@@ -2,7 +2,7 @@
   "entities": {
     "Project": {
       "title": "Project",
-      "description": "Represents an AI system project for compliance tracking.",
+      "description": "Represents the root of an AI system project for compliance tracking.",
       "type": "object",
       "properties": {
         "name": {
@@ -66,7 +66,20 @@
             "active",
             "archived"
           ]
-        },
+        }
+      },
+      "required": [
+        "name",
+        "version",
+        "owner",
+        "createdAt"
+      ]
+    },
+    "BasicInfo": {
+      "title": "BasicInfo",
+      "description": "Basic information about the project.",
+      "type": "object",
+      "properties": {
         "businessContext": {
           "type": "string",
           "description": "The business context of the project."
@@ -103,14 +116,21 @@
             "type": "string"
           },
           "description": "External dependencies of the project."
-        },
+        }
+      }
+    },
+    "Lifecycle": {
+      "title": "Lifecycle",
+      "description": "Lifecycle overview for the project.",
+      "type": "object",
+      "properties": {
         "lifecycleModel": {
           "type": "string",
-          "description": "The lifecycle model used for the project.",
           "enum": [
             "ISO42001",
             "Custom"
-          ]
+          ],
+          "description": "The lifecycle model used for the project."
         },
         "notes": {
           "type": "string",
@@ -120,7 +140,14 @@
           "type": "string",
           "format": "date-time",
           "description": "The timestamp of the last review."
-        },
+        }
+      }
+    },
+    "Design": {
+      "title": "Design",
+      "description": "Design phase details of the AI system.",
+      "type": "object",
+      "properties": {
         "functionalRequirements": {
           "type": "string",
           "description": "Functional requirements for the AI system."
@@ -148,7 +175,14 @@
         "explainabilityStrategy": {
           "type": "string",
           "description": "The strategy for ensuring explainability of the AI system."
-        },
+        }
+      }
+    },
+    "Development": {
+      "title": "Development",
+      "description": "Development phase details of the AI system.",
+      "type": "object",
+      "properties": {
         "toolchain": {
           "type": "array",
           "items": {
@@ -182,7 +216,14 @@
         "securityControls": {
           "type": "string",
           "description": "Security controls implemented for the AI system."
-        },
+        }
+      }
+    },
+    "Training": {
+      "title": "Training",
+      "description": "Training phase details of the AI system.",
+      "type": "object",
+      "properties": {
         "hasTrainingPhase": {
           "type": "boolean",
           "description": "Indicates if the project has a training phase."
@@ -220,7 +261,14 @@
             "type": "string"
           },
           "description": "Artifacts generated during training."
-        },
+        }
+      }
+    },
+    "Validation": {
+      "title": "Validation",
+      "description": "Validation phase details of the AI system.",
+      "type": "object",
+      "properties": {
         "validationMethods": {
           "type": "string",
           "description": "Methods used for validation."
@@ -244,7 +292,14 @@
         "independentReview": {
           "type": "string",
           "description": "Information about any independent review of the validation."
-        },
+        }
+      }
+    },
+    "Deployment": {
+      "title": "Deployment",
+      "description": "Deployment phase details of the AI system.",
+      "type": "object",
+      "properties": {
         "infrastructure": {
           "type": "string",
           "description": "The infrastructure used for deployment (e.g., Firebase, GCP, Azure)."
@@ -272,7 +327,14 @@
         "monitoringSetup": {
           "type": "string",
           "description": "The monitoring setup for the deployed system."
-        },
+        }
+      }
+    },
+    "Operation": {
+      "title": "Operation",
+      "description": "Operation phase details of the AI system.",
+      "type": "object",
+      "properties": {
         "monitoringProcedures": {
           "type": "string",
           "description": "Procedures for monitoring the AI system in operation."
@@ -296,7 +358,14 @@
         "loggingRetention": {
           "type": "string",
           "description": "Policy for retaining logs from the AI system."
-        },
+        }
+      }
+    },
+    "Retirement": {
+      "title": "Retirement",
+      "description": "Retirement phase details of the AI system.",
+      "type": "object",
+      "properties": {
         "retirementPlan": {
           "type": "string",
           "description": "The plan for retiring the AI system."
@@ -320,7 +389,14 @@
         "conditionsForRetirement": {
           "type": "string",
           "description": "Conditions that must be met for the system to be retired."
-        },
+        }
+      }
+    },
+    "Governance": {
+      "title": "Governance",
+      "description": "Governance and controls for the project.",
+      "type": "object",
+      "properties": {
         "policyReferences": {
           "type": "array",
           "items": {
@@ -423,38 +499,52 @@
       },
       "required": [
         "title",
-        "description",
         "category",
         "likelihood",
-        "impact",
-        "riskLevel",
-        "status"
+        "impact"
       ]
     },
     "Document": {
       "title": "Document",
-      "description": "A document associated with a project.",
+      "description": "A document associated with a project for export.",
       "type": "object",
       "properties": {
-        "name": {
+        "type": {
           "type": "string",
-          "description": "The name of the document."
+          "enum": [
+            "technicalFile",
+            "riskReport",
+            "fullLifecycle",
+            "custom"
+          ],
+          "description": "The type of the document."
         },
-        "url": {
+        "title": {
           "type": "string",
-          "format": "uri",
-          "description": "URL to the stored document."
+          "description": "The title of the document."
         },
-        "uploadedAt": {
+        "createdAt": {
           "type": "string",
           "format": "date-time",
-          "description": "The timestamp when the document was uploaded."
+          "description": "The timestamp when the document was created."
+        },
+        "generatedBy": {
+          "type": "string",
+          "description": "The user or process that generated the document."
+        },
+        "storagePath": {
+          "type": "string",
+          "description": "Link to the document in Firebase Storage."
+        },
+        "version": {
+          "type": "string",
+          "description": "The version of the document."
         }
       },
       "required": [
-        "name",
-        "url",
-        "uploadedAt"
+        "type",
+        "title",
+        "createdAt"
       ]
     }
   },
@@ -468,7 +558,67 @@
       "schema": {
         "$ref": "#/entities/Project"
       },
-      "description": "Stores individual AI project compliance data."
+      "description": "Stores root information for an AI project."
+    },
+    "/projects/{projectId}/basicInfo/{docId}": {
+      "schema": {
+        "$ref": "#/entities/BasicInfo"
+      },
+      "description": "Stores basic info for a specific project."
+    },
+    "/projects/{projectId}/lifecycle/{docId}": {
+      "schema": {
+        "$ref": "#/entities/Lifecycle"
+      },
+      "description": "Stores lifecycle overview for a specific project."
+    },
+    "/projects/{projectId}/design/{docId}": {
+      "schema": {
+        "$ref": "#/entities/Design"
+      },
+      "description": "Stores design phase details for a specific project."
+    },
+    "/projects/{projectId}/development/{docId}": {
+      "schema": {
+        "$ref": "#/entities/Development"
+      },
+      "description": "Stores development phase details for a specific project."
+    },
+    "/projects/{projectId}/training/{docId}": {
+      "schema": {
+        "$ref": "#/entities/Training"
+      },
+      "description": "Stores training phase details for a specific project."
+    },
+    "/projects/{projectId}/validation/{docId}": {
+      "schema": {
+        "$ref": "#/entities/Validation"
+      },
+      "description": "Stores validation phase details for a specific project."
+    },
+    "/projects/{projectId}/deployment/{docId}": {
+      "schema": {
+        "$ref": "#/entities/Deployment"
+      },
+      "description": "Stores deployment phase details for a specific project."
+    },
+    "/projects/{projectId}/operation/{docId}": {
+      "schema": {
+        "$ref": "#/entities/Operation"
+      },
+      "description": "Stores operation phase details for a specific project."
+    },
+    "/projects/{projectId}/retirement/{docId}": {
+      "schema": {
+        "$ref": "#/entities/Retirement"
+      },
+      "description": "Stores retirement phase details for a specific project."
+    },
+    "/projects/{projectId}/governance/{docId}": {
+      "schema": {
+        "$ref": "#/entities/Governance"
+      },
+      "description": "Stores governance and controls for a specific project."
     },
     "/projects/{projectId}/riskRegister/{riskId}": {
       "schema": {
@@ -480,7 +630,7 @@
       "schema": {
         "$ref": "#/entities/Document"
       },
-      "description": "Subcollection for documents related to a specific project."
+      "description": "Subcollection for documents related to a specific project for export."
     }
   }
 }
