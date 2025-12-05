@@ -244,6 +244,34 @@
         "independentReview": {
           "type": "string",
           "description": "Information about any independent review of the validation."
+        },
+        "infrastructure": {
+          "type": "string",
+          "description": "The infrastructure used for deployment (e.g., Firebase, GCP, Azure)."
+        },
+        "region": {
+          "type": "string",
+          "description": "The deployment region."
+        },
+        "ciCdPipeline": {
+          "type": "string",
+          "description": "Details about the CI/CD pipeline."
+        },
+        "accessControl": {
+          "type": "string",
+          "description": "Access control mechanisms in place."
+        },
+        "loggingPolicy": {
+          "type": "string",
+          "description": "The logging policy for the deployed system."
+        },
+        "secretsManagement": {
+          "type": "string",
+          "description": "How secrets are managed in the deployment environment."
+        },
+        "monitoringSetup": {
+          "type": "string",
+          "description": "The monitoring setup for the deployed system."
         }
       }
     },
