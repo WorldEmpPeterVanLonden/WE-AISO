@@ -120,6 +120,34 @@
           "type": "string",
           "format": "date-time",
           "description": "The timestamp of the last review."
+        },
+        "functionalRequirements": {
+          "type": "string",
+          "description": "Functional requirements for the AI system."
+        },
+        "nonFunctionalRequirements": {
+          "type": "string",
+          "description": "Non-functional requirements for the AI system."
+        },
+        "designChoices": {
+          "type": "string",
+          "description": "Design choices such as model selections, guardrails, and prompts."
+        },
+        "architectureSummary": {
+          "type": "string",
+          "description": "A summary of the system's architecture."
+        },
+        "dataArchitecture": {
+          "type": "string",
+          "description": "The architecture of the data processing and storage."
+        },
+        "performanceObjectives": {
+          "type": "string",
+          "description": "The performance objectives for the AI system."
+        },
+        "explainabilityStrategy": {
+          "type": "string",
+          "description": "The strategy for ensuring explainability of the AI system."
         }
       }
     },
