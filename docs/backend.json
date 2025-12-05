@@ -320,6 +320,33 @@
         "conditionsForRetirement": {
           "type": "string",
           "description": "Conditions that must be met for the system to be retired."
+        },
+        "policyReferences": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "References to ISO 42001 / 27001 documents."
+        },
+        "rolesAndResponsibilities": {
+          "type": "string",
+          "description": "Roles and responsibilities for governance."
+        },
+        "documentationVersioning": {
+          "type": "string",
+          "description": "How documentation is versioned."
+        },
+        "auditRequirements": {
+          "type": "string",
+          "description": "Requirements for auditing."
+        },
+        "changeManagement": {
+          "type": "string",
+          "description": "Process for managing changes."
+        },
+        "qualityControls": {
+          "type": "string",
+          "description": "Quality controls in place."
         }
       }
     },
