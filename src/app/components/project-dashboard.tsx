@@ -32,6 +32,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { format } from "date-fns";
+import Link from "next/link";
 
 // Mock Data
 const mockProjects = [
@@ -91,9 +92,11 @@ export function ProjectDashboard() {
               AISO Compliance Manager
             </h1>
           </div>
-          <Button>
-            <PlusCircle className="mr-2 h-4 w-4" />
-            Nieuw AI Project
+          <Button asChild>
+            <Link href="/project/new">
+              <PlusCircle className="mr-2 h-4 w-4" />
+              Nieuw AI Project
+            </Link>
           </Button>
         </div>
       </header>
