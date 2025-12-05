@@ -1,5 +1,5 @@
-import { ComplianceDashboard } from '@/app/components/compliance-dashboard';
+import { ProjectDashboard } from '@/app/components/project-dashboard';
 
 export default function Home() {
-  return <ComplianceDashboard />;
+  return <ProjectDashboard />;
 }
