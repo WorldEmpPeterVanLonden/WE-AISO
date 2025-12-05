@@ -220,6 +220,30 @@
             "type": "string"
           },
           "description": "Artifacts generated during training."
+        },
+        "validationMethods": {
+          "type": "string",
+          "description": "Methods used for validation."
+        },
+        "acceptanceCriteria": {
+          "type": "string",
+          "description": "Criteria for accepting the validation results."
+        },
+        "robustnessTests": {
+          "type": "string",
+          "description": "Tests for the robustness of the system."
+        },
+        "edgeCaseTests": {
+          "type": "string",
+          "description": "Tests for edge cases."
+        },
+        "validationResults": {
+          "type": "string",
+          "description": "The results of the validation."
+        },
+        "independentReview": {
+          "type": "string",
+          "description": "Information about any independent review of the validation."
         }
       }
     },
