@@ -18,7 +18,7 @@ const prompt = ai.definePrompt({
   name: 'riskAnalysisPrompt',
   input: {schema: RiskAnalysisInputSchema},
   output: {schema: RiskAnalysisOutputSchema},
-  prompt: `You are an AI risk assessment expert. Analyze the risks associated with the AI system based on the following information:\n\nUse Case: {{{useCase}}}\nData Type: {{{dataType}}}\nModel Type: {{{modelType}}}\nUser Group: {{{userGroup}}}\n\nIdentify potential risks (privacy, hallucination, bias, misuse, robustness), their risk levels (low, medium, high), recommended mitigations, and mapping to ISO 42001 controls.  Structure the output as a JSON array of risk objects.`,
+  prompt: `You are an AI risk assessment expert. Analyze the risks associated with the AI system based on the following information:\n\nUse Case: {{{useCase}}}\nData Type: {{{dataType}}}\nModel Type: {{{modelType}}}\nUser Group: {{{userGroup}}}\n\nIdentify potential risks (privacy, hallucination, bias, misuse, robustness), their risk levels (low, medium, high), recommended mitigations, and mapping to ISO 42001 controls.  Structure the output as a JSON object.`,
 });
 
 const analyzeRiskFlow = ai.defineFlow(

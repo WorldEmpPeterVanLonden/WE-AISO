@@ -277,7 +277,7 @@ export function ComplianceDashboard() {
                                   ISO 42001 Controls
                                 </h4>
                                  <ul className="ml-6 list-disc space-y-1 font-code text-sm text-muted-foreground">
-                                  {risk.iso27001Controls.map((control, i) => (
+                                  {risk.iso42001Controls.map((control, i) => (
                                     <li key={i}>{control}</li>
                                   ))}
                                 </ul>

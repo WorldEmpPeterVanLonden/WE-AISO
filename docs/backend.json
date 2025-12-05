@@ -1,0 +1,138 @@
+{
+  "entities": {
+    "Project": {
+      "title": "Project",
+      "description": "Represents an AI system project for compliance tracking.",
+      "type": "object",
+      "properties": {
+        "basicInfo": {
+          "type": "object",
+          "description": "Basic information about the AI system."
+        },
+        "lifecycle": {
+          "type": "object",
+          "description": "Information about the AI system's lifecycle."
+        },
+        "design": {
+          "type": "object",
+          "description": "Design details of the AI system."
+        },
+        "development": {
+          "type": "object",
+          "description": "Development details of the AI system."
+        },
+        "training": {
+          "type": "object",
+          "description": "Training details of the AI system."
+        },
+        "validation": {
+          "type": "object",
+          "description": "Validation details of the AI system."
+        },
+        "deployment": {
+          "type": "object",
+          "description": "Deployment details of the AI system."
+        },
+        "operation": {
+          "type": "object",
+          "description": "Operation details of the AI system."
+        },
+        "retirement": {
+          "type": "object",
+          "description": "Retirement details of the AI system."
+        },
+        "governance": {
+          "type": "object",
+          "description": "Governance details for the AI project."
+        }
+      }
+    },
+    "RiskRegisterEntry": {
+      "title": "Risk Register Entry",
+      "description": "An entry in the risk register for a project.",
+      "type": "object",
+      "properties": {
+        "risk": {
+          "type": "string",
+          "description": "Description of the identified risk."
+        },
+        "likelihood": {
+          "type": "string",
+          "description": "Likelihood of the risk occurring.",
+          "enum": [
+            "Low",
+            "Medium",
+            "High"
+          ]
+        },
+        "impact": {
+          "type": "string",
+          "description": "Impact of the risk if it occurs.",
+          "enum": [
+            "Low",
+            "Medium",
+            "High"
+          ]
+        },
+        "mitigation": {
+          "type": "string",
+          "description": "Mitigation measures for the risk."
+        }
+      },
+      "required": [
+        "risk"
+      ]
+    },
+    "Document": {
+      "title": "Document",
+      "description": "A document associated with a project.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The name of the document."
+        },
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "description": "URL to the stored document."
+        },
+        "uploadedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The timestamp when the document was uploaded."
+        }
+      },
+      "required": [
+        "name",
+        "url",
+        "uploadedAt"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "/projects/{projectId}": {
+      "schema": {
+        "$ref": "#/entities/Project"
+      },
+      "description": "Stores individual AI project compliance data."
+    },
+    "/projects/{projectId}/riskRegister/{riskId}": {
+      "schema": {
+        "$ref": "#/entities/RiskRegisterEntry"
+      },
+      "description": "Subcollection for the risk register of a specific project."
+    },
+    "/projects/{projectId}/documents/{documentId}": {
+      "schema": {
+        "$ref": "#/entities/Document"
+      },
+      "description": "Subcollection for documents related to a specific project."
+    }
+  }
+}

@@ -23,7 +23,7 @@ export const RiskAnalysisOutputSchema = z.object({
       riskType: z.string().describe('The type of risk (privacy, hallucination, bias, misuse, robustness).'),
       riskLevel: z.string().describe('The level of risk (low, medium, high).'),
       mitigations: z.array(z.string()).describe('Recommended mitigations for the risk.'),
-      iso27001Controls: z.array(z.string()).describe('Mapping to ISO 42001 controls.'),
+      iso42001Controls: z.array(z.string()).describe('Mapping to ISO 42001 controls.'),
     })
   ).describe('A list of risks associated with the AI system.'),
 });
