@@ -148,6 +148,40 @@
         "explainabilityStrategy": {
           "type": "string",
           "description": "The strategy for ensuring explainability of the AI system."
+        },
+        "toolchain": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            },
+            "description": "Toolchain used for the project (e.g., GitHub, Firebase, Azure)."
+        },
+        "devEnvironment": {
+            "type": "string",
+            "description": "The development environment for the project."
+        },
+        "codingStandards": {
+            "type": "string",
+            "description": "Coding standards applied to the project."
+        },
+        "dependencyList": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            },
+            "description": "A list of dependencies for the project."
+        },
+        "modelVersion": {
+            "type": "string",
+            "description": "The version of the model used."
+        },
+        "testApproach": {
+            "type": "string",
+            "description": "The approach for testing the AI system."
+        },
+        "securityControls": {
+            "type": "string",
+            "description": "Security controls implemented for the AI system."
         }
       }
     },
