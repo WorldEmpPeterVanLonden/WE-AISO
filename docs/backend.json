@@ -66,6 +66,43 @@
             "active",
             "archived"
           ]
+        },
+        "businessContext": {
+          "type": "string",
+          "description": "The business context of the project."
+        },
+        "intendedUsers": {
+          "type": "string",
+          "description": "The intended users of the AI system."
+        },
+        "geographicScope": {
+          "type": "string",
+          "description": "The geographic scope of the project."
+        },
+        "legalRequirements": {
+          "type": "string",
+          "description": "Legal requirements such as GDPR, MDR, AI Act, etc."
+        },
+        "dataCategories": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Categories of data used by the system."
+        },
+        "dataSources": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Sources of the data used by the system."
+        },
+        "externalDependencies": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "External dependencies of the project."
         }
       }
     },
