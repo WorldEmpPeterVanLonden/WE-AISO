@@ -182,6 +182,44 @@
         "securityControls": {
             "type": "string",
             "description": "Security controls implemented for the AI system."
+        },
+        "hasTrainingPhase": {
+          "type": "boolean",
+          "description": "Indicates if the project has a training phase."
+        },
+        "datasetDescription": {
+          "type": "string",
+          "description": "Description of the dataset used for training."
+        },
+        "datasetSources": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Sources of the dataset."
+        },
+        "dataQualityChecks": {
+          "type": "string",
+          "description": "Procedures for checking data quality."
+        },
+        "biasAssessment": {
+          "type": "string",
+          "description": "Assessment of potential bias in the data or model."
+        },
+        "privacyAssessment": {
+          "type": "string",
+          "description": "Assessment of privacy implications."
+        },
+        "trainingProcedure": {
+          "type": "string",
+          "description": "The procedure used for training the model."
+        },
+        "trainingArtifacts": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Artifacts generated during training."
         }
       }
     },
