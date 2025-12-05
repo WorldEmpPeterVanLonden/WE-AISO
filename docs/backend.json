@@ -103,6 +103,23 @@
             "type": "string"
           },
           "description": "External dependencies of the project."
+        },
+        "lifecycleModel": {
+          "type": "string",
+          "description": "The lifecycle model used for the project.",
+          "enum": [
+            "ISO42001",
+            "Custom"
+          ]
+        },
+        "notes": {
+          "type": "string",
+          "description": "Notes related to the project lifecycle."
+        },
+        "lastReview": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The timestamp of the last review."
         }
       }
     },
