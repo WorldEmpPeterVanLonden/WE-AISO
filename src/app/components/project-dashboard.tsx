@@ -6,6 +6,7 @@ import {
   PlusCircle,
   Eye,
   ShieldCheck,
+  FileText,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -21,6 +22,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
@@ -124,7 +126,9 @@ export function ProjectDashboard() {
               <TableBody>
                 {mockProjects.map((project) => (
                   <TableRow key={project.id}>
-                    <TableCell className="font-medium">{project.name}</TableCell>
+                    <TableCell className="font-medium">
+                       <Link href={`/project/${project.id}`} className="hover:underline">{project.name}</Link>
+                    </TableCell>
                     <TableCell>
                       <StatusBadge status={project.status as ProjectStatus} />
                     </TableCell>
@@ -142,17 +146,20 @@ export function ProjectDashboard() {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                           <DropdownMenuLabel>Acties</DropdownMenuLabel>
-                          <DropdownMenuItem>
-                            <Eye className="mr-2 h-4 w-4" />
-                            Open Project
+                          <DropdownMenuItem asChild>
+                            <Link href={`/project/${project.id}`}>
+                              <Eye className="mr-2 h-4 w-4" />
+                              Open Project
+                            </Link>
                           </DropdownMenuItem>
+                          <DropdownMenuItem>
+                            <FileText className="mr-2 h-4 w-4" />
+                            Bekijk Lifecycle
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
                           <DropdownMenuItem>
                             <Download className="mr-2 h-4 w-4" />
-                            Download Documenten
-                          </DropdownMenuItem>
-                           <DropdownMenuItem>
-                            <ShieldCheck className="mr-2 h-4 w-4" />
-                            Bekijk Lifecycle
+                            Exporteer Documenten
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
