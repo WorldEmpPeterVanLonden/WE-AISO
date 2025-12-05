@@ -5,45 +5,67 @@
       "description": "Represents an AI system project for compliance tracking.",
       "type": "object",
       "properties": {
-        "basicInfo": {
-          "type": "object",
-          "description": "Basic information about the AI system."
+        "name": {
+          "type": "string",
+          "description": "The name of the project."
         },
-        "lifecycle": {
-          "type": "object",
-          "description": "Information about the AI system's lifecycle."
+        "version": {
+          "type": "string",
+          "description": "The version of the project."
         },
-        "design": {
-          "type": "object",
-          "description": "Design details of the AI system."
+        "customerId": {
+          "type": "string",
+          "description": "The ID of the customer associated with the project."
         },
-        "development": {
-          "type": "object",
-          "description": "Development details of the AI system."
+        "description": {
+          "type": "string",
+          "description": "A description of the project."
         },
-        "training": {
-          "type": "object",
-          "description": "Training details of the AI system."
+        "useCase": {
+          "type": "string",
+          "description": "The use case for the AI system."
         },
-        "validation": {
-          "type": "object",
-          "description": "Validation details of the AI system."
+        "systemType": {
+          "type": "string",
+          "description": "The type of the AI system.",
+          "enum": [
+            "LLM",
+            "ML",
+            "Hybrid",
+            "RuleBased"
+          ]
         },
-        "deployment": {
-          "type": "object",
-          "description": "Deployment details of the AI system."
+        "riskCategory": {
+          "type": "string",
+          "description": "The risk category of the project.",
+          "enum": [
+            "high",
+            "medium",
+            "low"
+          ]
         },
-        "operation": {
-          "type": "object",
-          "description": "Operation details of the AI system."
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The timestamp when the project was created."
         },
-        "retirement": {
-          "type": "object",
-          "description": "Retirement details of the AI system."
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The timestamp when the project was last updated."
         },
-        "governance": {
-          "type": "object",
-          "description": "Governance details for the AI project."
+        "owner": {
+          "type": "string",
+          "description": "The owner of the project."
+        },
+        "status": {
+          "type": "string",
+          "description": "The status of the project.",
+          "enum": [
+            "draft",
+            "active",
+            "archived"
+          ]
         }
       }
     },
