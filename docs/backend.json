@@ -272,6 +272,30 @@
         "monitoringSetup": {
           "type": "string",
           "description": "The monitoring setup for the deployed system."
+        },
+        "monitoringProcedures": {
+          "type": "string",
+          "description": "Procedures for monitoring the AI system in operation."
+        },
+        "driftDetection": {
+          "type": "string",
+          "description": "Methods for detecting model or data drift."
+        },
+        "incidentHandling": {
+          "type": "string",
+          "description": "Process for handling incidents related to the AI system."
+        },
+        "modelUpdatePolicy": {
+          "type": "string",
+          "description": "Policy for updating the model in production."
+        },
+        "userFeedbackProcess": {
+          "type": "string",
+          "description": "Process for collecting and acting on user feedback."
+        },
+        "loggingRetention": {
+          "type": "string",
+          "description": "Policy for retaining logs from the AI system."
         }
       }
     },
