@@ -296,6 +296,30 @@
         "loggingRetention": {
           "type": "string",
           "description": "Policy for retaining logs from the AI system."
+        },
+        "retirementPlan": {
+          "type": "string",
+          "description": "The plan for retiring the AI system."
+        },
+        "dataMigrationPlan": {
+          "type": "string",
+          "description": "The plan for migrating data upon system retirement."
+        },
+        "dataDestructionProcedures": {
+          "type": "string",
+          "description": "Procedures for destructing data upon system retirement."
+        },
+        "userCommunicationPlan": {
+          "type": "string",
+          "description": "The plan for communicating the system retirement to users."
+        },
+        "archiveLocation": {
+          "type": "string",
+          "description": "The location where the retired system and its data will be archived."
+        },
+        "conditionsForRetirement": {
+          "type": "string",
+          "description": "Conditions that must be met for the system to be retired."
         }
       }
     },
