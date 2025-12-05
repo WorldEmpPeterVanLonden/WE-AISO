@@ -1,7 +1,17 @@
-import {genkit} from 'genkit';
-import {googleAI} from '@genkit-ai/google-genai';
+
+import { genkit } from 'genkit';
+import { vertexAI } from '@genkit-ai/vertexai';
+
+// helper voor env-vars met fallback
+function requireEnv(key: string, fallback: string): string {
+  const val = process.env[key];
+  return typeof val === 'string' && val.length > 0 ? val : fallback;
+}
 
 export const ai = genkit({
-  plugins: [googleAI()],
-  model: 'googleai/gemini-2.5-flash',
-});
+  plugins: [
+    vertexAI({
+      projectId: requireEnv('VERTEX_PROJECT', 'we-portal-b9e8d'),
+      location: requireEnv('VERTEX_LOCATION', 'us-central1'),
+    }),
+  ]});
