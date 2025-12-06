@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
-import { FileDown, Clock, CheckCircle2, ShieldCheck, GitMerge, Calendar, Edit, Minus } from "lucide-react";
+import { FileDown, Clock, CheckCircle2, ShieldCheck, GitMerge, Calendar, Edit, Minus, Bot } from "lucide-react";
 import { format, subDays } from "date-fns";
 
 const mockProjectDetails = {
@@ -16,7 +16,9 @@ const mockProjectDetails = {
     lastChange: subDays(new Date(), 2),
     lastReview: subDays(new Date(), 15),
     lifecycleCompletion: 45, // percentage
-    riskCategory: "medium"
+    riskCategory: "medium",
+    systemType: "LLM",
+    useCase: "Customer Support Automation"
 };
 
 const lifecycleStages = [
@@ -77,7 +79,17 @@ export default function OverviewPage() {
             <div className="flex justify-between items-start">
                 <div>
                     <CardTitle className="text-3xl font-bold font-headline">{mockProjectDetails.name}</CardTitle>
-                    <CardDescription className="mt-2">{mockProjectDetails.description}</CardDescription>
+                    <div className="flex items-center gap-4 text-muted-foreground mt-2">
+                        <div className="flex items-center gap-2">
+                           <Bot className="h-4 w-4" />
+                           <span className="text-sm font-medium">{mockProjectDetails.systemType}-based System</span>
+                        </div>
+                         <Separator orientation="vertical" className="h-4" />
+                        <div className="flex items-center gap-2">
+                             <span className="text-sm font-medium">Use Case: {mockProjectDetails.useCase}</span>
+                        </div>
+                    </div>
+                    <CardDescription className="mt-4">{mockProjectDetails.description}</CardDescription>
                 </div>
             </div>
         </CardHeader>
