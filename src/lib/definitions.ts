@@ -30,8 +30,8 @@ export const BasicInfoSchema = z.object({
   dataCategories: z.array(z.string()).optional(),
   dataSources: z.union([z.string(), z.array(z.string())]).optional(),
   externalDependencies: z.union([z.string(), z.array(z.string())]).optional(),
-  dataSensitivity: z.enum(["low", "medium", "high", "confidential"]).optional(),
-  dataSubjects: z.string().optional(),
+  dataSensitivity: z.enum(["public", "internal", "confidential", "highly-sensitive"]).optional(),
+  dataSubjects: z.array(z.string()).optional(),
   scopeComponents: z.string().optional(),
   stakeholders: z.string().optional(),
   prohibitedUse: z.string().optional(),
@@ -69,7 +69,7 @@ export const DevelopmentSchema = z.object({
   toolchain: z.array(z.string()).optional(),
   dependencies: z.string().optional(),
   securityControls: z.string().min(1, "Security controls are required."),
-  testApproach: z.string().min(1, "Test approach is required."),
+  testApproach: z.string().min(1,"Test approach is required."),
 });
 
 export const TrainingSchema = z.object({

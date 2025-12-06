@@ -66,6 +66,14 @@ const dataCategoryItems = [
     { id: "other", label: "Other" },
 ];
 
+const dataSubjectItems = [
+    { id: "adults", label: "Adults" },
+    { id: "children", label: "Children" },
+    { id: "employees", label: "Employees" },
+    { id: "customers", label: "Customers" },
+    { id: "third_parties", label: "Third parties" },
+];
+
 export function BasicInfoForm() {
   const [isSaving, setIsSaving] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -88,7 +96,7 @@ export function BasicInfoForm() {
       operationalEnvironment: "",
       performanceGoals: "",
       scopeComponents: "",
-      dataSubjects: "",
+      dataSubjects: [],
     },
   });
   
@@ -219,11 +227,37 @@ export function BasicInfoForm() {
                 </FormItem>
             )} />
             
-            <FormField control={form.control} name="dataSubjects" render={({ field }) => (
-                <FormItem>
-                    <FormLabel>Data Subjects</FormLabel>
-                    <FormControl><Input placeholder="e.g. Customers, employees, patients" {...field} /></FormControl>
-                    <FormDescription>Who is the data about?</FormDescription>
+            <FormField control={form.control} name="dataSubjects" render={() => (
+                <FormItem className="md:col-span-2">
+                    <div className="mb-4">
+                        <FormLabel>Data Subjects</FormLabel>
+                        <FormDescription>Who is the data about?</FormDescription>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                        {dataSubjectItems.map((item) => (
+                            <FormField
+                                key={item.id}
+                                control={form.control}
+                                name="dataSubjects"
+                                render={({ field }) => (
+                                    <FormItem key={item.id} className="flex flex-row items-start space-x-3 space-y-0">
+                                        <FormControl>
+                                            <Checkbox
+                                                checked={field.value?.includes(item.id)}
+                                                onCheckedChange={(checked) => {
+                                                    const currentValue = field.value || [];
+                                                    return checked
+                                                        ? field.onChange([...currentValue, item.id])
+                                                        : field.onChange(currentValue?.filter((value) => value !== item.id));
+                                                }}
+                                            />
+                                        </FormControl>
+                                        <FormLabel className="font-normal">{item.label}</FormLabel>
+                                    </FormItem>
+                                )}
+                            />
+                        ))}
+                    </div>
                     <FormMessage />
                 </FormItem>
             )} />
@@ -353,10 +387,10 @@ export function BasicInfoForm() {
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl><SelectTrigger><SelectValue placeholder="Select a sensitivity level" /></SelectTrigger></FormControl>
                     <SelectContent>
-                        <SelectItem value="low">Low</SelectItem>
-                        <SelectItem value="medium">Medium</SelectItem>
-                        <SelectItem value="high">High</SelectItem>
+                        <SelectItem value="public">Public</SelectItem>
+                        <SelectItem value="internal">Internal</SelectItem>
                         <SelectItem value="confidential">Confidential</SelectItem>
+                        <SelectItem value="highly-sensitive">Highly Sensitive</SelectItem>
                     </SelectContent>
                     </Select>
                     <FormMessage />
