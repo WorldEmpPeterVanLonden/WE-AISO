@@ -38,6 +38,7 @@ import {
 import { format } from "date-fns";
 import Link from "next/link";
 import { Progress } from "@/components/ui/progress";
+import { useRouter } from "next/navigation";
 
 // Mock Data
 const mockProjects = [
@@ -113,6 +114,8 @@ const RiskBadge = ({ risk }: { risk: RiskCategory }) => {
 };
 
 export function ProjectDashboard() {
+  const router = useRouter();
+  
   return (
     <div className="min-h-screen bg-background text-foreground">
        <header className="sticky top-0 z-10 border-b bg-background/80 backdrop-blur-sm">
@@ -157,9 +160,13 @@ export function ProjectDashboard() {
               </TableHeader>
               <TableBody>
                 {mockProjects.map((project) => (
-                  <TableRow key={project.id}>
-                    <TableCell className="font-medium">
-                       <Link href={`/project/${project.id}/overview`} className="hover:underline">{project.name}</Link>
+                  <TableRow 
+                    key={project.id} 
+                    className="cursor-pointer"
+                    onClick={() => router.push(`/project/${project.id}/overview`)}
+                  >
+                    <TableCell className="font-medium group-hover:underline">
+                       {project.name}
                     </TableCell>
                     <TableCell>{project.customerName}</TableCell>
                     <TableCell>
@@ -178,7 +185,7 @@ export function ProjectDashboard() {
                     <TableCell>
                       {format(project.updatedAt, "dd MMMM yyyy")}
                     </TableCell>
-                    <TableCell>
+                    <TableCell onClick={(e) => e.stopPropagation()}>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button aria-haspopup="true" size="icon" variant="ghost">
