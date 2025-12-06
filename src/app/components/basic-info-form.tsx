@@ -74,6 +74,18 @@ const dataSubjectItems = [
     { id: "third_parties", label: "Third parties" },
 ];
 
+const externalDependenciesItems = [
+    { id: "gcp", label: "Cloud provider (GCP)" },
+    { id: "azure", label: "Cloud provider (Azure)" },
+    { id: "aws", label: "Cloud provider (AWS)" },
+    { id: "openai", label: "OpenAI API" },
+    { id: "vertex", label: "Google Vertex AI" },
+    { id: "huggingface", label: "HuggingFace API" },
+    { id: "stripe", label: "Stripe" },
+    { id: "twilio", label: "Twilio" },
+    { id: "other", label: "Other" },
+];
+
 export function BasicInfoForm() {
   const [isSaving, setIsSaving] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -496,11 +508,39 @@ export function BasicInfoForm() {
                 </FormItem>
             )} />
 
-            <FormField control={form.control} name="externalDependencies" render={({ field }) => (
+            <FormField control={form.control} name="externalDependencies" render={() => (
                 <FormItem className="md:col-span-2">
-                    <FormLabel>External Dependencies</FormLabel>
-                    <FormControl><Textarea placeholder="e.g., External APIs (Google Maps), cloud services (Azure), open-source libraries." {...field} /></FormControl>
-                    <FormDescription>List of external systems or components, separated by commas.</FormDescription>
+                    <div className="mb-4">
+                        <FormLabel>External Dependencies</FormLabel>
+                        <FormDescription>List of external systems or components.</FormDescription>
+                    </div>
+                     <div className="grid grid-cols-2 gap-4">
+                        {externalDependenciesItems.map((item) => (
+                            <FormField
+                                key={item.id}
+                                control={form.control}
+                                name="externalDependencies"
+                                render={({ field }) => {
+                                    return (
+                                        <FormItem key={item.id} className="flex flex-row items-start space-x-3 space-y-0">
+                                            <FormControl>
+                                                <Checkbox
+                                                    checked={field.value?.includes(item.id)}
+                                                    onCheckedChange={(checked) => {
+                                                        const currentValue = field.value || [];
+                                                        return checked
+                                                            ? field.onChange([...currentValue, item.id])
+                                                            : field.onChange(currentValue.filter((value) => value !== item.id));
+                                                    }}
+                                                />
+                                            </FormControl>
+                                            <FormLabel className="font-normal">{item.label}</FormLabel>
+                                        </FormItem>
+                                    );
+                                }}
+                            />
+                        ))}
+                    </div>
                     <FormMessage />
                 </FormItem>
             )} />
@@ -560,3 +600,4 @@ export function BasicInfoForm() {
     </>
   );
 }
+
