@@ -666,7 +666,7 @@
     ]
   },
   "firestore": {
-    "/aiso_users/{userId}": {
+    "/aiso_user-profiles/{userId}": {
       "schema": {
         "$ref": "#/entities/UserProfile"
       },
