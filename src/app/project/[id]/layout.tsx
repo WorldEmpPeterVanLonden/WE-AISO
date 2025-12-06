@@ -1,5 +1,4 @@
 import { ProjectNav } from "@/app/components/project-nav";
-import { Card } from "@/components/ui/card";
 
 export default function ProjectDetailLayout({
   children,
@@ -14,10 +13,8 @@ export default function ProjectDetailLayout({
   return (
     <div className="flex min-h-screen w-full flex-col bg-muted/40">
       <ProjectNav projectId={params.id} projectName={projectName} />
-      <main className="flex-1 gap-4 p-4 sm:px-6 sm:py-0 md:gap-8 lg:grid lg:grid-cols-5">
-        <div className="lg:col-span-4 lg:col-start-2 lg:p-8">
-            {children}
-        </div>
+      <main className="flex flex-1 flex-col gap-4 p-4 sm:gap-8 sm:p-6 sm:ml-60">
+        {children}
       </main>
     </div>
   );
