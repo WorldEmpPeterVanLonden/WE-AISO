@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Loader2, Sparkles, Save } from "lucide-react";
+import { Loader2, Sparkles, Save, Info } from "lucide-react";
 
 import { BasicInfoSchema } from "@/lib/definitions";
 import { Button } from "@/components/ui/button";
@@ -25,6 +25,7 @@ import { useToast } from "@/hooks/use-toast";
 import { generateBasicInfoSuggestions, type BasicInfoSuggestionsOutput } from "@/ai/flows/generate-basic-info-suggestions";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 type BasicInfoFormData = z.infer<typeof BasicInfoSchema>;
 
@@ -88,6 +89,23 @@ const externalDependenciesItems = [
 ];
 
 type FieldName = keyof BasicInfoFormData;
+
+const TooltipLabel = ({ label, tooltipText }: { label: string, tooltipText: string }) => (
+    <div className="flex items-center gap-2">
+        <FormLabel>{label}</FormLabel>
+        <TooltipProvider>
+            <Tooltip>
+                <TooltipTrigger asChild>
+                    <Info className="h-4 w-4 text-muted-foreground cursor-help" />
+                </TooltipTrigger>
+                <TooltipContent>
+                    <p>{tooltipText}</p>
+                </TooltipContent>
+            </Tooltip>
+        </TooltipProvider>
+    </div>
+);
+
 
 export function BasicInfoForm() {
   const [isSaving, setIsSaving] = useState(false);
@@ -170,7 +188,7 @@ export function BasicInfoForm() {
         name={fieldName}
         render={({ field }) => (
           <FormItem>
-            <FormLabel>{label}</FormLabel>
+            {description ? <TooltipLabel label={label} tooltipText={description} /> : <FormLabel>{label}</FormLabel>}
             <div className="relative">
               <FormControl>
                 <Textarea placeholder={placeholder} {...field} rows={4} />
@@ -191,7 +209,6 @@ export function BasicInfoForm() {
                 <span className="sr-only">Generate suggestion for {label}</span>
               </Button>
             </div>
-            {description && <FormDescription>{description}</FormDescription>}
             <FormMessage />
           </FormItem>
         )}
@@ -214,8 +231,7 @@ export function BasicInfoForm() {
                         <FormField control={form.control} name="intendedUsers" render={() => (
                             <FormItem>
                                 <div className="mb-4">
-                                    <FormLabel>Intended Users</FormLabel>
-                                    <FormDescription>Who are the end users of the system?</FormDescription>
+                                     <TooltipLabel label="Intended Users" tooltipText="Who are the end users of the system?" />
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
                                     {intendedUserItems.map((item) => (
@@ -257,8 +273,7 @@ export function BasicInfoForm() {
                         <FormField control={form.control} name="dataSubjects" render={() => (
                             <FormItem>
                                 <div className="mb-4">
-                                    <FormLabel>Data Subjects</FormLabel>
-                                    <FormDescription>Who is the data about?</FormDescription>
+                                    <TooltipLabel label="Data Subjects" tooltipText="Who is the data about?" />
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
                                     {dataSubjectItems.map((item) => (
@@ -302,10 +317,9 @@ export function BasicInfoForm() {
                         
                         <FormField control={form.control} name="dataSources" render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Data Sources</FormLabel>
+                                <TooltipLabel label="Data Sources" tooltipText="Enter sources, separated by commas." />
                                 <FormControl><Textarea placeholder="Describe where the data comes from (e.g. internal databases, public APIs, user-provided)." {...field} />
                                 </FormControl>
-                                <FormDescription>Enter sources, separated by commas.</FormDescription>
                                 <FormMessage />
                             </FormItem>
                         )} />
@@ -313,8 +327,7 @@ export function BasicInfoForm() {
                         <FormField control={form.control} name="dataCategories" render={() => (
                             <FormItem>
                                  <div className="mb-4">
-                                    <FormLabel>Data Categories</FormLabel>
-                                    <FormDescription>Select the categories of data being processed.</FormDescription>
+                                    <TooltipLabel label="Data Categories" tooltipText="Select the categories of data being processed." />
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
                                 {dataCategoryItems.map((item) => (
@@ -350,7 +363,7 @@ export function BasicInfoForm() {
                                 name="retentionPolicy"
                                 render={({ field }) => (
                                     <FormItem>
-                                    <FormLabel>Retention Policy</FormLabel>
+                                    <TooltipLabel label="Retention Policy" tooltipText="Describe the data retention policy." />
                                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                                         <FormControl>
                                         <SelectTrigger>
@@ -367,7 +380,6 @@ export function BasicInfoForm() {
                                         <SelectItem value="other">Other</SelectItem>
                                         </SelectContent>
                                     </Select>
-                                    <FormDescription>Describe the data retention policy.</FormDescription>
                                     <FormMessage />
                                     </FormItem>
                                 )}
@@ -403,7 +415,7 @@ export function BasicInfoForm() {
                                 name="geographicScope"
                                 render={({ field }) => (
                                     <FormItem>
-                                    <FormLabel>Geographic Scope</FormLabel>
+                                    <TooltipLabel label="Geographic Scope" tooltipText="Where will the system be used?" />
                                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                                         <FormControl>
                                         <SelectTrigger>
@@ -419,7 +431,6 @@ export function BasicInfoForm() {
                                         <SelectItem value="other">Other</SelectItem>
                                         </SelectContent>
                                     </Select>
-                                    <FormDescription>Where will the system be used?</FormDescription>
                                     <FormMessage />
                                     </FormItem>
                                 )}
@@ -444,8 +455,7 @@ export function BasicInfoForm() {
                         <FormField control={form.control} name="legalRequirements" render={() => (
                             <FormItem>
                                 <div className="mb-4">
-                                    <FormLabel>Relevant Legislation</FormLabel>
-                                    <FormDescription>Which legal frameworks apply?</FormDescription>
+                                    <TooltipLabel label="Relevant Legislation" tooltipText="Which legal frameworks apply?" />
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
                                     {legislationItems.map((item) => (
@@ -489,7 +499,7 @@ export function BasicInfoForm() {
 
                         <FormField control={form.control} name="aiActClassification" render={({ field }) => (
                         <FormItem>
-                            <FormLabel>AI Act Classification</FormLabel>
+                            <TooltipLabel label="AI Act Classification" tooltipText="Classification according to the EU AI Act." />
                             <Select onValueChange={field.onChange} defaultValue={field.value}>
                             <FormControl><SelectTrigger><SelectValue placeholder="Select a classification" /></SelectTrigger></FormControl>
                             <SelectContent>
@@ -499,7 +509,6 @@ export function BasicInfoForm() {
                                 <SelectItem value="minimal">Minimal Risk</SelectItem>
                             </SelectContent>
                             </Select>
-                            <FormDescription>Classification according to the EU AI Act.</FormDescription>
                             <FormMessage />
                         </FormItem>
                         )} />
@@ -514,8 +523,7 @@ export function BasicInfoForm() {
                          <FormField control={form.control} name="externalDependencies" render={() => (
                             <FormItem>
                                 <div className="mb-4">
-                                    <FormLabel>External Dependencies</FormLabel>
-                                    <FormDescription>List of external systems or components.</FormDescription>
+                                    <TooltipLabel label="External Dependencies" tooltipText="List of external systems or components." />
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
                                     {externalDependenciesItems.map((item) => (
@@ -592,5 +600,3 @@ export function BasicInfoForm() {
     </>
   );
 }
-
-    
