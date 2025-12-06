@@ -1,3 +1,4 @@
+
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
@@ -62,25 +63,31 @@ export default function OverviewPage() {
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
-            <div className="flex items-center gap-3 p-4 bg-muted/50 rounded-lg">
-                <ShieldCheck className="h-6 w-6 text-primary" />
-                <div>
-                    <span className="text-muted-foreground">Status</span>
-                    <div className="font-semibold"><StatusBadge status={mockProjectDetails.status as ProjectStatus} /></div>
+            <div className="flex flex-col justify-center gap-3 p-4 bg-muted/50 rounded-lg">
+                <div className="flex items-center gap-3">
+                    <ShieldCheck className="h-6 w-6 text-primary" />
+                    <div>
+                        <span className="text-muted-foreground">Status</span>
+                        <div className="font-semibold"><StatusBadge status={mockProjectDetails.status as ProjectStatus} /></div>
+                    </div>
                 </div>
             </div>
-            <div className="flex items-center gap-3 p-4 bg-muted/50 rounded-lg">
-                <Clock className="h-6 w-6 text-primary" />
-                <div>
-                    <span className="text-muted-foreground">Last Review</span>
-                    <div className="font-semibold">{format(mockProjectDetails.lastReview, "dd.MM.yy")}</div>
+            <div className="flex flex-col justify-center gap-3 p-4 bg-muted/50 rounded-lg">
+                <div className="flex items-center gap-3">
+                    <Clock className="h-6 w-6 text-primary" />
+                    <div>
+                        <span className="text-muted-foreground">Last Review</span>
+                        <div className="font-semibold">{format(mockProjectDetails.lastReview, "dd.MM.yy")}</div>
+                    </div>
                 </div>
             </div>
-             <div className="flex items-center gap-3 p-4 bg-muted/50 rounded-lg">
-                <ShieldCheck className="h-6 w-6 text-primary" />
-                <div>
-                    <span className="text-muted-foreground">Risk</span>
-                    <div className="font-semibold"><RiskBadge risk={mockProjectDetails.riskCategory as RiskCategory} /></div>
+             <div className="flex flex-col justify-center gap-3 p-4 bg-muted/50 rounded-lg">
+                <div className="flex items-center gap-3">
+                    <ShieldCheck className="h-6 w-6 text-primary" />
+                    <div>
+                        <span className="text-muted-foreground">Risk</span>
+                        <div className="font-semibold"><RiskBadge risk={mockProjectDetails.riskCategory as RiskCategory} /></div>
+                    </div>
                 </div>
             </div>
         </div>
