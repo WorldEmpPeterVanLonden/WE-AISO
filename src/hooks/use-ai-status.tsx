@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { healthCheck } from '@/ai/flows/health-check';
+import { healthCheck } from '@/lib/actions';
 
 type AiStatus = 'checking' | 'connected' | 'disconnected';
 

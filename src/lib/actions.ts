@@ -104,3 +104,13 @@ export async function generateDocumentAction(formData: unknown) {
   revalidatePath(`/project/${projectId}/documents`);
   return { success: "Document generated successfully!" };
 }
+
+export type AiHealthOutput = { status: 'ok' };
+
+/**
+ * A simple health check function to verify that the server action endpoint is reachable.
+ * @returns A promise that resolves to an object with a status of 'ok'.
+ */
+export async function healthCheck(): Promise<AiHealthOutput> {
+  return { status: 'ok' };
+}
