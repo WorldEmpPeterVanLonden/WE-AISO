@@ -53,3 +53,12 @@ export const TrainingSchema = z.object({
     message: "Please fill out all fields for the training phase.",
     path: ["datasetDescription"], // you can pick one field to show the error on
 });
+
+export const ValidationSchema = z.object({
+    validationMethods: z.string().min(1, "Validation methods are required."),
+    acceptanceCriteria: z.string().min(1, "Acceptance criteria are required."),
+    robustnessTests: z.string().min(1, "Robustness tests are required."),
+    edgeCaseTests: z.string().min(1, "Edge case tests are required."),
+    validationResults: z.string().min(1, "Validation results are required."),
+    independentReview: z.string().optional(),
+});
