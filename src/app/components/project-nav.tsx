@@ -95,7 +95,7 @@ export function ProjectNav({
         <Button
             variant="ghost"
             size="icon"
-            className="absolute top-3 right-0 translate-x-1/2 rounded-full border hidden sm:block"
+            className="absolute top-3 right-0 translate-x-1/2 rounded-full border hidden sm:block bg-background hover:bg-background"
             onClick={toggleCollapse}
         >
             <PanelLeft className={cn("h-5 w-5 transition-transform", isCollapsed && "rotate-180")} />
@@ -132,20 +132,21 @@ export function ProjectNav({
               );
             })}
 
-            <Collapsible open={isLifecycleOpen && !isCollapsed} onOpenChange={setIsLifecycleOpen}>
-                <CollapsibleTrigger asChild>
-                    <Tooltip delayDuration={0}>
-                        <TooltipTrigger asChild>
-                             <Button variant={isLifecycleActive ? "secondary" : "ghost"} className={cn("w-full justify-start gap-2 my-1", isCollapsed && "justify-center")}>
+            <Collapsible open={isLifecycleOpen} onOpenChange={setIsLifecycleOpen} className={cn(isCollapsed && 'pointer-events-none')}>
+                <Tooltip delayDuration={0}>
+                    <TooltipTrigger asChild>
+                         <CollapsibleTrigger asChild>
+                             <Button variant={isLifecycleActive && !isCollapsed ? "secondary" : "ghost"} className={cn("w-full justify-start gap-2 my-1", isCollapsed && "justify-center")}>
                                 <GitMerge className="h-4 w-4" />
                                 <span className={cn(isCollapsed && "sr-only")}>Lifecycle</span>
                                 <ChevronDown className={cn("h-4 w-4 ml-auto transition-transform", (isLifecycleOpen && !isCollapsed) && "rotate-180", isCollapsed && "hidden")} />
                             </Button>
-                        </TooltipTrigger>
-                        <TooltipContent side="right">Lifecycle</TooltipContent>
-                    </Tooltip>
-                </CollapsibleTrigger>
-                <CollapsibleContent className="pl-4 border-l ml-3">
+                        </CollapsibleTrigger>
+                    </TooltipTrigger>
+                    <TooltipContent side="right">Lifecycle</TooltipContent>
+                </Tooltip>
+                
+                <CollapsibleContent className={cn("pl-4 border-l ml-3 data-[state=closed]:hidden", isCollapsed && "hidden")}>
                      {lifecycleNavItems.map(({ href, icon: Icon, label }) => {
                         const fullHref = `${baseHref}${href}`;
                         const isActive = pathname === fullHref;
