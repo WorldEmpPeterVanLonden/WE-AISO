@@ -81,3 +81,10 @@ export const OperationSchema = z.object({
   userFeedbackProcess: z.string().min(1, "User feedback process is required."),
   loggingRetention: z.string().min(1, "Logging retention policy is required."),
 });
+
+export const RetirementSchema = z.object({
+  retirementPlan: z.string().min(1, "Retirement plan is required."),
+  dataMigrationPlan: z.string().optional(),
+  dataDestructionProcedures: z.string().min(1, "Data destruction procedures are required."),
+  userCommunicationPlan: z.string().min(1, "User communication plan is required."),
+});
