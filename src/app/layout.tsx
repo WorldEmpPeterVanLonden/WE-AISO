@@ -6,6 +6,14 @@ import { FirebaseClientProvider } from '@/firebase/client-provider';
 export const metadata: Metadata = {
   title: 'AI Compliance Projects',
   description: 'Manage AI lifecycle and compliance with ISO 42001.',
+  robots: {
+    index: false,
+    follow: false,
+    googleBot: {
+      index: false,
+      follow: false,
+    },
+  },
 };
 
 export default function RootLayout({
