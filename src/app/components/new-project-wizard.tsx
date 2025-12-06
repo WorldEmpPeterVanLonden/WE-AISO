@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -59,6 +60,7 @@ const dataCategoryItems = [
     { id: "sensitive", label: "Sensitive Data (race, religion, etc.)" },
     { id: "location", label: "Location Data" },
     { id: "technical", label: "Technical Data (IP, logs)" },
+    { id: "behavioral", label: "Behavioral Data" },
     { id: "other", label: "Other" },
 ]
 
@@ -83,11 +85,11 @@ export function NewProjectWizard() {
       useCase: "",
       systemType: "LLM",
       riskCategory: "medium",
-      intendedUsers: "",
+      intendedUsers: [],
       geographicScope: "",
       dataCategories: [],
-      dataSources: "",
-      legalRequirements: "",
+      dataSources: [],
+      legalRequirements: [],
     },
     mode: "onChange",
   });
@@ -240,7 +242,7 @@ export function NewProjectWizard() {
                     <FormField control={form.control} name="intendedUsers" render={({ field }) => (
                         <FormItem>
                             <FormLabel>Intended Users</FormLabel>
-                            <FormControl><Input placeholder="e.g. End users, internal employees" {...field} /></FormControl>
+                            <FormControl><Input placeholder="e.g. End users, internal employees" {...field} onChange={e => field.onChange(e.target.value.split(',').map(s => s.trim()))} /></FormControl>
                             <FormMessage />
                         </FormItem>
                     )} />
@@ -254,14 +256,14 @@ export function NewProjectWizard() {
                     <FormField control={form.control} name="legalRequirements" render={({ field }) => (
                         <FormItem className="md:col-span-2">
                             <FormLabel>Relevant Legislation</FormLabel>
-                            <FormControl><Input placeholder="e.g. GDPR, AI Act, MDR" {...field} /></FormControl>
+                            <FormControl><Input placeholder="e.g. GDPR, AI Act, MDR" {...field} onChange={e => field.onChange(e.target.value.split(',').map(s => s.trim()))} /></FormControl>
                             <FormMessage />
                         </FormItem>
                     )} />
                     <FormField control={form.control} name="dataSources" render={({ field }) => (
                         <FormItem className="md:col-span-2">
                             <FormLabel>Data Sources</FormLabel>
-                            <FormControl><Textarea placeholder="Where does the data come from? (comma-separated)" {...field} /></FormControl>
+                            <FormControl><Textarea placeholder="Where does the data come from? (comma-separated)" {...field} onChange={e => field.onChange(e.target.value.split(',').map(s => s.trim()))} /></FormControl>
                              <FormMessage />
                         </FormItem>
                     )} />
@@ -323,10 +325,10 @@ export function NewProjectWizard() {
                     <div className="space-y-2">
                         <h3 className="font-semibold text-lg">Scope & Context</h3>
                          <div className="rounded-lg border bg-muted/30 p-4 grid grid-cols-2 gap-4 text-sm">
-                            <div><strong>Intended Users:</strong> {formData.intendedUsers}</div>
+                            <div><strong>Intended Users:</strong> {Array.isArray(formData.intendedUsers) ? formData.intendedUsers.join(', ') : formData.intendedUsers}</div>
                             <div><strong>Geographic Scope:</strong> {formData.geographicScope}</div>
-                            <div className="col-span-2"><strong>Legislation:</strong> {formData.legalRequirements || "-"}</div>
-                            <div className="col-span-2"><strong>Data Sources:</strong> {formData.dataSources || "-"}</div>
+                            <div className="col-span-2"><strong>Legislation:</strong> {Array.isArray(formData.legalRequirements) ? formData.legalRequirements.join(', ') : formData.legalRequirements}</div>
+                            <div className="col-span-2"><strong>Data Sources:</strong> {Array.isArray(formData.dataSources) ? formData.dataSources.join(', ') : formData.dataSources}</div>
                             <div className="col-span-2">
                                 <strong>Data Categories:</strong> {formData.dataCategories?.map(id => dataCategoryItems.find(item => item.id === id)?.label).join(', ') || "-"}
                             </div>

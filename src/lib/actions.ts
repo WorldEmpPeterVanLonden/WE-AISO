@@ -72,9 +72,9 @@ export async function createProject(formData: unknown) {
   const basicInfoData: Partial<z.infer<typeof BasicInfoSchema>> = {
       intendedUsers: data.intendedUsers,
       geographicScope: data.geographicScope,
-      legalRequirements: data.legalRequirements,
+      legalRequirements: Array.isArray(data.legalRequirements) ? data.legalRequirements : [],
       dataCategories: data.dataCategories,
-      dataSources: typeof data.dataSources === 'string' ? data.dataSources.split(',').map(s => s.trim()) : [],
+      dataSources: data.dataSources,
   }
 
   try {
