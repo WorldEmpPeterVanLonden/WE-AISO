@@ -146,8 +146,8 @@ export const RetirementSchema = z.object({
 
 export const GovernanceSchema = z.object({
   policyReferences: z.string().optional(),
-  rolesAndResponsibilities: z.string().min(1, "Roles and Responsibilities are required."),
-  documentationVersioning: z.string().min(1, "Documentation Versioning is required."),
+  rolesAndResponsibilities: z.array(z.string()).min(1, "At least one role must be selected."),
+  documentationVersioning: z.enum(["semantic", "manual", "continuous"]),
   auditRequirements: z.string().min(1, "Audit Requirements are required."),
   changeManagement: z.string().min(1, "Change Management is required."),
   qualityControls: z.string().min(1, "Quality Controls are required."),

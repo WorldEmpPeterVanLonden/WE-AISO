@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -11,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -20,12 +22,23 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { generateGovernanceSuggestions } from "@/ai/flows/generate-governance-suggestions";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 
 type GovernanceFormData = z.infer<typeof GovernanceSchema>;
 
 const mockProject = {
   useCase: "Customer Support Chatbot for a financial institution.",
 };
+
+const rolesItems = [
+    { id: "product-owner", label: "Product Owner" },
+    { id: "ai-responsible-officer", label: "AI Responsible Officer" },
+    { id: "data-steward", label: "Data Steward" },
+    { id: "security-officer", label: "Security Officer" },
+    { id: "ethics-committee", label: "Ethics Committee" },
+    { id: "external-auditor", label: "External Auditor" },
+];
 
 export function GovernanceForm() {
   const [isSaving, setIsSaving] = useState(false);
@@ -36,8 +49,8 @@ export function GovernanceForm() {
     resolver: zodResolver(GovernanceSchema),
     defaultValues: {
       policyReferences: "",
-      rolesAndResponsibilities: "",
-      documentationVersioning: "",
+      rolesAndResponsibilities: [],
+      documentationVersioning: "semantic",
       auditRequirements: "",
       changeManagement: "",
       qualityControls: "",
@@ -62,10 +75,10 @@ export function GovernanceForm() {
             useCase: mockProject.useCase,
         });
 
-        // This is a simple example. A real implementation might involve
-        // appending or merging suggestions rather than overwriting.
         if(result.suggestedControls) {
-            form.setValue("policyReferences", result.suggestedControls.join("\n"), { shouldValidate: true });
+            const currentRefs = form.getValues("policyReferences");
+            const newRefs = result.suggestedControls.filter(control => !currentRefs.includes(control));
+            form.setValue("policyReferences", (currentRefs ? currentRefs + "\n" : "") + newRefs.join("\n"), { shouldValidate: true });
         }
 
         toast({
@@ -111,20 +124,77 @@ export function GovernanceForm() {
                 <FormMessage />
               </FormItem>
             )} />
-            <FormField control={form.control} name="rolesAndResponsibilities" render={({ field }) => (
-              <FormItem>
-                <FormLabel>Roles and Responsibilities</FormLabel>
-                <FormControl><Textarea placeholder="e.g., AI Product Owner, Lead Developer, Compliance Officer. Define who is responsible for what." {...field} rows={3} /></FormControl>
-                <FormMessage />
-              </FormItem>
-            )} />
-             <FormField control={form.control} name="documentationVersioning" render={({ field }) => (
-              <FormItem>
-                <FormLabel>Documentation Versioning</FormLabel>
-                <FormControl><Textarea placeholder="How is documentation versioned and maintained? e.g., Git-based versioning, Confluence version history." {...field} rows={3} /></FormControl>
-                <FormMessage />
-              </FormItem>
-            )} />
+            
+            <FormField
+              control={form.control}
+              name="rolesAndResponsibilities"
+              render={() => (
+                <FormItem>
+                  <div className="mb-4">
+                    <FormLabel>Roles and Responsibilities</FormLabel>
+                     <FormDescription>Define who is responsible for what.</FormDescription>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    {rolesItems.map((item) => (
+                      <FormField
+                        key={item.id}
+                        control={form.control}
+                        name="rolesAndResponsibilities"
+                        render={({ field }) => {
+                          return (
+                            <FormItem
+                              key={item.id}
+                              className="flex flex-row items-start space-x-3 space-y-0"
+                            >
+                              <FormControl>
+                                <Checkbox
+                                  checked={field.value?.includes(item.id)}
+                                  onCheckedChange={(checked) => {
+                                    const currentValue = field.value || [];
+                                    return checked
+                                      ? field.onChange([...currentValue, item.id])
+                                      : field.onChange(
+                                          currentValue.filter(
+                                            (value) => value !== item.id
+                                          )
+                                        );
+                                  }}
+                                />
+                              </FormControl>
+                              <FormLabel className="font-normal">
+                                {item.label}
+                              </FormLabel>
+                            </FormItem>
+                          );
+                        }}
+                      />
+                    ))}
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+             <FormField
+                control={form.control}
+                name="documentationVersioning"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Documentation Versioning Approach</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
+                        <SelectContent>
+                            <SelectItem value="semantic">Semantic versioning</SelectItem>
+                            <SelectItem value="manual">Manual versioning</SelectItem>
+                            <SelectItem value="continuous">Continuous versioning</SelectItem>
+                        </SelectContent>
+                    </Select>
+                    <FormDescription>How is documentation versioned and maintained?</FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+            />
+
              <FormField control={form.control} name="auditRequirements" render={({ field }) => (
               <FormItem>
                 <FormLabel>Audit Requirements</FormLabel>
