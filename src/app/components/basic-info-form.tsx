@@ -22,7 +22,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
-import { generateBasicInfoSuggestions } from "@/ai/flows/generate-basic-info-suggestions";
+import { generateBasicInfoSuggestions, type BasicInfoSuggestionsOutput } from "@/ai/flows/generate-basic-info-suggestions";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
@@ -87,9 +87,11 @@ const externalDependenciesItems = [
     { id: "other", label: "Other" },
 ];
 
+type FieldName = keyof BasicInfoFormData;
+
 export function BasicInfoForm() {
   const [isSaving, setIsSaving] = useState(false);
-  const [isGenerating, setIsGenerating] = useState(false);
+  const [generatingField, setGeneratingField] = useState<FieldName | null>(null);
   const { toast } = useToast();
 
   const form = useForm<BasicInfoFormData>({
@@ -128,8 +130,8 @@ export function BasicInfoForm() {
     setIsSaving(false);
   }
   
-  async function handleGenerateSuggestions() {
-    setIsGenerating(true);
+  async function handleGenerateFieldSuggestion(fieldName: FieldName) {
+    setGeneratingField(fieldName);
     try {
         const currentValues = form.getValues();
         const result = await generateBasicInfoSuggestions({
@@ -137,59 +139,69 @@ export function BasicInfoForm() {
             useCase: mockProject.useCase,
             intendedUsers: currentValues.intendedUsers?.join(', ') || '',
             geographicScope: currentValues.geographicScope,
+            targetField: fieldName,
         });
 
-        if(result.businessContext) form.setValue("businessContext", result.businessContext, { shouldValidate: true });
+        if (result.businessContext) form.setValue("businessContext", result.businessContext, { shouldValidate: true });
+        if (result.stakeholders) form.setValue("stakeholders", result.stakeholders, { shouldValidate: true });
+        if (result.prohibitedUse) form.setValue("prohibitedUse", result.prohibitedUse, { shouldValidate: true });
         
-        if (result.legalRequirements) {
-            const suggestedLegislation = legislationItems
-                .filter(item => result.legalRequirements.toLowerCase().includes(item.label.toLowerCase().split(' ')[0]))
-                .map(item => item.id);
-            form.setValue("legalRequirements", suggestedLegislation, { shouldValidate: true });
-        }
-        
-        const suggestedCategories = result.dataCategories.map(cat => {
-            if (cat.toLowerCase().includes('personal')) return 'personal';
-            if (cat.toLowerCase().includes('financial')) return 'financial';
-            if (cat.toLowerCase().includes('health')) return 'health';
-            return 'other';
-        }).filter((value, index, self) => self.indexOf(value) === index);
-        
-        form.setValue("dataCategories", suggestedCategories, { shouldValidate: true });
-
         toast({
-            title: "Suggestions Generated",
-            description: "The AI has filled in some fields for you.",
+            title: "Suggestion Generated",
+            description: `The AI has suggested content for ${fieldName}.`,
         });
 
     } catch (error) {
-        console.error("Error generating suggestions:", error);
+        console.error(`Error generating suggestion for ${fieldName}:`, error);
         toast({
             variant: "destructive",
             title: "Generation Error",
-            description: "Could not generate AI suggestions. Please try again.",
+            description: "Could not generate AI suggestion. Please try again.",
         });
     }
-    setIsGenerating(false);
+    setGeneratingField(null);
   }
+
+  const renderFieldWithAI = (fieldName: FieldName, label: string, placeholder: string, description?: string) => {
+    const isLoading = generatingField === fieldName;
+    return (
+      <FormField
+        control={form.control}
+        name={fieldName}
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>{label}</FormLabel>
+            <div className="relative">
+              <FormControl>
+                <Textarea placeholder={placeholder} {...field} rows={4} />
+              </FormControl>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="absolute bottom-2 right-2 h-7 w-7 text-muted-foreground hover:text-primary"
+                onClick={() => handleGenerateFieldSuggestion(fieldName)}
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Sparkles className="h-4 w-4" />
+                )}
+                <span className="sr-only">Generate suggestion for {label}</span>
+              </Button>
+            </div>
+            {description && <FormDescription>{description}</FormDescription>}
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+    );
+  };
+
 
   return (
     <>
-    <div className="flex justify-end mb-6">
-        <Button onClick={handleGenerateSuggestions} disabled={isGenerating}>
-            {isGenerating ? (
-                <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Generating...
-                </>
-            ) : (
-                <>
-                    <Sparkles className="mr-2 h-4 w-4" />
-                    Generate AI Suggestions
-                </>
-            )}
-        </Button>
-    </div>
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <Accordion type="multiple" defaultValue={['item-1']} className="w-full">
@@ -197,13 +209,7 @@ export function BasicInfoForm() {
                 <AccordionTrigger className="text-lg font-semibold">Core Information</AccordionTrigger>
                 <AccordionContent className="pt-4">
                     <div className="space-y-8">
-                        <FormField control={form.control} name="businessContext" render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Business Context</FormLabel>
-                                <FormControl><Textarea placeholder="Describe the business goal or problem this AI system solves." {...field} rows={4} /></FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )} />
+                        {renderFieldWithAI("businessContext", "Business Context", "Describe the business goal or problem this AI system solves.")}
 
                         <FormField control={form.control} name="intendedUsers" render={() => (
                             <FormItem>
@@ -235,31 +241,11 @@ export function BasicInfoForm() {
                             </FormItem>
                         )} />
                         
-                        <FormField control={form.control} name="stakeholders" render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Stakeholders</FormLabel>
-                                <FormControl><Textarea placeholder="e.g. Product Owner, Legal department, Data Protection Officer" {...field} rows={2} /></FormControl>
-                                <FormDescription>List the key stakeholders involved.</FormDescription>
-                                <FormMessage />
-                            </FormItem>
-                        )} />
+                        {renderFieldWithAI("stakeholders", "Stakeholders", "e.g. Product Owner, Legal department, Data Protection Officer", "List the key stakeholders involved.")}
 
-                        <FormField control={form.control} name="scopeComponents" render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>In-scope / Out-of-scope Components</FormLabel>
-                                <FormControl><Textarea placeholder="Clearly define what is and isn't part of the AI system." {...field} /></FormControl>
-                                <FormDescription>e.g., 'In-scope: the model API. Out-of-scope: the front-end application.'</FormDescription>
-                                <FormMessage />
-                            </FormItem>
-                        )} />
-                         <FormField control={form.control} name="prohibitedUse" render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Prohibited Use</FormLabel>
-                                <FormControl><Textarea placeholder="e.g., The system must not be used for financial advice or medical diagnosis." {...field} /></FormControl>
-                                <FormDescription>Clearly state any prohibited uses of the AI system.</FormDescription>
-                                <FormMessage />
-                            </FormItem>
-                        )} />
+                        {renderFieldWithAI("scopeComponents", "In-scope / Out-of-scope Components", "Clearly define what is and isn't part of the AI system.", "e.g., 'In-scope: the model API. Out-of-scope: the front-end application.'")}
+                        
+                        {renderFieldWithAI("prohibitedUse", "Prohibited Use", "e.g., The system must not be used for financial advice or medical diagnosis.", "Clearly state any prohibited uses of the AI system.")}
                     </div>
                 </AccordionContent>
             </AccordionItem>
