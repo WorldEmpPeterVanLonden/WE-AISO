@@ -1,3 +1,4 @@
+
 import { z } from "zod";
 
 export const ProjectSchema = z.object({
@@ -118,3 +119,10 @@ export const RiskRegisterEntrySchema = z.object({
 });
 
 export type RiskRegisterEntry = z.infer<typeof RiskRegisterEntrySchema>;
+
+export const GenerateDocumentSchema = z.object({
+  projectId: z.string(),
+  documentType: z.enum(["technicalFile", "riskReport", "fullLifecycle", "custom"]),
+  version: z.string().min(1, "Version is required"),
+  format: z.enum(["pdf", "word"]),
+});
