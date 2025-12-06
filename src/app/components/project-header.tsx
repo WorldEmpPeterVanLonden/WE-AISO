@@ -22,6 +22,7 @@ import Link from "next/link";
 import { type User } from "firebase/auth";
 import { signOut, type Auth } from "firebase/auth";
 import { cn } from "@/lib/utils";
+import { FirestoreStatusIndicator } from "./firestore-status-indicator";
 
 
 export function ProjectHeader({ title, user: initialUser, showProjectName = true }: { title: string, user?: User | null, showProjectName?: boolean }) {
@@ -52,6 +53,7 @@ export function ProjectHeader({ title, user: initialUser, showProjectName = true
             </h1>
           </div>
           <div className="flex items-center gap-4">
+             <FirestoreStatusIndicator />
              <Button asChild>
               <Link href="/project/new">
                 <PlusCircle className="mr-2 h-4 w-4" />
