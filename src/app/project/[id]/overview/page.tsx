@@ -20,18 +20,18 @@ const mockProjectDetails = {
     systemType: "LLM",
     useCase: "Customer Support Automation",
     auditReadiness: {
-        lifecycleScore: 3/7, // 3 of 7 phases completed
-        riskScore: 3/4,      // 3 of 4 criteria met
-        governanceScore: 4/5, // 4 of 5 criteria met
-        total: ( (3/7 * 0.5) + (3/4 * 0.3) + (4/5 * 0.2) ),
-        lastCalculated: subDays(new Date(), 1),
+        lifecycleScore: 0,
+        riskScore: 0,
+        governanceScore: 0,
+        total: 0,
+        lastCalculated: new Date(),
     }
 };
 
 const lifecycleStages = [
-    { name: "Design", completed: true },
-    { name: "Development", completed: true },
-    { name: "Training", completed: true },
+    { name: "Design", completed: false },
+    { name: "Development", completed: false },
+    { name: "Training", completed: false },
     { name: "Validation", completed: false },
     { name: "Deployment", completed: false },
     { name: "Operation", completed: false },
@@ -233,5 +233,3 @@ export default function OverviewPage() {
         </div>
     );
 }
-
-    

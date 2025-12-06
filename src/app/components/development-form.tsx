@@ -28,11 +28,6 @@ import { generateDevelopmentSuggestions } from "@/ai/flows/generate-development-
 
 type DevelopmentFormData = z.infer<typeof DevelopmentSchema>;
 
-// Mock data, replace with actual data fetching
-const mockProject = {
-  useCase: "A customer support chatbot for an e-commerce platform that handles order tracking, returns, and product questions."
-};
-
 const toolchainItems = [
     { id: "firebase", label: "Firebase" },
     { id: "nextjs", label: "Next.js" },
@@ -77,7 +72,7 @@ export function DevelopmentForm() {
   async function handleGenerateSuggestions() {
     setIsGenerating(true);
     try {
-        const result = await generateDevelopmentSuggestions({ useCase: mockProject.useCase });
+        const result = await generateDevelopmentSuggestions({ useCase: "A customer support chatbot for an e-commerce platform that handles order tracking, returns, and product questions." });
         
         if (result.toolchain) form.setValue("toolchain", result.toolchain, { shouldValidate: true, shouldDirty: true });
         if (result.dependencies) form.setValue("dependencies", result.dependencies, { shouldValidate: true, shouldDirty: true });
@@ -261,5 +256,3 @@ export function DevelopmentForm() {
     </Form>
   );
 }
-
-    

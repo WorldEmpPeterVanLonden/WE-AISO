@@ -32,33 +32,6 @@ import { GenerateDocumentDialog } from "@/app/components/generate-document-dialo
 import { useParams } from "next/navigation";
 import type { GenerateDocumentFormData } from "@/ai/schemas/ai-technical-file-generation";
 
-const mockDocuments = [
-  {
-    id: "doc_1",
-    title: "Technical File v1.2.0",
-    type: "technicalFile",
-    createdAt: new Date(),
-    version: "1.2.0",
-    generatedBy: "system",
-  },
-  {
-    id: "doc_2",
-    title: "Risk Report - Q2 2024",
-    type: "riskReport",
-    createdAt: new Date(new Date().setDate(new Date().getDate() - 10)),
-    version: "1.0.0",
-    generatedBy: "admin",
-  },
-  {
-    id: "doc_3",
-    title: "Lifecycle Overview v1.1.0",
-    type: "fullLifecycle",
-    createdAt: new Date(new Date().setMonth(new Date().getMonth() - 1)),
-    version: "1.1.0",
-    generatedBy: "system",
-  },
-];
-
 type DocumentType = GenerateDocumentFormData['documentType'];
 
 export default function DocumentsPage() {
@@ -66,6 +39,7 @@ export default function DocumentsPage() {
   const [selectedDocType, setSelectedDocType] = useState<DocumentType>('technicalFile');
   const params = useParams();
   const projectId = params.id as string;
+  const [mockDocuments, setMockDocuments] = useState<any[]>([]); // Using state to manage documents
 
   const handleGenerate = (type: DocumentType) => {
     setSelectedDocType(type);
@@ -122,22 +96,30 @@ export default function DocumentsPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {mockDocuments.map((doc) => (
-                <TableRow key={doc.id}>
-                  <TableCell className="font-medium">{doc.title}</TableCell>
-                  <TableCell className="capitalize">
-                    {doc.type.replace(/([A-Z])/g, ' $1').trim()}
-                  </TableCell>
-                  <TableCell>{doc.version}</TableCell>
-                  <TableCell>{format(doc.createdAt, "PPP")}</TableCell>
-                  <TableCell className="text-right">
-                    <Button variant="outline" size="sm">
-                      <Download className="mr-2 h-4 w-4" />
-                      Download
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
+              {mockDocuments.length === 0 ? (
+                 <TableRow>
+                    <TableCell colSpan={5} className="h-24 text-center">
+                      No documents generated yet.
+                    </TableCell>
+                  </TableRow>
+              ) : (
+                mockDocuments.map((doc) => (
+                  <TableRow key={doc.id}>
+                    <TableCell className="font-medium">{doc.title}</TableCell>
+                    <TableCell className="capitalize">
+                      {doc.type.replace(/([A-Z])/g, ' $1').trim()}
+                    </TableCell>
+                    <TableCell>{doc.version}</TableCell>
+                    <TableCell>{format(doc.createdAt, "PPP")}</TableCell>
+                    <TableCell className="text-right">
+                      <Button variant="outline" size="sm">
+                        <Download className="mr-2 h-4 w-4" />
+                        Download
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
             </TableBody>
           </Table>
         </CardContent>

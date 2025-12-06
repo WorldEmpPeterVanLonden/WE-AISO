@@ -28,11 +28,6 @@ import { generateValidationSuggestions } from "@/ai/flows/generate-validation-su
 
 type ValidationFormData = z.infer<typeof ValidationSchema>;
 
-// Mock data, replace with actual data fetching
-const mockProject = {
-  useCase: "A customer support chatbot for an e-commerce platform that handles order tracking, returns, and product questions."
-};
-
 const validationMethodItems = [
     { id: "human-evaluation", label: "Human evaluation" },
     { id: "automated-test-suite", label: "Automated test suite" },
@@ -77,7 +72,7 @@ export function ValidationForm() {
   async function handleGenerateSuggestions() {
     setIsGenerating(true);
     try {
-        const result = await generateValidationSuggestions({ useCase: mockProject.useCase });
+        const result = await generateValidationSuggestions({ useCase: "A customer support chatbot for an e-commerce platform that handles order tracking, returns, and product questions." });
         
         if (result.acceptanceCriteria) form.setValue("acceptanceCriteria", result.acceptanceCriteria, { shouldValidate: true, shouldDirty: true });
         if (result.robustnessTests) form.setValue("robustnessTests", result.robustnessTests, { shouldValidate: true, shouldDirty: true });
@@ -242,5 +237,3 @@ export function ValidationForm() {
     </Form>
   );
 }
-
-    

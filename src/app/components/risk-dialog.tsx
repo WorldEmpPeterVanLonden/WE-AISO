@@ -57,11 +57,6 @@ const impactLikelihoodLabels: { [key: number]: string } = {
     5: "5 (Very High)",
 };
 
-const mockProject = {
-    useCase: "A customer support chatbot for an e-commerce platform that handles order tracking, returns, and product questions.",
-    dataCategories: ["Personal Data", "Technical Data (IP, logs)"],
-}
-
 export function RiskDialog({ isOpen, setIsOpen, onAddRisk }: RiskDialogProps) {
   const [isGenerating, setIsGenerating] = useState(false);
 
@@ -88,8 +83,8 @@ export function RiskDialog({ isOpen, setIsOpen, onAddRisk }: RiskDialogProps) {
     try {
         const currentTitle = form.getValues("title");
         const result = await suggestRisk({
-            useCase: mockProject.useCase,
-            dataCategories: mockProject.dataCategories,
+            useCase: "A customer support chatbot for an e-commerce platform that handles order tracking, returns, and product questions.", // TODO: Pass from props
+            dataCategories: ["Personal Data", "Technical Data (IP, logs)"], // TODO: Pass from props
             riskTitle: currentTitle,
         });
 
@@ -302,5 +297,3 @@ export function RiskDialog({ isOpen, setIsOpen, onAddRisk }: RiskDialogProps) {
     </Dialog>
   );
 }
-
-    

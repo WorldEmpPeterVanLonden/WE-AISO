@@ -30,11 +30,6 @@ import { generateTrainingSuggestions } from "@/ai/flows/generate-training-sugges
 
 type TrainingFormData = z.infer<typeof TrainingSchema>;
 
-// Mock data, replace with actual data fetching
-const mockProject = {
-  useCase: "A customer support chatbot for an e-commerce platform that handles order tracking, returns, and product questions."
-};
-
 const qualityCheckItems = [
     { id: "manual-review", label: "Manual review" },
     { id: "automated-validation", label: "Automated validation" },
@@ -80,7 +75,7 @@ export function TrainingForm() {
   async function handleGenerateSuggestions() {
     setIsGenerating(true);
     try {
-        const result = await generateTrainingSuggestions({ useCase: mockProject.useCase });
+        const result = await generateTrainingSuggestions({ useCase: "A customer support chatbot for an e-commerce platform that handles order tracking, returns, and product questions." });
         
         if (result.datasetDescription) form.setValue("datasetDescription", result.datasetDescription, { shouldValidate: true, shouldDirty: true });
         if (result.datasetSources) form.setValue("datasetSources", result.datasetSources, { shouldValidate: true, shouldDirty: true });
@@ -278,5 +273,3 @@ export function TrainingForm() {
     </Form>
   );
 }
-
-    

@@ -9,7 +9,7 @@ export default function ProjectDetailLayout({
   params: { id: string };
 }) {
   // TODO: Fetch project details by params.id
-  const projectName = "Customer Support Chatbot"; // Mock data
+  const projectName = "Project"; // Placeholder name
 
   return (
     <ProjectLayoutClient projectId={params.id} projectName={projectName}>

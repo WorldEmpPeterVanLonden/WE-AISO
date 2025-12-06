@@ -4,18 +4,19 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
-import { ProjectSchema, BasicInfoSchema, NewProjectSchema } from "./definitions";
+import { NewProjectSchema } from "./definitions";
 import { generateAiTechnicalFile } from "@/ai/ai-technical-file-generation";
 import { GenerateDocumentSchema } from "@/ai/schemas/ai-technical-file-generation";
 
-// This is a mock function. Replace with actual Firebase calls.
-async function createProjectInFirestore(
-  projectData: z.infer<typeof ProjectSchema>,
-  basicInfoData: Partial<z.infer<typeof BasicInfoSchema>>
-) {
-  console.log("Creating project with data:", projectData);
-  console.log("Adding basic info:", basicInfoData);
+export async function createProject(formData: unknown) {
 
+  const validatedFields = NewProjectSchema.safeParse(formData);
+
+  if (!validatedFields.success) {
+    console.error(validatedFields.error.flatten().fieldErrors);
+    throw new Error("Invalid form data.");
+  }
+  
   // Here you would typically use the Firebase Admin SDK to create documents
   // For example:
   // const { getFirestore } = require('firebase-admin/firestore');
@@ -31,52 +32,7 @@ async function createProjectInFirestore(
   // await db.collection('projects').doc(projectRef.id).collection('basicInfo').add({
   //  ...basicInfoData
   // });
-  
-  // Simulate network delay
-  await new Promise(resolve => setTimeout(resolve, 1000));
-
   console.log("Project created successfully (mock)");
-  return { id: "mock-project-id" };
-}
-
-
-export async function createProject(formData: unknown) {
-
-  const validatedFields = NewProjectSchema.safeParse(formData);
-
-  if (!validatedFields.success) {
-    console.error(validatedFields.error.flatten().fieldErrors);
-    throw new Error("Invalid form data.");
-  }
-
-  const { data } = validatedFields;
-  
-  const projectData: z.infer<typeof ProjectSchema> = {
-      name: data.name,
-      version: data.version,
-      customerId: data.customerId,
-      description: data.description,
-      useCase: data.useCase,
-      systemType: data.systemType,
-      riskCategory: data.riskCategory,
-  }
-
-  const basicInfoData: Partial<z.infer<typeof BasicInfoSchema>> = {
-      intendedUsers: data.intendedUsers,
-      geographicScope: data.geographicScope,
-      legalRequirements: Array.isArray(data.legalRequirements) ? data.legalRequirements : [],
-      dataCategories: data.dataCategories,
-      dataSources: data.dataSources,
-  }
-
-  try {
-    // We are not using Firestore yet, so this is commented out.
-    // await createProjectInFirestore(projectData, basicInfoData);
-    console.log("Mock project creation successful.");
-  } catch (error) {
-    console.error("Database Error:", error);
-    throw new Error("Failed to create project.");
-  }
 
   revalidatePath("/");
   redirect("/");
@@ -95,9 +51,9 @@ export async function generateDocumentAction(formData: unknown) {
   console.log(`Generating document for project ${projectId}...`);
 
   try {
-    // 1. Fetch all data from Firestore (mocked for now)
+    // TODO: 1. Fetch all data from Firestore 
     console.log("Fetching project data from Firestore...");
-    const MOCK_DATA = {
+    const DATA = {
         systemDefinition: "Mock System Definition: Customer support chatbot...",
         lifecycleOverview: "Mock Lifecycle: Design -> Dev -> ... -> Retirement",
         riskAnalysis: "Mock Risk Register: Includes hallucination, PII leakage risks...",
@@ -111,28 +67,16 @@ export async function generateDocumentAction(formData: unknown) {
     // 2. Call the AI flow
     console.log("Calling AI generation flow...");
     const generatedFile = await generateAiTechnicalFile({
-      ...MOCK_DATA,
+      ...DATA,
       format,
     });
     
     // 3. (Future) Generate PDF and save to Firebase Storage
     console.log("Simulating PDF generation and upload to Firebase Storage...");
-    const mockStoragePath = `/documents/${projectId}/${documentType}_${version}.pdf`;
-    console.log("Generated text content:", generatedFile.technicalFile.substring(0, 200) + "...");
-    await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate upload
-
+    const storagePath = `/documents/${projectId}/${documentType}_${version}.pdf`;
+    
     // 4. (Future) Create a record in Firestore
     console.log(`Creating Firestore record at /projects/${projectId}/documents`);
-    const newDocumentRecord = {
-        type: documentType,
-        title: `${documentType.replace(/([A-Z])/g, ' $1').trim()} v${version}`,
-        createdAt: new Date().toISOString(),
-        generatedBy: "system", // or current user
-        storagePath: mockStoragePath,
-        version: version,
-    };
-    console.log("New document record:", newDocumentRecord);
-    await new Promise(resolve => setTimeout(resolve, 500)); // Simulate DB write
 
   } catch(error) {
     console.error("Error during document generation:", error);

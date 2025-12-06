@@ -1,5 +1,4 @@
 
-
 "use client";
 
 import {
@@ -50,53 +49,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-// Mock Data
-const mockProjects = [
-  {
-    id: "proj_1",
-    name: "Customer Support Chatbot",
-    customerName: "Global Tech Inc.",
-    status: "active",
-    startDate: new Date(new Date().setMonth(new Date().getMonth() - 6)),
-    updatedAt: new Date(),
-    version: "1.2.0",
-    complianceProgress: 75,
-    riskCategory: "medium",
-  },
-  {
-    id: "proj_2",
-    name: "Medical Diagnosis Tool",
-    customerName: "Healthcare Solutions",
-    status: "draft",
-    startDate: new Date(new Date().setDate(new Date().getDate() - 20)),
-    updatedAt: new Date(new Date().setDate(new Date().getDate() - 5)),
-    version: "0.5.0",
-    complianceProgress: 20,
-    riskCategory: "high",
-  },
-  {
-    id: "proj_3",
-    name: "Financial Fraud Detection",
-    customerName: "SecureBank",
-    status: "archived",
-    startDate: new Date(new Date().setFullYear(new Date().getFullYear() - 1)),
-    updatedAt: new Date(new Date().setMonth(new Date().getMonth() - 2)),
-    version: "2.0.0",
-    complianceProgress: 100,
-    riskCategory: "high",
-  },
-  {
-    id: "proj_4",
-    name: "Content Recommendation Engine",
-    customerName: "MediaStream Co.",
-    status: "active",
-    startDate: new Date(new Date().setDate(new Date().getDate() - 90)),
-    updatedAt: new Date(new Date().setDate(new Date().getDate() - 1)),
-    version: "3.1.0",
-    complianceProgress: 90,
-    riskCategory: "low",
-  },
-];
+// Mock Data Removed
 
 type ProjectStatus = "draft" | "active" | "archived";
 type RiskCategory = "low" | "medium" | "high";
@@ -146,6 +99,7 @@ const RiskBadge = ({ risk }: { risk: RiskCategory }) => {
 
 export function ProjectDashboard() {
   const router = useRouter();
+  const mockProjects: any[] = []; // Empty array instead of mock data
   
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -192,70 +146,78 @@ export function ProjectDashboard() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {mockProjects.map((project) => (
-                  <TableRow 
-                    key={project.id} 
-                    className="cursor-pointer"
-                    onClick={() => router.push(`/project/${project.id}/overview`)}
-                  >
-                    <TableCell className="font-medium group-hover:underline">
-                       {project.name}
-                    </TableCell>
-                    <TableCell>{project.customerName}</TableCell>
-                    <TableCell>
-                      <StatusBadge status={project.status as ProjectStatus} />
-                    </TableCell>
-                    <TableCell>
-                        <RiskBadge risk={project.riskCategory as RiskCategory} />
-                    </TableCell>
-                    <TableCell>
-                        <div className="flex items-center gap-2">
-                            <Progress value={project.complianceProgress} className="w-24" />
-                            <span className="text-muted-foreground text-xs">{project.complianceProgress}%</span>
-                        </div>
-                    </TableCell>
-                    <TableCell>{format(project.startDate, "dd.MM.yy")}</TableCell>
-                    <TableCell>{format(project.updatedAt, "dd.MM.yy")}</TableCell>
-                    <TableCell onClick={(e) => e.stopPropagation()}>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button aria-haspopup="true" size="icon" variant="ghost">
-                            <MoreHorizontal className="h-4 w-4" />
-                            <span className="sr-only">Toggle menu</span>
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                          <DropdownMenuItem asChild>
-                            <Link href={`/project/${project.id}/overview`}>
-                              <Eye className="mr-2 h-4 w-4" />
-                              Open Project
-                            </Link>
-                          </DropdownMenuItem>
-                          <DropdownMenuItem asChild>
-                             <Link href={`/project/${project.id}/risk-register`}>
-                                <ShieldAlert className="mr-2 h-4 w-4" />
-                                View Risk Register
-                            </Link>
-                          </DropdownMenuItem>
-                          <DropdownMenuItem asChild>
-                             <Link href={`/project/${project.id}/design`}>
-                                <FileText className="mr-2 h-4 w-4" />
-                                View Lifecycle
-                            </Link>
-                          </DropdownMenuItem>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem asChild>
-                             <Link href={`/project/${project.id}/documents`}>
-                                <Download className="mr-2 h-4 w-4" />
-                                Export Documents
-                            </Link>
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                {mockProjects.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={8} className="h-24 text-center">
+                      No projects found. <Link href="/project/new" className="text-primary underline">Create a new project</Link> to get started.
                     </TableCell>
                   </TableRow>
-                ))}
+                ) : (
+                  mockProjects.map((project) => (
+                    <TableRow 
+                      key={project.id} 
+                      className="cursor-pointer"
+                      onClick={() => router.push(`/project/${project.id}/overview`)}
+                    >
+                      <TableCell className="font-medium group-hover:underline">
+                        {project.name}
+                      </TableCell>
+                      <TableCell>{project.customerName}</TableCell>
+                      <TableCell>
+                        <StatusBadge status={project.status as ProjectStatus} />
+                      </TableCell>
+                      <TableCell>
+                          <RiskBadge risk={project.riskCategory as RiskCategory} />
+                      </TableCell>
+                      <TableCell>
+                          <div className="flex items-center gap-2">
+                              <Progress value={project.complianceProgress} className="w-24" />
+                              <span className="text-muted-foreground text-xs">{project.complianceProgress}%</span>
+                          </div>
+                      </TableCell>
+                      <TableCell>{format(project.startDate, "dd.MM.yy")}</TableCell>
+                      <TableCell>{format(project.updatedAt, "dd.MM.yy")}</TableCell>
+                      <TableCell onClick={(e) => e.stopPropagation()}>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button aria-haspopup="true" size="icon" variant="ghost">
+                              <MoreHorizontal className="h-4 w-4" />
+                              <span className="sr-only">Toggle menu</span>
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                            <DropdownMenuItem asChild>
+                              <Link href={`/project/${project.id}/overview`}>
+                                <Eye className="mr-2 h-4 w-4" />
+                                Open Project
+                              </Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem asChild>
+                              <Link href={`/project/${project.id}/risk-register`}>
+                                  <ShieldAlert className="mr-2 h-4 w-4" />
+                                  View Risk Register
+                              </Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem asChild>
+                              <Link href={`/project/${project.id}/design`}>
+                                  <FileText className="mr-2 h-4 w-4" />
+                                  View Lifecycle
+                              </Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem asChild>
+                              <Link href={`/project/${project.id}/documents`}>
+                                  <Download className="mr-2 h-4 w-4" />
+                                  Export Documents
+                              </Link>
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
               </TableBody>
             </Table>
           </CardContent>

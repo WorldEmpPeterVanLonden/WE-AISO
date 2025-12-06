@@ -22,18 +22,12 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
-import { generateBasicInfoSuggestions, type BasicInfoSuggestionsOutput } from "@/ai/flows/generate-basic-info-suggestions";
+import { generateBasicInfoSuggestions } from "@/ai/flows/generate-basic-info-suggestions";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 type BasicInfoFormData = z.infer<typeof BasicInfoSchema>;
-
-// Mock project data, replace with actual data fetching
-const mockProject = {
-  name: "Customer Support Chatbot",
-  useCase: "Automate responses to common customer questions and escalate complex issues to human agents.",
-};
 
 const intendedUserItems = [
     { id: "external_customers", label: "External customers" },
@@ -155,8 +149,9 @@ export function BasicInfoForm() {
     try {
         const currentValues = form.getValues();
         const result = await generateBasicInfoSuggestions({
-            projectName: mockProject.name,
-            useCase: mockProject.useCase,
+            // These will need to be passed in as props later
+            projectName: "Project Name", // Placeholder
+            useCase: "Project Use Case", // Placeholder
             intendedUsers: currentValues.intendedUsers?.join(', ') || '',
             geographicScope: currentValues.geographicScope,
             targetField: fieldName,
@@ -614,5 +609,3 @@ export function BasicInfoForm() {
     </>
   );
 }
-
-    

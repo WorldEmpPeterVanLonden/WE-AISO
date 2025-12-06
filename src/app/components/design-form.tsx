@@ -28,11 +28,6 @@ import { generateDesignSuggestions } from "@/ai/flows/generate-design-suggestion
 
 type DesignFormData = z.infer<typeof DesignSchema>;
 
-// Mock data, replace with actual data fetching
-const mockProject = {
-  useCase: "A customer support chatbot for an e-commerce platform that handles order tracking, returns, and product questions."
-};
-
 const explainabilityItems = [
     { id: "model-card", label: "Model card" },
     { id: "shap", label: "SHAP" },
@@ -81,7 +76,7 @@ export function DesignForm() {
   async function handleGenerateSuggestions() {
     setIsGenerating(true);
     try {
-        const result = await generateDesignSuggestions({ useCase: mockProject.useCase });
+        const result = await generateDesignSuggestions({ useCase: "A customer support chatbot for an e-commerce platform that handles order tracking, returns, and product questions." });
         
         if (result.functionalRequirements) form.setValue("functionalRequirements", result.functionalRequirements, { shouldValidate: true, shouldDirty: true });
         if (result.nonFunctionalRequirements) form.setValue("nonFunctionalRequirements", result.nonFunctionalRequirements, { shouldValidate: true, shouldDirty: true });
@@ -243,5 +238,3 @@ export function DesignForm() {
     </Form>
   );
 }
-
-    
