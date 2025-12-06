@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'AISO Compliance Manager',
+  title: 'AI Compliance Projects',
   description: 'Manage AI lifecycle and compliance with ISO 42001.',
 };
 

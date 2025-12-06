@@ -123,7 +123,7 @@ export function ProjectDashboard() {
           <div className="flex items-center gap-3">
             <ShieldCheck className="h-8 w-8 text-primary" />
             <h1 className="font-headline text-2xl font-bold text-primary">
-              AISO Compliance Manager
+              AI Compliance Projects
             </h1>
           </div>
           <Button asChild>
