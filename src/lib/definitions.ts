@@ -72,3 +72,12 @@ export const DeploymentSchema = z.object({
   secretsManagement: z.string().min(1, "Secrets management strategy is required."),
   monitoringSetup: z.string().min(1, "Monitoring setup is required."),
 });
+
+export const OperationSchema = z.object({
+  monitoringProcedures: z.string().min(1, "Monitoring procedures are required."),
+  driftDetection: z.string().min(1, "Drift detection methods are required."),
+  incidentHandling: z.string().min(1, "Incident handling process is required."),
+  modelUpdatePolicy: z.string().min(1, "Model update policy is required."),
+  userFeedbackProcess: z.string().min(1, "User feedback process is required."),
+  loggingRetention: z.string().min(1, "Logging retention policy is required."),
+});
