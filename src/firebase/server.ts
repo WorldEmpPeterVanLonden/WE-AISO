@@ -1,24 +1,17 @@
 import { initializeApp, getApps, getApp, type FirebaseApp } from 'firebase-admin/app';
 import { getAuth, type Auth } from 'firebase-admin/auth';
 import { getFirestore, type Firestore } from 'firebase-admin/firestore';
-import { credential } from 'firebase-admin';
 
 let app: FirebaseApp;
 let auth: Auth;
 let firestore: Firestore;
 
-function getServiceAccount() {
-  const serviceAccount = process.env.FIREBASE_SERVICE_ACCOUNT;
-  if (!serviceAccount) {
-    throw new Error('FIREBASE_SERVICE_ACCOUNT environment variable is not set.');
-  }
-  return JSON.parse(serviceAccount);
-}
-
 export async function getFirebase() {
   if (getApps().length === 0) {
+    // In this environment, the service account is automatically discovered.
+    // We don't need to manually parse the service account JSON.
     app = initializeApp({
-      credential: credential.cert(getServiceAccount())
+      projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
     });
     auth = getAuth(app);
     firestore = getFirestore(app);
