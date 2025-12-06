@@ -5,21 +5,12 @@
  * @fileOverview A simple health check flow for the AI service.
  */
 
-import { ai } from '@/ai/genkit';
-import { z } from 'zod';
-import { AiHealthOutputSchema, type AiHealthOutput } from '@/ai/schemas/health-check';
+import type { AiHealthOutput } from '@/ai/schemas/health-check';
 
+/**
+ * A simple health check function to verify that the server action endpoint is reachable.
+ * @returns A promise that resolves to an object with a status of 'ok'.
+ */
 export async function healthCheck(): Promise<AiHealthOutput> {
-  return healthCheckFlow();
+  return { status: 'ok' };
 }
-
-const healthCheckFlow = ai.defineFlow(
-  {
-    name: 'healthCheckFlow',
-    inputSchema: z.void(),
-    outputSchema: AiHealthOutputSchema,
-  },
-  async () => {
-    return { status: 'ok' };
-  }
-);
