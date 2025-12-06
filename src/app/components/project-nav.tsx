@@ -8,6 +8,7 @@ import {
   GitMerge,
   Home,
   LifeBuoy,
+  PanelLeft,
   Rocket,
   ShieldAlert,
   ShieldCheck,
@@ -59,9 +60,13 @@ const bottomNavItems = [
 export function ProjectNav({
   projectId,
   projectName,
+  isCollapsed,
+  toggleCollapse,
 }: {
   projectId: string;
   projectName: string;
+  isCollapsed: boolean;
+  toggleCollapse: () => void;
 }) {
   const pathname = usePathname();
   const baseHref = `/project/${projectId}`;
@@ -72,16 +77,32 @@ export function ProjectNav({
 
 
   return (
-    <aside className="fixed inset-y-0 left-0 z-10 hidden w-60 flex-col border-r bg-background sm:flex">
-      <nav className="flex flex-col items-center gap-4 px-2 sm:py-5">
-        <Link
-          href="/"
-          className="group flex h-9 w-full shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-lg font-semibold text-primary-foreground md:h-8 md:text-base"
+    <aside className={cn(
+        "fixed inset-y-0 left-0 z-10 hidden flex-col border-r bg-background transition-[width] sm:flex",
+        isCollapsed ? "w-14" : "w-60"
+      )}>
+       <nav className="flex flex-col items-center gap-4 px-2 sm:py-5">
+        <div className={cn("flex h-9 w-full items-center justify-center", isCollapsed ? "" : "bg-primary text-primary-foreground rounded-full")}>
+            <Link
+              href="/"
+              className="group flex items-center justify-center gap-2 shrink-0 md:h-8"
+            >
+              <ShieldCheck className="h-5 w-5 transition-all group-hover:scale-110" />
+              <span className={cn("sr-only", !isCollapsed && "sm:not-sr-only sm:font-semibold")}>AISO Manager</span>
+            </Link>
+        </div>
+
+        <Button
+            variant="ghost"
+            size="icon"
+            className="absolute top-3 right-0 translate-x-1/2 rounded-full border hidden sm:block"
+            onClick={toggleCollapse}
         >
-          <ShieldCheck className="h-5 w-5 transition-all group-hover:scale-110" />
-          <span className="sr-only">AISO Manager</span>
-        </Link>
-        <div className="w-full px-2 text-center">
+            <PanelLeft className={cn("h-5 w-5 transition-transform", isCollapsed && "rotate-180")} />
+            <span className="sr-only">Toggle sidebar</span>
+        </Button>
+        
+        <div className={cn("w-full px-2 text-center", isCollapsed && "sr-only")}>
             <h2 className="font-bold text-md truncate">{projectName}</h2>
             <p className="text-xs text-muted-foreground">ID: {projectId}</p>
         </div>
@@ -94,15 +115,15 @@ export function ProjectNav({
               const isActive = pathname === fullHref || (href === '/overview' && pathname === baseHref);
 
               return (
-                <Tooltip key={label}>
+                <Tooltip key={label} delayDuration={0}>
                   <TooltipTrigger asChild>
                     <Link href={fullHref}>
                       <Button
                         variant={isActive ? "secondary" : "ghost"}
-                        className="w-full justify-start gap-2 my-1"
+                        className={cn("w-full justify-start gap-2 my-1", isCollapsed && "justify-center")}
                       >
                         <Icon className="h-4 w-4" />
-                        {label}
+                        <span className={cn(isCollapsed && "sr-only")}>{label}</span>
                       </Button>
                     </Link>
                   </TooltipTrigger>
@@ -111,14 +132,14 @@ export function ProjectNav({
               );
             })}
 
-            <Collapsible open={isLifecycleOpen} onOpenChange={setIsLifecycleOpen}>
+            <Collapsible open={isLifecycleOpen && !isCollapsed} onOpenChange={setIsLifecycleOpen}>
                 <CollapsibleTrigger asChild>
-                    <Tooltip>
+                    <Tooltip delayDuration={0}>
                         <TooltipTrigger asChild>
-                             <Button variant={isLifecycleActive ? "secondary" : "ghost"} className="w-full justify-start gap-2 my-1">
+                             <Button variant={isLifecycleActive ? "secondary" : "ghost"} className={cn("w-full justify-start gap-2 my-1", isCollapsed && "justify-center")}>
                                 <GitMerge className="h-4 w-4" />
-                                Lifecycle
-                                <ChevronDown className={cn("h-4 w-4 ml-auto transition-transform", isLifecycleOpen && "rotate-180")} />
+                                <span className={cn(isCollapsed && "sr-only")}>Lifecycle</span>
+                                <ChevronDown className={cn("h-4 w-4 ml-auto transition-transform", (isLifecycleOpen && !isCollapsed) && "rotate-180", isCollapsed && "hidden")} />
                             </Button>
                         </TooltipTrigger>
                         <TooltipContent side="right">Lifecycle</TooltipContent>
@@ -129,7 +150,7 @@ export function ProjectNav({
                         const fullHref = `${baseHref}${href}`;
                         const isActive = pathname === fullHref;
                         return (
-                             <Tooltip key={label}>
+                             <Tooltip key={label} delayDuration={0}>
                                 <TooltipTrigger asChild>
                                     <Link href={fullHref}>
                                     <Button
@@ -154,15 +175,15 @@ export function ProjectNav({
               const fullHref = `${baseHref}${href}`;
               const isActive = pathname === fullHref;
               return (
-                <Tooltip key={label}>
+                <Tooltip key={label} delayDuration={0}>
                   <TooltipTrigger asChild>
                     <Link href={fullHref}>
                       <Button
                         variant={isActive ? "secondary" : "ghost"}
-                        className="w-full justify-start gap-2 my-1"
+                        className={cn("w-full justify-start gap-2 my-1", isCollapsed && "justify-center")}
                       >
                         <Icon className="h-4 w-4" />
-                        {label}
+                        <span className={cn(isCollapsed && "sr-only")}>{label}</span>
                       </Button>
                     </Link>
                   </TooltipTrigger>
