@@ -1,10 +1,11 @@
 
+
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
-import { FileDown, Clock, CheckCircle2, ShieldCheck, GitMerge, Calendar, Edit } from "lucide-react";
+import { FileDown, Clock, CheckCircle2, ShieldCheck, GitMerge, Calendar, Edit, Minus } from "lucide-react";
 import { format, subDays } from "date-fns";
 
 const mockProjectDetails = {
@@ -17,6 +18,20 @@ const mockProjectDetails = {
     lifecycleCompletion: 45, // percentage
     riskCategory: "medium"
 };
+
+const lifecycleStages = [
+    { name: "Design", completed: true },
+    { name: "Development", completed: true },
+    { name: "Training", completed: true },
+    { name: "Validation", completed: false },
+    { name: "Deployment", completed: false },
+    { name: "Operation", completed: false },
+    { name: "Retirement", completed: false },
+];
+const completedStages = lifecycleStages.filter(s => s.completed).length;
+const totalStages = lifecycleStages.length;
+const completionPercentage = Math.round((completedStages / totalStages) * 100);
+
 
 type ProjectStatus = "draft" | "active" | "archived" | "complete";
 type RiskCategory = "low" | "medium" | "high";
@@ -65,38 +80,38 @@ export default function OverviewPage() {
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
-            <div className="flex flex-col justify-center gap-3 p-4 bg-muted/50 rounded-lg">
+            <div className="flex flex-col justify-center gap-3 p-4 bg-muted/50 rounded-lg h-full">
                 <div className="flex items-center gap-3">
                     <ShieldCheck className="h-6 w-6 text-primary" />
                     <div>
-                        <span className="text-muted-foreground">Status</span>
+                        <div className="text-muted-foreground">Status</div>
                         <div className="font-semibold"><StatusBadge status={mockProjectDetails.status as ProjectStatus} /></div>
                     </div>
                 </div>
             </div>
-             <div className="flex flex-col justify-center gap-3 p-4 bg-muted/50 rounded-lg">
+             <div className="flex flex-col justify-center gap-3 p-4 bg-muted/50 rounded-lg h-full">
                 <div className="flex items-center gap-3">
                     <Calendar className="h-6 w-6 text-primary" />
                     <div>
-                        <span className="text-muted-foreground">Start Date</span>
+                        <div className="text-muted-foreground">Start Date</div>
                         <div className="font-semibold">{format(mockProjectDetails.startDate, "dd.MM.yy")}</div>
                     </div>
                 </div>
             </div>
-             <div className="flex flex-col justify-center gap-3 p-4 bg-muted/50 rounded-lg">
+             <div className="flex flex-col justify-center gap-3 p-4 bg-muted/50 rounded-lg h-full">
                 <div className="flex items-center gap-3">
                     <Edit className="h-6 w-6 text-primary" />
                     <div>
-                        <span className="text-muted-foreground">Last Change</span>
+                        <div className="text-muted-foreground">Last Change</div>
                         <div className="font-semibold">{format(mockProjectDetails.lastChange, "dd.MM.yy")}</div>
                     </div>
                 </div>
             </div>
-             <div className="flex flex-col justify-center gap-3 p-4 bg-muted/50 rounded-lg">
+             <div className="flex flex-col justify-center gap-3 p-4 bg-muted/50 rounded-lg h-full">
                 <div className="flex items-center gap-3">
                     <ShieldCheck className="h-6 w-6 text-primary" />
                     <div>
-                        <span className="text-muted-foreground">Risk</span>
+                        <div className="text-muted-foreground">Risk</div>
                         <div className="font-semibold"><RiskBadge risk={mockProjectDetails.riskCategory as RiskCategory} /></div>
                     </div>
                 </div>
@@ -110,12 +125,24 @@ export default function OverviewPage() {
                 <GitMerge className="h-5 w-5 text-primary" />
                 Lifecycle Progress
             </h3>
-            <div className="space-y-3">
+            <div className="space-y-4">
                 <div className="flex justify-between items-center">
-                    <p className="text-muted-foreground">Total completion</p>
-                    <p className="font-bold text-primary">{mockProjectDetails.lifecycleCompletion}%</p>
+                    <p className="text-muted-foreground">Total completion ({completedStages} of {totalStages} phases)</p>
+                    <p className="font-bold text-primary">{completionPercentage}%</p>
                 </div>
-                <Progress value={mockProjectDetails.lifecycleCompletion} />
+                <Progress value={completionPercentage} />
+                <div className="grid grid-cols-4 lg:grid-cols-7 gap-x-4 gap-y-2 text-xs text-muted-foreground">
+                    {lifecycleStages.map(stage => (
+                        <div key={stage.name} className="flex items-center gap-1.5">
+                            {stage.completed ? (
+                                <CheckCircle2 className="h-4 w-4 text-green-500" />
+                            ) : (
+                                <Minus className="h-4 w-4 text-border" />
+                            )}
+                            <span className={stage.completed ? 'font-semibold text-foreground' : ''}>{stage.name}</span>
+                        </div>
+                    ))}
+                </div>
             </div>
         </div>
 
