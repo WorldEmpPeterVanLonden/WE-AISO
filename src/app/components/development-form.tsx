@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -22,18 +23,18 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 type DevelopmentFormData = z.infer<typeof DevelopmentSchema>;
 
 const toolchainItems = [
-    { id: "github", label: "GitHub" },
-    { id: "gitlab", label: "GitLab" },
-    { id: "jira", label: "Jira" },
     { id: "firebase", label: "Firebase" },
-    { id: "gcp", label: "Google Cloud" },
-    { id: "azure", label: "Azure" },
-    { id: "aws", label: "AWS" },
+    { id: "nextjs", label: "Next.js" },
+    { id: "python", label: "Python" },
+    { id: "nodejs", label: "Node.js" },
     { id: "docker", label: "Docker" },
+    { id: "azure-ml", label: "Azure ML" },
+    { id: "github-actions", label: "GitHub Actions" },
 ];
 
 export function DevelopmentForm() {
@@ -49,6 +50,7 @@ export function DevelopmentForm() {
       dependencies: "",
       securityControls: "",
       testApproach: "",
+      codingStandards: "iso42001",
     },
   });
 
@@ -150,6 +152,22 @@ export function DevelopmentForm() {
                 </FormItem>
               )}
             />
+
+            <FormField control={form.control} name="codingStandards" render={({ field }) => (
+                <FormItem>
+                    <FormLabel>Coding Standards</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
+                        <SelectContent>
+                            <SelectItem value="iso42001">ISO 42001 coding guidelines</SelectItem>
+                            <SelectItem value="pep8">PEP-8</SelectItem>
+                            <SelectItem value="google">Google style</SelectItem>
+                            <SelectItem value="custom">Custom standard</SelectItem>
+                        </SelectContent>
+                    </Select>
+                    <FormMessage />
+                </FormItem>
+            )} />
 
             <FormField
               control={form.control}

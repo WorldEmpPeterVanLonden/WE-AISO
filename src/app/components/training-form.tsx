@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -23,8 +24,16 @@ import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 
 type TrainingFormData = z.infer<typeof TrainingSchema>;
+
+const qualityCheckItems = [
+    { id: "manual-review", label: "Manual review" },
+    { id: "automated-validation", label: "Automated validation" },
+    { id: "statistical-anomaly-detection", label: "Statistical anomaly detection" },
+];
 
 export function TrainingForm() {
   const [isSaving, setIsSaving] = useState(false);
@@ -36,9 +45,10 @@ export function TrainingForm() {
     resolver: zodResolver(TrainingSchema),
     defaultValues: {
       hasTrainingPhase: false,
+      trainingMethod: "no-training",
       datasetDescription: "",
       datasetSources: "",
-      dataQualityChecks: "",
+      dataQualityChecks: [],
       biasAssessment: "",
       privacyAssessment: "",
       trainingProcedure: "",
@@ -118,6 +128,23 @@ export function TrainingForm() {
             />
 
             <div className={cn("space-y-6", !hasTrainingPhase && "hidden")}>
+                <FormField control={form.control} name="trainingMethod" render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Training Method</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
+                            <SelectContent>
+                                <SelectItem value="no-training">No training (pretrained only)</SelectItem>
+                                <SelectItem value="fine-tuning">Fine-tuning</SelectItem>
+                                <SelectItem value="supervised">Supervised learning</SelectItem>
+                                <SelectItem value="reinforcement">Reinforcement learning</SelectItem>
+                                <SelectItem value="transfer">Transfer learning</SelectItem>
+                            </SelectContent>
+                        </Select>
+                        <FormMessage />
+                    </FormItem>
+                )} />
+
                 <FormField control={form.control} name="datasetDescription" render={({ field }) => (
                 <FormItem>
                     <FormLabel>Dataset Description</FormLabel>
@@ -133,14 +160,55 @@ export function TrainingForm() {
                     <FormMessage />
                 </FormItem>
                 )} />
-
-                <FormField control={form.control} name="dataQualityChecks" render={({ field }) => (
-                <FormItem>
-                    <FormLabel>Data Quality Checks</FormLabel>
-                    <FormControl><Textarea placeholder="What procedures were used to ensure data quality? e.g., validation scripts, manual review." {...field} rows={3} /></FormControl>
-                    <FormMessage />
-                </FormItem>
-                )} />
+                
+                <FormField
+                    control={form.control}
+                    name="dataQualityChecks"
+                    render={() => (
+                        <FormItem>
+                        <div className="mb-4">
+                            <FormLabel>Data Quality Checks</FormLabel>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            {qualityCheckItems.map((item) => (
+                            <FormField
+                                key={item.id}
+                                control={form.control}
+                                name="dataQualityChecks"
+                                render={({ field }) => {
+                                return (
+                                    <FormItem
+                                    key={item.id}
+                                    className="flex flex-row items-start space-x-3 space-y-0"
+                                    >
+                                    <FormControl>
+                                        <Checkbox
+                                        checked={field.value?.includes(item.id)}
+                                        onCheckedChange={(checked) => {
+                                            const currentValue = field.value || [];
+                                            return checked
+                                            ? field.onChange([...currentValue, item.id])
+                                            : field.onChange(
+                                                currentValue?.filter(
+                                                    (value) => value !== item.id
+                                                )
+                                                );
+                                        }}
+                                        />
+                                    </FormControl>
+                                    <FormLabel className="font-normal">
+                                        {item.label}
+                                    </FormLabel>
+                                    </FormItem>
+                                );
+                                }}
+                            />
+                            ))}
+                        </div>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                />
 
                 <FormField control={form.control} name="biasAssessment" render={({ field }) => (
                 <FormItem>

@@ -82,19 +82,21 @@ export const DevelopmentSchema = z.object({
   dependencies: z.string().optional(),
   securityControls: z.string().min(1, "Security controls are required."),
   testApproach: z.string().min(1, "Test approach is required."),
+  codingStandards: z.string().optional(),
 });
 
 export const TrainingSchema = z.object({
     hasTrainingPhase: z.boolean().default(false),
+    trainingMethod: z.string().optional(),
     datasetDescription: z.string().optional(),
     datasetSources: z.string().optional(),
-    dataQualityChecks: z.string().optional(),
+    dataQualityChecks: z.array(z.string()).optional(),
     biasAssessment: z.string().optional(),
     privacyAssessment: z.string().optional(),
     trainingProcedure: z.string().optional(),
 }).refine(data => {
     if (data.hasTrainingPhase) {
-        return !!data.datasetDescription && !!data.datasetSources && !!data.dataQualityChecks && !!data.biasAssessment && !!data.privacyAssessment && !!data.trainingProcedure;
+        return !!data.datasetDescription && !!data.datasetSources && data.dataQualityChecks && data.dataQualityChecks.length > 0 && !!data.biasAssessment && !!data.privacyAssessment && !!data.trainingProcedure;
     }
     return true;
 }, {
