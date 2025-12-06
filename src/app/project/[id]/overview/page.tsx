@@ -66,7 +66,7 @@ export default function OverviewPage() {
                 <ShieldCheck className="h-6 w-6 text-primary" />
                 <div>
                     <span className="text-muted-foreground">Status</span>
-                    <p className="font-semibold"><StatusBadge status={mockProjectDetails.status as ProjectStatus} /></p>
+                    <div className="font-semibold"><StatusBadge status={mockProjectDetails.status as ProjectStatus} /></div>
                 </div>
             </div>
             <div className="flex items-center gap-3 p-4 bg-muted/50 rounded-lg">
@@ -80,7 +80,7 @@ export default function OverviewPage() {
                 <ShieldCheck className="h-6 w-6 text-primary" />
                 <div>
                     <span className="text-muted-foreground">Risk</span>
-                    <p className="font-semibold"><RiskBadge risk={mockProjectDetails.riskCategory as RiskCategory} /></p>
+                    <div className="font-semibold"><RiskBadge risk={mockProjectDetails.riskCategory as RiskCategory} /></div>
                 </div>
             </div>
         </div>
