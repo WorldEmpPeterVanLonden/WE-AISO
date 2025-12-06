@@ -8,6 +8,7 @@ import {
   Eye,
   ShieldCheck,
   FileText,
+  ShieldAlert,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -47,6 +48,7 @@ const mockProjects = [
     updatedAt: new Date(),
     version: "1.2.0",
     complianceProgress: 75,
+    riskCategory: "medium",
   },
   {
     id: "proj_2",
@@ -55,6 +57,7 @@ const mockProjects = [
     updatedAt: new Date(new Date().setDate(new Date().getDate() - 5)),
     version: "0.5.0",
     complianceProgress: 20,
+    riskCategory: "high",
   },
   {
     id: "proj_3",
@@ -63,6 +66,7 @@ const mockProjects = [
     updatedAt: new Date(new Date().setMonth(new Date().getMonth() - 2)),
     version: "2.0.0",
     complianceProgress: 100,
+    riskCategory: "high",
   },
   {
     id: "proj_4",
@@ -71,10 +75,12 @@ const mockProjects = [
     updatedAt: new Date(new Date().setDate(new Date().getDate() - 1)),
     version: "3.1.0",
     complianceProgress: 90,
+    riskCategory: "low",
   },
 ];
 
 type ProjectStatus = "draft" | "active" | "archived";
+type RiskCategory = "low" | "medium" | "high";
 
 const StatusBadge = ({ status }: { status: ProjectStatus }) => {
   const variant: "default" | "secondary" | "destructive" =
@@ -87,6 +93,19 @@ const StatusBadge = ({ status }: { status: ProjectStatus }) => {
   const statusText = status.charAt(0).toUpperCase() + status.slice(1);
 
   return <Badge variant={variant}>{statusText}</Badge>;
+};
+
+const RiskBadge = ({ risk }: { risk: RiskCategory }) => {
+    const variant: "secondary" | "default" | "destructive" =
+        risk === 'low'
+        ? 'secondary'
+        : risk === 'medium'
+        ? 'default'
+        : 'destructive';
+    
+    const riskText = risk.charAt(0).toUpperCase() + risk.slice(1);
+    
+    return <Badge variant={variant} className="border">{riskText}</Badge>;
 };
 
 export function ProjectDashboard() {
@@ -122,6 +141,7 @@ export function ProjectDashboard() {
                 <TableRow>
                   <TableHead>Project Name</TableHead>
                   <TableHead>Status</TableHead>
+                  <TableHead>Risk Level</TableHead>
                   <TableHead>Version</TableHead>
                   <TableHead>Compliance Progress</TableHead>
                   <TableHead>Last Updated</TableHead>
@@ -138,6 +158,9 @@ export function ProjectDashboard() {
                     </TableCell>
                     <TableCell>
                       <StatusBadge status={project.status as ProjectStatus} />
+                    </TableCell>
+                    <TableCell>
+                        <RiskBadge risk={project.riskCategory as RiskCategory} />
                     </TableCell>
                     <TableCell>{project.version}</TableCell>
                     <TableCell>
@@ -163,6 +186,12 @@ export function ProjectDashboard() {
                             <Link href={`/project/${project.id}/overview`}>
                               <Eye className="mr-2 h-4 w-4" />
                               Open Project
+                            </Link>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem asChild>
+                             <Link href={`/project/${project.id}/risk-register`}>
+                                <ShieldAlert className="mr-2 h-4 w-4" />
+                                View Risk Register
                             </Link>
                           </DropdownMenuItem>
                           <DropdownMenuItem asChild>
