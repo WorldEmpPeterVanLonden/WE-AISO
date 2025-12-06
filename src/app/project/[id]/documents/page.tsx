@@ -30,8 +30,7 @@ import { Download, FilePlus2 } from "lucide-react";
 import { format } from "date-fns";
 import { GenerateDocumentDialog } from "@/app/components/generate-document-dialog";
 import { useParams } from "next/navigation";
-import type { z } from "zod";
-import type { GenerateDocumentSchema } from "@/lib/definitions";
+import type { GenerateDocumentFormData } from "@/ai/schemas/ai-technical-file-generation";
 
 const mockDocuments = [
   {
@@ -60,7 +59,7 @@ const mockDocuments = [
   },
 ];
 
-type DocumentType = z.infer<typeof GenerateDocumentSchema>['documentType'];
+type DocumentType = GenerateDocumentFormData['documentType'];
 
 export default function DocumentsPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);

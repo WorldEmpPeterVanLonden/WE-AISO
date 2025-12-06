@@ -4,8 +4,9 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
-import { ProjectSchema, BasicInfoSchema, GenerateDocumentSchema } from "./definitions";
+import { ProjectSchema, BasicInfoSchema } from "./definitions";
 import { generateAiTechnicalFile } from "@/ai/ai-technical-file-generation";
+import { GenerateDocumentSchema } from "@/ai/schemas/ai-technical-file-generation";
 
 // This is a mock function. Replace with actual Firebase calls.
 async function createProjectInFirestore(

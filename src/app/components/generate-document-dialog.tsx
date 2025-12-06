@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { z } from "zod";
@@ -33,7 +33,7 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { GenerateDocumentSchema } from "@/lib/definitions";
+import { GenerateDocumentSchema } from "@/ai/schemas/ai-technical-file-generation";
 import { generateDocumentAction } from "@/lib/actions";
 
 type GenerateDocumentFormData = z.infer<typeof GenerateDocumentSchema>;
@@ -59,9 +59,7 @@ export function GenerateDocumentDialog({ isOpen, setIsOpen, documentType, projec
     },
   });
 
-  // When the dialog opens, reset the form with the current document type
-  // This is necessary because the dialog is not re-mounted, only re-rendered
-  useState(() => {
+  useEffect(() => {
     if (isOpen) {
         form.reset({
             projectId: projectId,
@@ -70,7 +68,7 @@ export function GenerateDocumentDialog({ isOpen, setIsOpen, documentType, projec
             format: "pdf",
         });
     }
-  });
+  }, [isOpen, form, projectId, documentType]);
 
 
   async function onSubmit(data: GenerateDocumentFormData) {
