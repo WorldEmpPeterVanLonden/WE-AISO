@@ -36,6 +36,7 @@ export const BasicInfoSchema = z.object({
   stakeholders: z.string().optional(),
   prohibitedUse: z.string().optional(),
   retentionPolicy: z.string().optional(),
+  retentionPolicyOther: z.string().optional(),
   aiActClassification: z.enum(["unacceptable", "high", "limited", "minimal"]).optional(),
   operationalEnvironment: z.string().optional(),
   performanceGoals: z.string().optional(),
@@ -55,6 +56,14 @@ export const BasicInfoSchema = z.object({
 }, {
     message: "Please specify other legislation.",
     path: ["legalRequirementsOther"],
+}).refine(data => {
+    if (data.retentionPolicy === 'other') {
+        return !!data.retentionPolicyOther && data.retentionPolicyOther.length > 0;
+    }
+    return true;
+}, {
+    message: "Please specify the retention policy.",
+    path: ["retentionPolicyOther"],
 });
 
 export const DesignSchema = z.object({

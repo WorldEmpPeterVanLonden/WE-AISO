@@ -102,6 +102,7 @@ export function BasicInfoForm() {
   
   const geographicScopeValue = form.watch("geographicScope");
   const legalRequirementsValue = form.watch("legalRequirements");
+  const retentionPolicyValue = form.watch("retentionPolicy");
 
   async function onSubmit(data: BasicInfoFormData) {
     setIsSaving(true);
@@ -443,14 +444,48 @@ export function BasicInfoForm() {
                 </FormItem>
             )} />
 
-            <FormField control={form.control} name="retentionPolicy" render={({ field }) => (
-                <FormItem className="md:col-span-2">
-                    <FormLabel>Retention Policy</FormLabel>
-                    <FormControl><Textarea placeholder="e.g., Anonymized data is retained for 1 year for model improvement." {...field} /></FormControl>
-                    <FormDescription>Describe the data retention policy.</FormDescription>
-                    <FormMessage />
+            <FormField
+              control={form.control}
+              name="retentionPolicy"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Retention Policy</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a retention period" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="no-retention">No retention</SelectItem>
+                      <SelectItem value="30-days">30 days</SelectItem>
+                      <SelectItem value="3-months">3 months</SelectItem>
+                      <SelectItem value="6-months">6 months</SelectItem>
+                      <SelectItem value="1-year">1 year</SelectItem>
+                      <SelectItem value="5-years">5 years</SelectItem>
+                      <SelectItem value="other">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormDescription>Describe the data retention policy.</FormDescription>
+                  <FormMessage />
                 </FormItem>
-            )} />
+              )}
+            />
+            {retentionPolicyValue === 'other' && (
+              <FormField
+                control={form.control}
+                name="retentionPolicyOther"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Please specify retention policy</FormLabel>
+                    <FormControl>
+                      <Textarea placeholder="e.g., Anonymized data is retained for 1 year for model improvement." {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
 
              <FormField control={form.control} name="scopeComponents" render={({ field }) => (
                 <FormItem className="md:col-span-2">
@@ -481,9 +516,23 @@ export function BasicInfoForm() {
 
             <FormField control={form.control} name="operationalEnvironment" render={({ field }) => (
                 <FormItem>
-                    <FormLabel>High-level Operational Environment</FormLabel>
-                    <FormControl><Input placeholder="e.g., Cloud-based, on-premise, embedded device" {...field} /></FormControl>
-                    <FormMessage />
+                  <FormLabel>Operational Environment</FormLabel>
+                   <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select an environment" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="gcp">Cloud (GCP)</SelectItem>
+                      <SelectItem value="azure">Cloud (Azure)</SelectItem>
+                      <SelectItem value="aws">Cloud (AWS)</SelectItem>
+                      <SelectItem value="on-premise">On-premise</SelectItem>
+                      <SelectItem value="hybrid">Hybrid</SelectItem>
+                      <SelectItem value="edge">Edge device</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
                 </FormItem>
             )} />
             
@@ -511,5 +560,3 @@ export function BasicInfoForm() {
     </>
   );
 }
-
-    
