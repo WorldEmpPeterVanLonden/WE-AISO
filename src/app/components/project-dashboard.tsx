@@ -53,6 +53,7 @@ import { useUser } from "@/firebase";
 import { signOut, type Auth } from "firebase/auth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ProjectHeader } from "./project-header";
+import { useEffect } from "react";
 
 type ProjectStatus = "draft" | "active" | "archived";
 type RiskCategory = "low" | "medium" | "high";
@@ -105,6 +106,12 @@ export function ProjectDashboard() {
   const { user, auth, loading } = useUser();
   const mockProjects: any[] = []; 
 
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push('/login');
+    }
+  }, [loading, user, router]);
+
   const handleSignOut = async () => {
     if (auth) {
       await signOut(auth as Auth);
@@ -117,17 +124,12 @@ export function ProjectDashboard() {
     return name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
   }
 
-  if (loading) {
+  if (loading || !user) {
     return (
         <div className="flex items-center justify-center min-h-screen">
             <Loader2 className="h-16 w-16 animate-spin text-primary" />
         </div>
     )
-  }
-
-  if (!user) {
-    router.push('/login');
-    return null;
   }
   
   return (
