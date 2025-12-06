@@ -97,7 +97,7 @@ export function ProjectDashboard() {
           <Button asChild>
             <Link href="/project/new">
               <PlusCircle className="mr-2 h-4 w-4" />
-              Nieuw AI Project
+              New AI Project
             </Link>
           </Button>
         </div>
@@ -105,21 +105,21 @@ export function ProjectDashboard() {
        <main className="container mx-auto flex-1 p-4 md:p-8">
          <Card>
           <CardHeader>
-            <CardTitle>Projecten</CardTitle>
+            <CardTitle>Projects</CardTitle>
             <CardDescription>
-              Een overzicht van al uw AI-compliance projecten.
+              An overview of all your AI compliance projects.
             </CardDescription>
           </CardHeader>
           <CardContent>
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Projectnaam</TableHead>
+                  <TableHead>Project Name</TableHead>
                   <TableHead>Status</TableHead>
-                  <TableHead>Versie</TableHead>
-                  <TableHead>Laatst bijgewerkt</TableHead>
+                  <TableHead>Version</TableHead>
+                  <TableHead>Last Updated</TableHead>
                   <TableHead>
-                    <span className="sr-only">Acties</span>
+                    <span className="sr-only">Actions</span>
                   </TableHead>
                 </TableRow>
               </TableHeader>
@@ -145,7 +145,7 @@ export function ProjectDashboard() {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuLabel>Acties</DropdownMenuLabel>
+                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
                           <DropdownMenuItem asChild>
                             <Link href={`/project/${project.id}`}>
                               <Eye className="mr-2 h-4 w-4" />
@@ -154,12 +154,12 @@ export function ProjectDashboard() {
                           </DropdownMenuItem>
                           <DropdownMenuItem>
                             <FileText className="mr-2 h-4 w-4" />
-                            Bekijk Lifecycle
+                            View Lifecycle
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
                           <DropdownMenuItem>
                             <Download className="mr-2 h-4 w-4" />
-                            Exporteer Documenten
+                            Export Documents
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>

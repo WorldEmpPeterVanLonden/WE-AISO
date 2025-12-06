@@ -32,13 +32,13 @@ const mockProject = {
 };
 
 const dataCategoryItems = [
-    { id: "personal", label: "Persoonsgegevens" },
-    { id: "financial", label: "Financiële gegevens" },
-    { id: "health", label: "Gezondheidsgegevens" },
-    { id: "sensitive", label: "Gevoelige gegevens (ras, religie, etc.)" },
-    { id: "location", label: "Locatiegegevens" },
-    { id: "technical", label: "Technische gegevens (IP, logs)" },
-    { id: "other", label: "Anders" },
+    { id: "personal", label: "Personal Data" },
+    { id: "financial", label: "Financial Data" },
+    { id: "health", label: "Health Data" },
+    { id: "sensitive", label: "Sensitive Data (race, religion, etc.)" },
+    { id: "location", label: "Location Data" },
+    { id: "technical", label: "Technical Data (IP, logs)" },
+    { id: "other", label: "Other" },
 ]
 
 export function BasicInfoForm() {
@@ -65,8 +65,8 @@ export function BasicInfoForm() {
     // TODO: Implement server action to save the data
     await new Promise(resolve => setTimeout(resolve, 1000));
     toast({
-      title: "Opgeslagen!",
-      description: "De basisinformatie is succesvol bijgewerkt.",
+      title: "Saved!",
+      description: "The basic information has been successfully updated.",
     });
     setIsSaving(false);
   }
@@ -97,16 +97,16 @@ export function BasicInfoForm() {
         form.setValue("dataCategories", suggestedCategories, { shouldValidate: true });
 
         toast({
-            title: "Suggesties gegenereerd",
-            description: "De AI heeft enkele velden voor je ingevuld.",
+            title: "Suggestions Generated",
+            description: "The AI has filled in some fields for you.",
         });
 
     } catch (error) {
         console.error("Error generating suggestions:", error);
         toast({
             variant: "destructive",
-            title: "Fout bij genereren",
-            description: "Kon geen AI-suggesties genereren. Probeer het opnieuw.",
+            title: "Generation Error",
+            description: "Could not generate AI suggestions. Please try again.",
         });
     }
     setIsGenerating(false);
@@ -119,12 +119,12 @@ export function BasicInfoForm() {
             {isGenerating ? (
                 <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Genereren...
+                    Generating...
                 </>
             ) : (
                 <>
                     <Sparkles className="mr-2 h-4 w-4" />
-                    AI Suggesties genereren
+                    Generate AI Suggestions
                 </>
             )}
         </Button>
@@ -135,44 +135,44 @@ export function BasicInfoForm() {
             <FormField control={form.control} name="businessContext" render={({ field }) => (
                 <FormItem className="md:col-span-2">
                     <FormLabel>Business Context</FormLabel>
-                    <FormControl><Textarea placeholder="Beschrijf het zakelijke doel of het probleem dat dit AI-systeem oplost." {...field} rows={4} /></FormControl>
+                    <FormControl><Textarea placeholder="Describe the business goal or problem this AI system solves." {...field} rows={4} /></FormControl>
                     <FormMessage />
                 </FormItem>
             )} />
 
             <FormField control={form.control} name="intendedUsers" render={({ field }) => (
                 <FormItem>
-                    <FormLabel>Doelgroep</FormLabel>
-                    <FormControl><Input placeholder="bv. Klanten, interne medewerkers, artsen" {...field} /></FormControl>
-                    <FormDescription>Wie zijn de eindgebruikers van het systeem?</FormDescription>
+                    <FormLabel>Intended Users</FormLabel>
+                    <FormControl><Input placeholder="e.g. Customers, internal employees, doctors" {...field} /></FormControl>
+                    <FormDescription>Who are the end users of the system?</FormDescription>
                     <FormMessage />
                 </FormItem>
             )} />
             
             <FormField control={form.control} name="geographicScope" render={({ field }) => (
                 <FormItem>
-                    <FormLabel>Geografische Scope</FormLabel>
-                    <FormControl><Input placeholder="bv. Nederland, EU, wereldwijd" {...field} /></FormControl>
-                     <FormDescription>Waar zal het systeem gebruikt worden?</FormDescription>
+                    <FormLabel>Geographic Scope</FormLabel>
+                    <FormControl><Input placeholder="e.g. Netherlands, EU, Worldwide" {...field} /></FormControl>
+                     <FormDescription>Where will the system be used?</FormDescription>
                     <FormMessage />
                 </FormItem>
             )} />
             
             <FormField control={form.control} name="legalRequirements" render={({ field }) => (
                 <FormItem className="md:col-span-2">
-                    <FormLabel>Relevante Wetgeving</FormLabel>
-                    <FormControl><Input placeholder="bv. GDPR, AI Act, MDR" {...field} /></FormControl>
-                    <FormDescription>Welke wettelijke kaders zijn van toepassing?</FormDescription>
+                    <FormLabel>Relevant Legislation</FormLabel>
+                    <FormControl><Input placeholder="e.g. GDPR, AI Act, MDR" {...field} /></FormControl>
+                    <FormDescription>Which legal frameworks apply?</FormDescription>
                     <FormMessage />
                 </FormItem>
             )} />
 
             <FormField control={form.control} name="dataSources" render={({ field }) => (
                 <FormItem className="md:col-span-2">
-                    <FormLabel>Data-bronnen</FormLabel>
-                    <FormControl><Textarea placeholder="Beschrijf waar de data vandaan komt (bv. interne databases, publieke API's, door gebruikers aangeleverd)." {...field} />
+                    <FormLabel>Data Sources</FormLabel>
+                    <FormControl><Textarea placeholder="Describe where the data comes from (e.g. internal databases, public APIs, user-provided)." {...field} />
                     </FormControl>
-                    <FormDescription>Voer bronnen in, gescheiden door komma's.</FormDescription>
+                    <FormDescription>Enter sources, separated by commas.</FormDescription>
                     <FormMessage />
                 </FormItem>
             )} />
@@ -180,8 +180,8 @@ export function BasicInfoForm() {
             <FormField control={form.control} name="dataCategories" render={() => (
                 <FormItem className="md:col-span-2">
                      <div className="mb-4">
-                        <FormLabel>Data-categorieën</FormLabel>
-                        <FormDescription>Selecteer de categorieën van data die verwerkt worden.</FormDescription>
+                        <FormLabel>Data Categories</FormLabel>
+                        <FormDescription>Select the categories of data being processed.</FormDescription>
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                     {dataCategoryItems.map((item) => (
@@ -215,9 +215,9 @@ export function BasicInfoForm() {
 
             <FormField control={form.control} name="externalDependencies" render={({ field }) => (
                 <FormItem className="md:col-span-2">
-                    <FormLabel>Externe afhankelijkheden</FormLabel>
-                    <FormControl><Textarea placeholder="bv. Externe API's (Google Maps), cloud services (Azure), open-source libraries." {...field} /></FormControl>
-                    <FormDescription>Lijst van externe systemen of componenten, gescheiden door komma's.</FormDescription>
+                    <FormLabel>External Dependencies</FormLabel>
+                    <FormControl><Textarea placeholder="e.g. External APIs (Google Maps), cloud services (Azure), open-source libraries." {...field} /></FormControl>
+                    <FormDescription>List of external systems or components, separated by commas.</FormDescription>
                     <FormMessage />
                 </FormItem>
             )} />
@@ -230,7 +230,7 @@ export function BasicInfoForm() {
                 ) : (
                     <Save className="mr-2 h-4 w-4" />
                 )}
-                Wijzigingen Opslaan
+                Save Changes
             </Button>
         </div>
       </form>

@@ -40,18 +40,18 @@ import { Loader2 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 
 const projectSchema = z.object({
-  name: z.string().min(3, "Projectnaam is te kort"),
-  version: z.string().min(1, "Versie is verplicht"),
+  name: z.string().min(3, "Project name is too short"),
+  version: z.string().min(1, "Version is required"),
   customerId: z.string().optional(),
   description: z.string().optional(),
-  useCase: z.string().min(1, "Use-case is verplicht"),
+  useCase: z.string().min(1, "Use-case is required"),
   systemType: z.enum(["LLM", "ML", "Hybrid", "RuleBased"]),
   riskCategory: z.enum(["high", "medium", "low"]),
 });
 
 const basicInfoSchema = z.object({
-  intendedUsers: z.string().min(1, "Doelgroep is verplicht"),
-  geographicScope: z.string().min(1, "Geografische scope is verplicht"),
+  intendedUsers: z.string().min(1, "Intended users are required"),
+  geographicScope: z.string().min(1, "Geographic scope is required"),
   dataCategories: z.array(z.string()).optional(),
   dataSources: z.string().optional(),
   legalRequirements: z.string().optional(),
@@ -62,13 +62,13 @@ const formSchema = projectSchema.merge(basicInfoSchema);
 type FormData = z.infer<typeof formSchema>;
 
 const dataCategoryItems = [
-    { id: "personal", label: "Persoonsgegevens" },
-    { id: "financial", label: "Financiële gegevens" },
-    { id: "health", label: "Gezondheidsgegevens" },
-    { id: "sensitive", label: "Gevoelige gegevens (ras, religie, etc.)" },
-    { id: "location", label: "Locatiegegevens" },
-    { id: "technical", label: "Technische gegevens (IP, logs)" },
-    { id: "other", label: "Anders" },
+    { id: "personal", label: "Personal Data" },
+    { id: "financial", label: "Financial Data" },
+    { id: "health", label: "Health Data" },
+    { id: "sensitive", label: "Sensitive Data (race, religion, etc.)" },
+    { id: "location", label: "Location Data" },
+    { id: "technical", label: "Technical Data (IP, logs)" },
+    { id: "other", label: "Other" },
 ]
 
 export function NewProjectWizard() {
@@ -138,16 +138,16 @@ export function NewProjectWizard() {
     try {
       await createProject(data);
       toast({
-        title: "Project aangemaakt!",
-        description: `${data.name} is succesvol aangemaakt.`,
+        title: "Project created!",
+        description: `${data.name} has been successfully created.`,
       });
       router.push("/");
     } catch (error) {
       console.error(error);
       toast({
         variant: "destructive",
-        title: "Oh nee! Er is iets misgegaan.",
-        description: "Kon het project niet aanmaken. Probeer het opnieuw.",
+        title: "Oh no! Something went wrong.",
+        description: "Could not create the project. Please try again.",
       });
       setIsSubmitting(false);
     }
@@ -160,9 +160,9 @@ export function NewProjectWizard() {
         <CardHeader>
             <Progress value={progress} className="mb-4" />
             <div className="flex justify-between font-medium text-sm text-muted-foreground">
-                <button onClick={() => jumpToStep(1)} className={step >= 1 ? "text-primary" : ""}>Stap 1: Basisgegevens</button>
-                <button onClick={() => jumpToStep(2)} className={step >= 2 ? "text-primary" : ""}>Stap 2: Scope & Context</button>
-                <button onClick={() => jumpToStep(3)} className={step >= 3 ? "text-primary" : ""}>Stap 3: Overzicht</button>
+                <button onClick={() => jumpToStep(1)} className={step >= 1 ? "text-primary" : ""}>Step 1: Basic Details</button>
+                <button onClick={() => jumpToStep(2)} className={step >= 2 ? "text-primary" : ""}>Step 2: Scope & Context</button>
+                <button onClick={() => jumpToStep(3)} className={step >= 3 ? "text-primary" : ""}>Step 3: Review</button>
             </div>
         </CardHeader>
       <Form {...form}>
@@ -170,47 +170,47 @@ export function NewProjectWizard() {
           <CardContent className="space-y-8">
             {step === 1 && (
               <>
-                <CardTitle>Stap 1: Basisgegevens</CardTitle>
-                <CardDescription>Start met de basisinformatie van uw AI-project.</CardDescription>
+                <CardTitle>Step 1: Basic Details</CardTitle>
+                <CardDescription>Start with the basic information for your AI project.</CardDescription>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <FormField control={form.control} name="name" render={({ field }) => (
                         <FormItem className="md:col-span-2">
-                            <FormLabel>Projectnaam</FormLabel>
-                            <FormControl><Input placeholder="bv. Klantenservice Chatbot" {...field} /></FormControl>
+                            <FormLabel>Project Name</FormLabel>
+                            <FormControl><Input placeholder="e.g. Customer Service Chatbot" {...field} /></FormControl>
                             <FormMessage />
                         </FormItem>
                     )} />
                     <FormField control={form.control} name="version" render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Versie</FormLabel>
-                            <FormControl><Input placeholder="bv. 1.0.0" {...field} /></FormControl>
+                            <FormLabel>Version</FormLabel>
+                            <FormControl><Input placeholder="e.g. 1.0.0" {...field} /></FormControl>
                             <FormMessage />
                         </FormItem>
                     )} />
                     <FormField control={form.control} name="customerId" render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Klant</FormLabel>
-                            <FormControl><Input placeholder="Naam van de klant (optioneel)" {...field} /></FormControl>
+                            <FormLabel>Customer</FormLabel>
+                            <FormControl><Input placeholder="Name of the customer (optional)" {...field} /></FormControl>
                             <FormMessage />
                         </FormItem>
                     )} />
                     <FormField control={form.control} name="description" render={({ field }) => (
                         <FormItem className="md:col-span-2">
-                            <FormLabel>Beschrijving</FormLabel>
-                            <FormControl><Textarea placeholder="Een korte beschrijving van het project" {...field} /></FormControl>
+                            <FormLabel>Description</FormLabel>
+                            <FormControl><Textarea placeholder="A brief description of the project" {...field} /></FormControl>
                             <FormMessage />
                         </FormItem>
                     )} />
                     <FormField control={form.control} name="useCase" render={({ field }) => (
                         <FormItem className="md:col-span-2">
                             <FormLabel>Use-case</FormLabel>
-                            <FormControl><Textarea placeholder="Wat is het doel van het AI-systeem?" {...field} /></FormControl>
+                            <FormControl><Textarea placeholder="What is the purpose of the AI system?" {...field} /></FormControl>
                             <FormMessage />
                         </FormItem>
                     )} />
                     <FormField control={form.control} name="systemType" render={({ field }) => (
                         <FormItem>
-                            <FormLabel>AI-systeemtype</FormLabel>
+                            <FormLabel>AI System Type</FormLabel>
                             <Select onValueChange={field.onChange} defaultValue={field.value}>
                             <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
                             <SelectContent>
@@ -225,13 +225,13 @@ export function NewProjectWizard() {
                     )} />
                     <FormField control={form.control} name="riskCategory" render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Risicocategorie</FormLabel>
+                            <FormLabel>Risk Category</FormLabel>
                              <Select onValueChange={field.onChange} defaultValue={field.value}>
                             <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
                             <SelectContent>
-                                <SelectItem value="low">Laag</SelectItem>
+                                <SelectItem value="low">Low</SelectItem>
                                 <SelectItem value="medium">Medium</SelectItem>
-                                <SelectItem value="high">Hoog</SelectItem>
+                                <SelectItem value="high">High</SelectItem>
                             </SelectContent>
                             </Select>
                             <FormMessage />
@@ -243,42 +243,42 @@ export function NewProjectWizard() {
 
             {step === 2 && (
               <>
-                <CardTitle>Stap 2: Scope & Context</CardTitle>
-                <CardDescription>Definieer de context en de grenzen van uw project.</CardDescription>
+                <CardTitle>Step 2: Scope & Context</CardTitle>
+                <CardDescription>Define the context and boundaries of your project.</CardDescription>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <FormField control={form.control} name="intendedUsers" render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Doelgroep</FormLabel>
-                            <FormControl><Input placeholder="bv. Eindgebruikers, interne medewerkers" {...field} /></FormControl>
+                            <FormLabel>Intended Users</FormLabel>
+                            <FormControl><Input placeholder="e.g. End users, internal employees" {...field} /></FormControl>
                             <FormMessage />
                         </FormItem>
                     )} />
                     <FormField control={form.control} name="geographicScope" render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Geografische scope</FormLabel>
-                            <FormControl><Input placeholder="bv. Nederland, EU, wereldwijd" {...field} /></FormControl>
+                            <FormLabel>Geographic Scope</FormLabel>
+                            <FormControl><Input placeholder="e.g. Netherlands, EU, Worldwide" {...field} /></FormControl>
                             <FormMessage />
                         </FormItem>
                     )} />
                     <FormField control={form.control} name="legalRequirements" render={({ field }) => (
                         <FormItem className="md:col-span-2">
-                            <FormLabel>Relevante wetgeving</FormLabel>
-                            <FormControl><Input placeholder="bv. GDPR, AI Act, MDR" {...field} /></FormControl>
+                            <FormLabel>Relevant Legislation</FormLabel>
+                            <FormControl><Input placeholder="e.g. GDPR, AI Act, MDR" {...field} /></FormControl>
                             <FormMessage />
                         </FormItem>
                     )} />
                     <FormField control={form.control} name="dataSources" render={({ field }) => (
                         <FormItem className="md:col-span-2">
-                            <FormLabel>Data-bronnen</FormLabel>
-                            <FormControl><Textarea placeholder="Waar komt de data vandaan?" {...field} /></FormControl>
+                            <FormLabel>Data Sources</FormLabel>
+                            <FormControl><Textarea placeholder="Where does the data come from?" {...field} /></FormControl>
                              <FormMessage />
                         </FormItem>
                     )} />
                     <FormField control={form.control} name="dataCategories" render={() => (
                         <FormItem className="md:col-span-2">
                              <div className="mb-4">
-                                <FormLabel>Data-categorieën</FormLabel>
-                                <FormDescription>Selecteer de categorieën van data die verwerkt worden.</FormDescription>
+                                <FormLabel>Data Categories</FormLabel>
+                                <FormDescription>Select the categories of data being processed.</FormDescription>
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                             {dataCategoryItems.map((item) => (
@@ -314,30 +314,30 @@ export function NewProjectWizard() {
 
             {step === 3 && (
                 <>
-                <CardTitle>Stap 3: Overzicht & Bevestigen</CardTitle>
-                <CardDescription>Controleer de ingevoerde gegevens en maak het project aan.</CardDescription>
+                <CardTitle>Step 3: Review & Confirm</CardTitle>
+                <CardDescription>Review the entered details and create the project.</CardDescription>
                 <div className="space-y-6">
                     <div className="space-y-2">
-                        <h3 className="font-semibold text-lg">Basisgegevens</h3>
+                        <h3 className="font-semibold text-lg">Basic Details</h3>
                         <div className="rounded-lg border bg-muted/30 p-4 grid grid-cols-2 gap-4 text-sm">
-                            <p><strong>Projectnaam:</strong> {formData.name}</p>
-                            <p><strong>Versie:</strong> {formData.version}</p>
-                            <p><strong>Klant:</strong> {formData.customerId || "-"}</p>
-                            <p><strong>Systeemtype:</strong> {formData.systemType}</p>
-                            <p><strong>Risicocategorie:</strong> {formData.riskCategory}</p>
-                            <p className="col-span-2"><strong>Beschrijving:</strong> {formData.description || "-"}</p>
+                            <p><strong>Project Name:</strong> {formData.name}</p>
+                            <p><strong>Version:</strong> {formData.version}</p>
+                            <p><strong>Customer:</strong> {formData.customerId || "-"}</p>
+                            <p><strong>System Type:</strong> {formData.systemType}</p>
+                            <p><strong>Risk Category:</strong> {formData.riskCategory}</p>
+                            <p className="col-span-2"><strong>Description:</strong> {formData.description || "-"}</p>
                             <p className="col-span-2"><strong>Use-case:</strong> {formData.useCase}</p>
                         </div>
                     </div>
                     <div className="space-y-2">
                         <h3 className="font-semibold text-lg">Scope & Context</h3>
                          <div className="rounded-lg border bg-muted/30 p-4 grid grid-cols-2 gap-4 text-sm">
-                            <p><strong>Doelgroep:</strong> {formData.intendedUsers}</p>
-                            <p><strong>Geografische scope:</strong> {formData.geographicScope}</p>
-                            <p className="col-span-2"><strong>Wetgeving:</strong> {formData.legalRequirements || "-"}</p>
-                            <p className="col-span-2"><strong>Databronnen:</strong> {formData.dataSources || "-"}</p>
+                            <p><strong>Intended Users:</strong> {formData.intendedUsers}</p>
+                            <p><strong>Geographic Scope:</strong> {formData.geographicScope}</p>
+                            <p className="col-span-2"><strong>Legislation:</strong> {formData.legalRequirements || "-"}</p>
+                            <p className="col-span-2"><strong>Data Sources:</strong> {formData.dataSources || "-"}</p>
                             <p className="col-span-2">
-                                <strong>Data-categorieën:</strong> {formData.dataCategories?.map(id => dataCategoryItems.find(item => item.id === id)?.label).join(', ') || "-"}
+                                <strong>Data Categories:</strong> {formData.dataCategories?.map(id => dataCategoryItems.find(item => item.id === id)?.label).join(', ') || "-"}
                             </p>
                         </div>
                     </div>
@@ -349,23 +349,23 @@ export function NewProjectWizard() {
           <CardFooter className="flex justify-between">
             {step > 1 && (
               <Button variant="outline" onClick={prevStep} type="button">
-                Vorige
+                Previous
               </Button>
             )}
             {step === 1 && <div></div>}
             {step < 3 ? (
               <Button onClick={nextStep} type="button">
-                Volgende
+                Next
               </Button>
             ) : (
               <Button type="submit" disabled={isSubmitting}>
                 {isSubmitting ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Project aanmaken...
+                    Creating Project...
                   </>
                 ) : (
-                  "Project aanmaken"
+                  "Create Project"
                 )}
               </Button>
             )}

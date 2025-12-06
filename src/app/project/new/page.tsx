@@ -9,7 +9,7 @@ export default function NewProjectPage() {
           <div className="flex items-center gap-3">
             <ShieldCheck className="h-8 w-8 text-primary" />
             <h1 className="font-headline text-2xl font-bold text-primary">
-              Nieuw AI Project
+              New AI Project
             </h1>
           </div>
         </div>

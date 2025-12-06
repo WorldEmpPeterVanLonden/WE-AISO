@@ -56,7 +56,7 @@ export default function OverviewPage() {
             </div>
              <Button variant="outline">
                 <FileDown className="mr-2 h-4 w-4" />
-                Genereer Technical File (PDF)
+                Generate Technical File (PDF)
             </Button>
         </div>
       </CardHeader>
@@ -72,14 +72,14 @@ export default function OverviewPage() {
             <div className="flex items-center gap-3 p-4 bg-muted/50 rounded-lg">
                 <Clock className="h-6 w-6 text-primary" />
                 <div>
-                    <span className="text-muted-foreground">Laatste review</span>
+                    <span className="text-muted-foreground">Last Review</span>
                     <p className="font-semibold">{format(mockProjectDetails.lastReview, "dd MMMM yyyy")}</p>
                 </div>
             </div>
              <div className="flex items-center gap-3 p-4 bg-muted/50 rounded-lg">
                 <ShieldCheck className="h-6 w-6 text-primary" />
                 <div>
-                    <span className="text-muted-foreground">Risico</span>
+                    <span className="text-muted-foreground">Risk</span>
                     <p className="font-semibold"><RiskBadge risk={mockProjectDetails.riskCategory as RiskCategory} /></p>
                 </div>
             </div>
@@ -90,11 +90,11 @@ export default function OverviewPage() {
         <div>
             <h3 className="text-lg font-semibold flex items-center gap-2 mb-3">
                 <GitMerge className="h-5 w-5 text-primary" />
-                Lifecycle Voortgang
+                Lifecycle Progress
             </h3>
             <div className="space-y-3">
                 <div className="flex justify-between items-center">
-                    <p className="text-muted-foreground">Totaal ingevuld</p>
+                    <p className="text-muted-foreground">Total completion</p>
                     <p className="font-bold text-primary">{mockProjectDetails.lifecycleCompletion}%</p>
                 </div>
                 <Progress value={mockProjectDetails.lifecycleCompletion} />
