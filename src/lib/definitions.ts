@@ -43,7 +43,7 @@ export const DevelopmentSchema = z.object({
   toolchain: z.array(z.string()).optional(),
   dependencies: z.string().optional(),
   securityControls: z.string().min(1, "Security controls are required."),
-  testApproach: z.string().min(1_,"Test approach is required."),
+  testApproach: z.string().min(1,"Test approach is required."),
 });
 
 export const TrainingSchema = z.object({
