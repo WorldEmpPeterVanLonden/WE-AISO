@@ -129,7 +129,7 @@ export default function DocumentsPage() {
                     {doc.type.replace(/([A-Z])/g, ' $1').trim()}
                   </TableCell>
                   <TableCell>{doc.version}</TableCell>
-                  <TableCell>{format(doc.createdAt, "dd.MM.yy")}</TableCell>
+                  <TableCell>{format(doc.createdAt, "PPP")}</TableCell>
                   <TableCell className="text-right">
                     <Button variant="outline" size="sm">
                       <Download className="mr-2 h-4 w-4" />

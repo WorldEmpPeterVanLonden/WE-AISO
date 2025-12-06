@@ -10,9 +10,6 @@ import {
   ShieldCheck,
   FileText,
   ShieldAlert,
-  Database,
-  Bot,
-  HardDrive
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -57,6 +54,7 @@ const mockProjects = [
     name: "Customer Support Chatbot",
     customerName: "Global Tech Inc.",
     status: "active",
+    startDate: new Date(new Date().setMonth(new Date().getMonth() - 6)),
     updatedAt: new Date(),
     version: "1.2.0",
     complianceProgress: 75,
@@ -67,6 +65,7 @@ const mockProjects = [
     name: "Medical Diagnosis Tool",
     customerName: "Healthcare Solutions",
     status: "draft",
+    startDate: new Date(new Date().setDate(new Date().getDate() - 20)),
     updatedAt: new Date(new Date().setDate(new Date().getDate() - 5)),
     version: "0.5.0",
     complianceProgress: 20,
@@ -77,6 +76,7 @@ const mockProjects = [
     name: "Financial Fraud Detection",
     customerName: "SecureBank",
     status: "archived",
+    startDate: new Date(new Date().setFullYear(new Date().getFullYear() - 1)),
     updatedAt: new Date(new Date().setMonth(new Date().getMonth() - 2)),
     version: "2.0.0",
     complianceProgress: 100,
@@ -87,6 +87,7 @@ const mockProjects = [
     name: "Content Recommendation Engine",
     customerName: "MediaStream Co.",
     status: "active",
+    startDate: new Date(new Date().setDate(new Date().getDate() - 90)),
     updatedAt: new Date(new Date().setDate(new Date().getDate() - 1)),
     version: "3.1.0",
     complianceProgress: 90,
@@ -140,23 +141,6 @@ const RiskBadge = ({ risk }: { risk: RiskCategory }) => {
     return <Badge variant={variant} className="border">{riskText}</Badge>;
 };
 
-const ServiceIndicator = ({ active, tooltip, children }: { active: boolean; tooltip: string; children: React.ReactNode }) => {
-    if (!active) return null;
-
-    return (
-        <TooltipProvider>
-            <Tooltip>
-                <TooltipTrigger asChild>
-                    <span className="text-muted-foreground">{children}</span>
-                </TooltipTrigger>
-                <TooltipContent>
-                    <p>{tooltip}</p>
-                </TooltipContent>
-            </Tooltip>
-        </TooltipProvider>
-    );
-};
-
 
 export function ProjectDashboard() {
   const router = useRouter();
@@ -172,17 +156,6 @@ export function ProjectDashboard() {
             </h1>
           </div>
           <div className="flex items-center gap-6">
-            <div className="flex items-center gap-4">
-              <ServiceIndicator active={true} tooltip="Uses AI/Genkit">
-                <Bot className="h-5 w-5" />
-              </ServiceIndicator>
-              <ServiceIndicator active={true} tooltip="Uses Firestore">
-                <Database className="h-5 w-5" />
-              </ServiceIndicator>
-              <ServiceIndicator active={true} tooltip="Uses Cloud Storage">
-                <HardDrive className="h-5 w-5" />
-              </ServiceIndicator>
-            </div>
             <Button asChild>
               <Link href="/project/new">
                 <PlusCircle className="mr-2 h-4 w-4" />
@@ -209,6 +182,8 @@ export function ProjectDashboard() {
                   <TableHead>Status</TableHead>
                   <TableHead>Risk Level</TableHead>
                   <TableHead>Compliance Progress</TableHead>
+                  <TableHead>Start Date</TableHead>
+                  <TableHead>Last Update</TableHead>
                   <TableHead>
                     <span className="sr-only">Actions</span>
                   </TableHead>
@@ -237,6 +212,8 @@ export function ProjectDashboard() {
                             <span className="text-muted-foreground text-xs">{project.complianceProgress}%</span>
                         </div>
                     </TableCell>
+                    <TableCell>{format(project.startDate, "dd.MM.yy")}</TableCell>
+                    <TableCell>{format(project.updatedAt, "dd.MM.yy")}</TableCell>
                     <TableCell onClick={(e) => e.stopPropagation()}>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
