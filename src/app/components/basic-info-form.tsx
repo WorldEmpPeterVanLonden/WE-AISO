@@ -67,6 +67,8 @@ export function BasicInfoForm() {
       dataSubjects: "",
     },
   });
+  
+  const geographicScopeValue = form.watch("geographicScope");
 
   async function onSubmit(data: BasicInfoFormData) {
     setIsSaving(true);
@@ -178,12 +180,33 @@ export function BasicInfoForm() {
 
             <FormField control={form.control} name="geographicScope" render={({ field }) => (
                 <FormItem>
-                    <FormLabel>Geographic Scope</FormLabel>
-                    <FormControl><Input placeholder="e.g. Netherlands, EU, Worldwide" {...field} /></FormControl>
-                     <FormDescription>Where will the system be used?</FormDescription>
-                    <FormMessage />
+                  <FormLabel>Geographic Scope</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl><SelectTrigger><SelectValue placeholder="Select a scope" /></SelectTrigger></FormControl>
+                    <SelectContent>
+                      <SelectItem value="EU">EU</SelectItem>
+                      <SelectItem value="EEA">EEA</SelectItem>
+                      <SelectItem value="Global">Global</SelectItem>
+                      <SelectItem value="US">US</SelectItem>
+                      <SelectItem value="India">India</SelectItem>
+                      <SelectItem value="other">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormDescription>Where will the system be used?</FormDescription>
+                  <FormMessage />
                 </FormItem>
-            )} />
+              )}
+            />
+
+            {geographicScopeValue === 'other' && (
+              <FormField control={form.control} name="geographicScopeOther" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Please specify other scope</FormLabel>
+                  <FormControl><Input placeholder="e.g. Canada" {...field} /></FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             
             <FormField control={form.control} name="legalRequirements" render={({ field }) => (
                 <FormItem>
@@ -341,5 +364,3 @@ export function BasicInfoForm() {
     </>
   );
 }
-
-    

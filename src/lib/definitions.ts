@@ -24,6 +24,7 @@ export const BasicInfoSchema = z.object({
   businessContext: z.string().optional(),
   intendedUsers: z.string().min(1, "Intended users are required."),
   geographicScope: z.string().min(1, "Geographic scope is required."),
+  geographicScopeOther: z.string().optional(),
   legalRequirements: z.string().optional(),
   dataCategories: z.array(z.string()).optional(),
   dataSources: z.union([z.string(), z.array(z.string())]).optional(),
@@ -37,6 +38,14 @@ export const BasicInfoSchema = z.object({
   aiActClassification: z.enum(["unacceptable", "high", "limited", "minimal"]).optional(),
   operationalEnvironment: z.string().optional(),
   performanceGoals: z.string().optional(),
+}).refine(data => {
+    if (data.geographicScope === 'other') {
+        return !!data.geographicScopeOther && data.geographicScopeOther.length > 0;
+    }
+    return true;
+}, {
+    message: "Please specify the geographic scope.",
+    path: ["geographicScopeOther"],
 });
 
 export const DesignSchema = z.object({
@@ -143,5 +152,3 @@ export const GenerateDocumentSchema = z.object({
   version: z.string().min(1, "Version is required"),
   format: z.enum(["pdf", "word"]),
 });
-
-    
