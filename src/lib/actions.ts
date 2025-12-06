@@ -4,14 +4,14 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
-import { ProjectSchema, BasicInfoSchema } from "./definitions";
+import { ProjectSchema, BasicInfoSchema, NewProjectSchema } from "./definitions";
 import { generateAiTechnicalFile } from "@/ai/ai-technical-file-generation";
 import { GenerateDocumentSchema } from "@/ai/schemas/ai-technical-file-generation";
 
 // This is a mock function. Replace with actual Firebase calls.
 async function createProjectInFirestore(
   projectData: z.infer<typeof ProjectSchema>,
-  basicInfoData: z.infer<typeof BasicInfoSchema>
+  basicInfoData: Partial<z.infer<typeof BasicInfoSchema>>
 ) {
   console.log("Creating project with data:", projectData);
   console.log("Adding basic info:", basicInfoData);
@@ -41,16 +41,8 @@ async function createProjectInFirestore(
 
 
 export async function createProject(formData: unknown) {
-  
-  const combinedSchema = ProjectSchema.extend({
-    intendedUsers: BasicInfoSchema.shape.intendedUsers,
-    geographicScope: BasicInfoSchema.shape.geographicScope,
-    dataCategories: BasicInfoSchema.shape.dataCategories,
-    dataSources: BasicInfoSchema.shape.dataSources,
-    legalRequirements: BasicInfoSchema.shape.legalRequirements,
-  });
 
-  const validatedFields = combinedSchema.safeParse(formData);
+  const validatedFields = NewProjectSchema.safeParse(formData);
 
   if (!validatedFields.success) {
     console.error(validatedFields.error.flatten().fieldErrors);

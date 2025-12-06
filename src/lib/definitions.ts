@@ -29,7 +29,7 @@ export const BasicInfoSchema = z.object({
   legalRequirements: z.array(z.string()).optional(),
   legalRequirementsOther: z.string().optional(),
   dataCategories: z.array(z.string()).optional(),
-  dataSources: z.union([z.string(), z.array(z.string())]).optional(),
+  dataSources: z.array(z.string()).optional(),
   externalDependencies: z.array(z.string()).optional(),
   dataSensitivity: z.enum(["public", "internal", "confidential", "highly-sensitive"]).optional(),
   dataSubjects: z.array(z.string()).optional(),
@@ -101,7 +101,7 @@ export const TrainingSchema = z.object({
     return true;
 }, {
     message: "Please fill out all fields for the training phase.",
-    path: ["datasetDescription"], // you can pick one field to show the error on
+    path: ["datasetDescription"], 
 });
 
 export const ValidationSchema = z.object({
@@ -173,6 +173,15 @@ export const RiskRegisterEntrySchema = z.object({
 });
 
 export type RiskRegisterEntry = z.infer<typeof RiskRegisterEntrySchema>;
+
+
+export const NewProjectSchema = ProjectSchema.merge(BasicInfoSchema.pick({
+    intendedUsers: true,
+    geographicScope: true,
+    dataCategories: true,
+    dataSources: true,
+    legalRequirements: true,
+}));
 
 export const GenerateDocumentSchema = z.object({
   projectId: z.string(),

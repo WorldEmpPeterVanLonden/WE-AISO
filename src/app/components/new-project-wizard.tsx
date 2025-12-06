@@ -39,19 +39,10 @@ import { createProject } from "@/lib/actions";
 import { toast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
-import { ProjectSchema, BasicInfoSchema } from "@/lib/definitions";
+import { ProjectSchema, BasicInfoSchema, NewProjectSchema } from "@/lib/definitions";
 
 
-const formSchema = ProjectSchema.merge(z.object({
-    intendedUsers: BasicInfoSchema.shape.intendedUsers,
-    geographicScope: BasicInfoSchema.shape.geographicScope,
-    dataCategories: BasicInfoSchema.shape.dataCategories,
-    dataSources: BasicInfoSchema.shape.dataSources,
-    legalRequirements: BasicInfoSchema.shape.legalRequirements,
-}));
-
-
-type FormData = z.infer<typeof formSchema>;
+type FormData = z.infer<typeof NewProjectSchema>;
 
 const dataCategoryItems = [
     { id: "personal", label: "Personal Data" },
@@ -75,7 +66,7 @@ export function NewProjectWizard() {
         ? ProjectSchema
         : step === 2
         ? BasicInfoSchema.pick({ intendedUsers: true, geographicScope: true, dataCategories: true, dataSources: true, legalRequirements: true})
-        : formSchema
+        : NewProjectSchema
     ),
     defaultValues: {
       name: "",
@@ -242,7 +233,7 @@ export function NewProjectWizard() {
                     <FormField control={form.control} name="intendedUsers" render={({ field }) => (
                         <FormItem>
                             <FormLabel>Intended Users</FormLabel>
-                            <FormControl><Input placeholder="e.g. End users, internal employees" {...field} onChange={e => field.onChange(e.target.value.split(',').map(s => s.trim()))} /></FormControl>
+                            <FormControl><Input placeholder="e.g. End users, internal employees" {...field} onChange={e => field.onChange(e.target.value.split(',').map(s => s.trim()))} value={Array.isArray(field.value) ? field.value.join(", ") : ""} /></FormControl>
                             <FormMessage />
                         </FormItem>
                     )} />
@@ -256,14 +247,14 @@ export function NewProjectWizard() {
                     <FormField control={form.control} name="legalRequirements" render={({ field }) => (
                         <FormItem className="md:col-span-2">
                             <FormLabel>Relevant Legislation</FormLabel>
-                            <FormControl><Input placeholder="e.g. GDPR, AI Act, MDR" {...field} onChange={e => field.onChange(e.target.value.split(',').map(s => s.trim()))} /></FormControl>
+                            <FormControl><Input placeholder="e.g. GDPR, AI Act, MDR" {...field} onChange={e => field.onChange(e.target.value.split(',').map(s => s.trim()))} value={Array.isArray(field.value) ? field.value.join(", ") : ""} /></FormControl>
                             <FormMessage />
                         </FormItem>
                     )} />
                     <FormField control={form.control} name="dataSources" render={({ field }) => (
                         <FormItem className="md:col-span-2">
                             <FormLabel>Data Sources</FormLabel>
-                            <FormControl><Textarea placeholder="Where does the data come from? (comma-separated)" {...field} onChange={e => field.onChange(e.target.value.split(',').map(s => s.trim()))} /></FormControl>
+                            <FormControl><Textarea placeholder="Where does the data come from? (comma-separated)" {...field} onChange={e => field.onChange(e.target.value.split(',').map(s => s.trim()))} value={Array.isArray(field.value) ? field.value.join(", ") : ""} /></FormControl>
                              <FormMessage />
                         </FormItem>
                     )} />
@@ -325,10 +316,10 @@ export function NewProjectWizard() {
                     <div className="space-y-2">
                         <h3 className="font-semibold text-lg">Scope & Context</h3>
                          <div className="rounded-lg border bg-muted/30 p-4 grid grid-cols-2 gap-4 text-sm">
-                            <div><strong>Intended Users:</strong> {Array.isArray(formData.intendedUsers) ? formData.intendedUsers.join(', ') : formData.intendedUsers}</div>
+                            <div><strong>Intended Users:</strong> {Array.isArray(formData.intendedUsers) ? formData.intendedUsers.join(', ') : ""}</div>
                             <div><strong>Geographic Scope:</strong> {formData.geographicScope}</div>
-                            <div className="col-span-2"><strong>Legislation:</strong> {Array.isArray(formData.legalRequirements) ? formData.legalRequirements.join(', ') : formData.legalRequirements}</div>
-                            <div className="col-span-2"><strong>Data Sources:</strong> {Array.isArray(formData.dataSources) ? formData.dataSources.join(', ') : formData.dataSources}</div>
+                            <div className="col-span-2"><strong>Legislation:</strong> {Array.isArray(formData.legalRequirements) ? formData.legalRequirements.join(', ') : ""}</div>
+                            <div className="col-span-2"><strong>Data Sources:</strong> {Array.isArray(formData.dataSources) ? formData.dataSources.join(', ') : ""}</div>
                             <div className="col-span-2">
                                 <strong>Data Categories:</strong> {formData.dataCategories?.map(id => dataCategoryItems.find(item => item.id === id)?.label).join(', ') || "-"}
                             </div>
