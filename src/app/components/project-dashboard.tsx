@@ -10,6 +10,9 @@ import {
   ShieldCheck,
   FileText,
   ShieldAlert,
+  Bot,
+  Database,
+  HardDrive,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -129,16 +132,15 @@ const StatusBadge = ({ status }: { status: ProjectStatus }) => {
 };
 
 const RiskBadge = ({ risk }: { risk: RiskCategory }) => {
-    const variant: "secondary" | "default" | "destructive" =
-        risk === 'low'
-        ? 'secondary'
-        : risk === 'medium'
-        ? 'default'
-        : 'destructive';
+  const riskStyles = {
+    low: "bg-green-100 text-green-800 border-green-200",
+    medium: "bg-orange-100 text-orange-800 border-orange-200",
+    high: "bg-red-100 text-red-800 border-red-200",
+  };
     
-    const riskText = risk.charAt(0).toUpperCase() + risk.slice(1);
+  const riskText = risk.charAt(0).toUpperCase() + risk.slice(1);
     
-    return <Badge variant={variant} className="border">{riskText}</Badge>;
+  return <Badge className={`border ${riskStyles[risk]}`}>{riskText}</Badge>;
 };
 
 
