@@ -28,3 +28,10 @@ export const DesignSchema = z.object({
   dataArchitecture: z.string().min(1, "Data architecture is required."),
   explainabilityStrategy: z.string().min(1, "Explainability strategy is required."),
 });
+
+export const DevelopmentSchema = z.object({
+  toolchain: z.array(z.string()).optional(),
+  dependencies: z.string().optional(),
+  securityControls: z.string().min(1, "Security controls are required."),
+  testApproach: z.string().min(1, "Test approach is required."),
+});
