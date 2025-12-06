@@ -20,3 +20,11 @@ export const BasicInfoSchema = z.object({
   dataSources: z.array(z.string()).optional(),
   externalDependencies: z.array(z.string()).optional(),
 });
+
+export const DesignSchema = z.object({
+  functionalRequirements: z.string().min(1, "Functional requirements are required."),
+  nonFunctionalRequirements: z.string().min(1, "Non-functional requirements are required."),
+  designChoices: z.string().min(1, "Design choices are required."),
+  dataArchitecture: z.string().min(1, "Data architecture is required."),
+  explainabilityStrategy: z.string().min(1, "Explainability strategy is required."),
+});
