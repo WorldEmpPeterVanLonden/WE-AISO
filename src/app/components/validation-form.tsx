@@ -24,8 +24,14 @@ import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { generateValidationSuggestions } from "@/ai/flows/generate-validation-suggestions";
 
 type ValidationFormData = z.infer<typeof ValidationSchema>;
+
+// Mock data, replace with actual data fetching
+const mockProject = {
+  useCase: "A customer support chatbot for an e-commerce platform that handles order tracking, returns, and product questions."
+};
 
 const validationMethodItems = [
     { id: "human-evaluation", label: "Human evaluation" },
@@ -70,11 +76,27 @@ export function ValidationForm() {
 
   async function handleGenerateSuggestions() {
     setIsGenerating(true);
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    toast({
-      title: "Suggestions Generated",
-      description: "The AI has filled in some fields for you (mock).",
-    });
+    try {
+        const result = await generateValidationSuggestions({ useCase: mockProject.useCase });
+        
+        if (result.acceptanceCriteria) form.setValue("acceptanceCriteria", result.acceptanceCriteria, { shouldValidate: true });
+        if (result.robustnessTests) form.setValue("robustnessTests", result.robustnessTests, { shouldValidate: true });
+        if (result.edgeCaseTests) form.setValue("edgeCaseTests", result.edgeCaseTests, { shouldValidate: true });
+        if (result.validationResults) form.setValue("validationResults", result.validationResults, { shouldValidate: true });
+        
+        toast({
+            title: "Suggestions Generated",
+            description: "The AI has filled in the validation fields for you.",
+        });
+
+    } catch (error) {
+        console.error("Error generating validation suggestions:", error);
+        toast({
+            variant: "destructive",
+            title: "Generation Error",
+            description: "Could not generate AI suggestions for the validation phase.",
+        });
+    }
     setIsGenerating(false);
   }
 

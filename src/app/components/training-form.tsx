@@ -26,8 +26,14 @@ import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
+import { generateTrainingSuggestions } from "@/ai/flows/generate-training-suggestions";
 
 type TrainingFormData = z.infer<typeof TrainingSchema>;
+
+// Mock data, replace with actual data fetching
+const mockProject = {
+  useCase: "A customer support chatbot for an e-commerce platform that handles order tracking, returns, and product questions."
+};
 
 const qualityCheckItems = [
     { id: "manual-review", label: "Manual review" },
@@ -73,11 +79,31 @@ export function TrainingForm() {
 
   async function handleGenerateSuggestions() {
     setIsGenerating(true);
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    toast({
-      title: "Suggestions Generated",
-      description: "The AI has filled in some fields for you (mock).",
-    });
+    try {
+        const result = await generateTrainingSuggestions({ useCase: mockProject.useCase });
+        
+        if (result.datasetDescription) form.setValue("datasetDescription", result.datasetDescription, { shouldValidate: true });
+        if (result.datasetSources) form.setValue("datasetSources", result.datasetSources, { shouldValidate: true });
+        if (result.biasAssessment) form.setValue("biasAssessment", result.biasAssessment, { shouldValidate: true });
+        if (result.privacyAssessment) form.setValue("privacyAssessment", result.privacyAssessment, { shouldValidate: true });
+        if (result.trainingProcedure) form.setValue("trainingProcedure", result.trainingProcedure, { shouldValidate: true });
+
+        // You might want to suggest a training method or quality checks too
+        // For example: form.setValue("trainingMethod", "fine-tuning");
+        
+        toast({
+            title: "Suggestions Generated",
+            description: "The AI has filled in the training fields for you.",
+        });
+
+    } catch (error) {
+        console.error("Error generating training suggestions:", error);
+        toast({
+            variant: "destructive",
+            title: "Generation Error",
+            description: "Could not generate AI suggestions for the training phase.",
+        });
+    }
     setIsGenerating(false);
   }
 

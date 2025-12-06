@@ -24,8 +24,14 @@ import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { generateDevelopmentSuggestions } from "@/ai/flows/generate-development-suggestions";
 
 type DevelopmentFormData = z.infer<typeof DevelopmentSchema>;
+
+// Mock data, replace with actual data fetching
+const mockProject = {
+  useCase: "A customer support chatbot for an e-commerce platform that handles order tracking, returns, and product questions."
+};
 
 const toolchainItems = [
     { id: "firebase", label: "Firebase" },
@@ -70,11 +76,27 @@ export function DevelopmentForm() {
 
   async function handleGenerateSuggestions() {
     setIsGenerating(true);
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    toast({
-      title: "Suggestions Generated",
-      description: "The AI has filled in some fields for you (mock).",
-    });
+    try {
+        const result = await generateDevelopmentSuggestions({ useCase: mockProject.useCase });
+        
+        if (result.toolchain) form.setValue("toolchain", result.toolchain, { shouldValidate: true });
+        if (result.dependencies) form.setValue("dependencies", result.dependencies, { shouldValidate: true });
+        if (result.securityControls) form.setValue("securityControls", result.securityControls, { shouldValidate: true });
+        if (result.testApproach) form.setValue("testApproach", result.testApproach, { shouldValidate: true });
+        
+        toast({
+            title: "Suggestions Generated",
+            description: "The AI has filled in the development fields for you.",
+        });
+
+    } catch (error) {
+        console.error("Error generating development suggestions:", error);
+        toast({
+            variant: "destructive",
+            title: "Generation Error",
+            description: "Could not generate AI suggestions for the development phase.",
+        });
+    }
     setIsGenerating(false);
   }
 
