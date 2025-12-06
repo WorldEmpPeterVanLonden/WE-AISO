@@ -97,3 +97,24 @@ export const GovernanceSchema = z.object({
   changeManagement: z.string().min(1, "Change Management is required."),
   qualityControls: z.string().min(1, "Quality Controls are required."),
 });
+
+export const RiskRegisterEntrySchema = z.object({
+  title: z.string().min(1, "Title is required."),
+  description: z.string().optional(),
+  category: z.enum([
+    "privacy",
+    "security",
+    "bias",
+    "robustness",
+    "misuse",
+    "legal",
+    "accuracy",
+  ]),
+  likelihood: z.number().min(1).max(5),
+  impact: z.number().min(1).max(5),
+  mitigations: z.string().optional(),
+  isoControls: z.string().optional(),
+  status: z.enum(["open", "mitigated", "accepted"]),
+});
+
+export type RiskRegisterEntry = z.infer<typeof RiskRegisterEntrySchema>;
