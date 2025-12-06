@@ -206,7 +206,7 @@ export function BasicInfoForm() {
                   <FormMessage />
                 </FormItem>
               )}
-            />
+            )}
             
             <FormField control={form.control} name="legalRequirements" render={({ field }) => (
                 <FormItem>
