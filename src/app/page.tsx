@@ -1,13 +1,8 @@
 import { redirect } from 'next/navigation';
-import { getFirebase } from '@/firebase/server';
 
 export default async function Home() {
-  const { auth } = await getFirebase();
-  const user = auth.currentUser;
-
-  if (user) {
-    redirect('/dashboard');
-  } else {
-    redirect('/login');
-  }
+  // Always redirect to the dashboard.
+  // The dashboard is a client component that will handle
+  // redirecting to /login if the user is not authenticated.
+  redirect('/dashboard');
 }
