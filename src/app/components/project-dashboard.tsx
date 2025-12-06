@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import {
@@ -39,6 +40,12 @@ import { format } from "date-fns";
 import Link from "next/link";
 import { Progress } from "@/components/ui/progress";
 import { useRouter } from "next/navigation";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 // Mock Data
 const mockProjects = [
@@ -97,7 +104,24 @@ const StatusBadge = ({ status }: { status: ProjectStatus }) => {
   
   const statusText = status.charAt(0).toUpperCase() + status.slice(1);
 
-  return <Badge variant={variant}>{statusText}</Badge>;
+  const tooltipText = {
+    active: "In use, lifecycle actively managed.",
+    draft: "Not yet validated.",
+    archived: "Archived, no longer operational.",
+  }[status];
+
+  return (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger>
+          <Badge variant={variant}>{statusText}</Badge>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>{tooltipText}</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
 };
 
 const RiskBadge = ({ risk }: { risk: RiskCategory }) => {
