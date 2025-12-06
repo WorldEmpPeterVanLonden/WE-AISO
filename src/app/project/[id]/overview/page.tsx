@@ -88,7 +88,7 @@ export default function OverviewPage() {
                              <span className="text-sm font-medium">Use Case: {mockProjectDetails.useCase}</span>
                         </div>
                     </div>
-                    <CardDescription className="mt-4">{mockProjectDetails.description}</CardDescription>
+                    <CardDescription className="mt-4 leading-relaxed">{mockProjectDetails.description}</CardDescription>
                 </div>
             </div>
         </CardHeader>
