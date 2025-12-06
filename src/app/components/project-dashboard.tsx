@@ -44,6 +44,7 @@ const mockProjects = [
   {
     id: "proj_1",
     name: "Customer Support Chatbot",
+    customerName: "Global Tech Inc.",
     status: "active",
     updatedAt: new Date(),
     version: "1.2.0",
@@ -53,6 +54,7 @@ const mockProjects = [
   {
     id: "proj_2",
     name: "Medical Diagnosis Tool",
+    customerName: "Healthcare Solutions",
     status: "draft",
     updatedAt: new Date(new Date().setDate(new Date().getDate() - 5)),
     version: "0.5.0",
@@ -62,6 +64,7 @@ const mockProjects = [
   {
     id: "proj_3",
     name: "Financial Fraud Detection",
+    customerName: "SecureBank",
     status: "archived",
     updatedAt: new Date(new Date().setMonth(new Date().getMonth() - 2)),
     version: "2.0.0",
@@ -71,6 +74,7 @@ const mockProjects = [
   {
     id: "proj_4",
     name: "Content Recommendation Engine",
+    customerName: "MediaStream Co.",
     status: "active",
     updatedAt: new Date(new Date().setDate(new Date().getDate() - 1)),
     version: "3.1.0",
@@ -140,6 +144,7 @@ export function ProjectDashboard() {
               <TableHeader>
                 <TableRow>
                   <TableHead>Project Name</TableHead>
+                  <TableHead>Customer</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Risk Level</TableHead>
                   <TableHead>Version</TableHead>
@@ -156,6 +161,7 @@ export function ProjectDashboard() {
                     <TableCell className="font-medium">
                        <Link href={`/project/${project.id}/overview`} className="hover:underline">{project.name}</Link>
                     </TableCell>
+                    <TableCell>{project.customerName}</TableCell>
                     <TableCell>
                       <StatusBadge status={project.status as ProjectStatus} />
                     </TableCell>
