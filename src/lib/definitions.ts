@@ -27,7 +27,7 @@ export const BasicInfoSchema = z.object({
   legalRequirements: z.string().optional(),
   dataCategories: z.array(z.string()).optional(),
   dataSources: z.union([z.string(), z.array(z.string())]).optional(),
-  externalDependencies: z.array(z.string()).optional(),
+  externalDependencies: z.union([z.string(), z.array(z.string())]).optional(),
   dataSensitivity: z.enum(["low", "medium", "high", "confidential"]).optional(),
   dataSubjects: z.string().optional(),
   scopeComponents: z.string().optional(),
@@ -143,3 +143,5 @@ export const GenerateDocumentSchema = z.object({
   version: z.string().min(1, "Version is required"),
   format: z.enum(["pdf", "word"]),
 });
+
+    
