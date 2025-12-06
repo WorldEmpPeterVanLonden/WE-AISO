@@ -4,13 +4,15 @@ import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
-import { FileDown, Clock, CheckCircle2, ShieldCheck, GitMerge } from "lucide-react";
+import { FileDown, Clock, CheckCircle2, ShieldCheck, GitMerge, Calendar, Edit } from "lucide-react";
 import { format, subDays } from "date-fns";
 
 const mockProjectDetails = {
     name: "Customer Support Chatbot",
     description: "An AI-powered chatbot to assist users with common queries and escalate complex issues to human agents.",
     status: "active",
+    startDate: subDays(new Date(), 90),
+    lastChange: subDays(new Date(), 2),
     lastReview: subDays(new Date(), 15),
     lifecycleCompletion: 45, // percentage
     riskCategory: "medium"
@@ -62,7 +64,7 @@ export default function OverviewPage() {
         </div>
       </CardHeader>
       <CardContent className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
             <div className="flex flex-col justify-center gap-3 p-4 bg-muted/50 rounded-lg">
                 <div className="flex items-center gap-3">
                     <ShieldCheck className="h-6 w-6 text-primary" />
@@ -72,12 +74,21 @@ export default function OverviewPage() {
                     </div>
                 </div>
             </div>
-            <div className="flex flex-col justify-center gap-3 p-4 bg-muted/50 rounded-lg">
+             <div className="flex flex-col justify-center gap-3 p-4 bg-muted/50 rounded-lg">
                 <div className="flex items-center gap-3">
-                    <Clock className="h-6 w-6 text-primary" />
+                    <Calendar className="h-6 w-6 text-primary" />
                     <div>
-                        <span className="text-muted-foreground">Last Review</span>
-                        <div className="font-semibold">{format(mockProjectDetails.lastReview, "dd.MM.yy")}</div>
+                        <span className="text-muted-foreground">Start Date</span>
+                        <div className="font-semibold">{format(mockProjectDetails.startDate, "dd.MM.yy")}</div>
+                    </div>
+                </div>
+            </div>
+             <div className="flex flex-col justify-center gap-3 p-4 bg-muted/50 rounded-lg">
+                <div className="flex items-center gap-3">
+                    <Edit className="h-6 w-6 text-primary" />
+                    <div>
+                        <span className="text-muted-foreground">Last Change</span>
+                        <div className="font-semibold">{format(mockProjectDetails.lastChange, "dd.MM.yy")}</div>
                     </div>
                 </div>
             </div>
