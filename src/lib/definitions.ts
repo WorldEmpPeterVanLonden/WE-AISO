@@ -18,7 +18,7 @@ export const ProjectSchema = z.object({
   systemType: z.enum(["LLM", "ML", "Hybrid", "RuleBased"]),
   riskCategory: z.enum(["high", "medium", "low"]),
   auditReadiness: AuditReadinessSchema.optional(),
-  owner: z.string().min(1, "Owner is required."),
+  owner: z.string().optional(), // Make owner optional for multi-step validation
 });
 
 export const BasicInfoObjectSchema = z.object({
@@ -184,7 +184,9 @@ export const NewProjectSchema = ProjectSchema.merge(BasicInfoObjectSchema.pick({
     dataCategories: true,
     dataSources: true,
     legalRequirements: true,
-}));
+})).extend({
+    owner: z.string().min(1, "Owner is required."),
+});
 
 export const GenerateDocumentSchema = z.object({
   projectId: z.string(),

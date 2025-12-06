@@ -39,10 +39,25 @@ import { createProject } from "@/lib/actions";
 import { toast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
-import { ProjectSchema, NewProjectSchema, BasicInfoObjectSchema } from "@/lib/definitions";
+import { ProjectSchema as Step1Schema, NewProjectSchema, BasicInfoObjectSchema } from "@/lib/definitions";
 import { useUser } from "@/firebase";
 
-type FormData = z.infer<typeof NewProjectSchema>;
+const FormSchema = z.object({
+    name: z.string().min(1, "Project name is required."),
+    version: z.string().min(1, "Version is required."),
+    customerId: z.string().optional(),
+    description: z.string().optional(),
+    useCase: z.string().min(1, "Use-case is required."),
+    systemType: z.enum(["LLM", "ML", "Hybrid", "RuleBased"]),
+    riskCategory: z.enum(["high", "medium", "low"]),
+    intendedUsers: z.array(z.string()).optional(),
+    geographicScope: z.string().min(1, "Geographic scope is required."),
+    dataCategories: z.array(z.string()).optional(),
+    dataSources: z.array(z.string()).optional(),
+    legalRequirements: z.array(z.string()).optional(),
+});
+
+type FormData = z.infer<typeof FormSchema>;
 
 const dataCategoryItems = [
     { id: "personal", label: "Personal Data" },
@@ -64,10 +79,10 @@ export function NewProjectWizard() {
   const form = useForm<FormData>({
     resolver: zodResolver(
       step === 1
-        ? ProjectSchema
+        ? Step1Schema.pick({ name: true, version: true, customerId: true, description: true, useCase: true, systemType: true, riskCategory: true })
         : step === 2
         ? BasicInfoObjectSchema.pick({ intendedUsers: true, geographicScope: true, dataCategories: true, dataSources: true, legalRequirements: true})
-        : NewProjectSchema
+        : FormSchema
     ),
     defaultValues: {
       name: "",
@@ -89,7 +104,7 @@ export function NewProjectWizard() {
   const formData = useWatch({ control: form.control });
 
   const nextStep = async () => {
-    const fieldsToValidate = Object.keys(ProjectSchema.shape) as (keyof FormData)[];
+    const fieldsToValidate = Object.keys(Step1Schema.pick({ name: true, version: true, customerId: true, description: true, useCase: true, systemType: true, riskCategory: true }).shape) as (keyof FormData)[];
     const isValid = await form.trigger(fieldsToValidate);
     if (isValid) {
       setStep(2);
@@ -108,7 +123,7 @@ export function NewProjectWizard() {
     
     let isValid = true;
     if (step === 1 && targetStep > 1) {
-        const fields = Object.keys(ProjectSchema.shape) as (keyof FormData)[];
+        const fields = Object.keys(Step1Schema.pick({ name: true, version: true, customerId: true, description: true, useCase: true, systemType: true, riskCategory: true }).shape) as (keyof FormData)[];
         isValid = await form.trigger(fields);
     }
     
