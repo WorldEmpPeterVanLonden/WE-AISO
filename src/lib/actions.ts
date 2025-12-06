@@ -35,12 +35,13 @@ export async function createProject(formData: unknown) {
     };
     const projectRef = await addDoc(collection(firestore, "projects"), projectData);
     
-    // Add the owner to the basicInfoData as well to satisfy security rules on create.
+    // Add the owner to the basicInfoData to satisfy security rules on create.
     const basicInfoData = {
       intendedUsers, geographicScope, dataCategories, dataSources, legalRequirements,
-      owner: owner,
+      owner: owner, // Ensure owner is present for the security rule check
     };
     
+    // Use a specific doc ID for the singleton basic info document.
     await setDoc(doc(firestore, "projects", projectRef.id, "basicInfo", "details"), basicInfoData);
     
     console.log("Project created successfully with ID: ", projectRef.id);
@@ -51,7 +52,8 @@ export async function createProject(formData: unknown) {
   }
 
   revalidatePath("/dashboard");
-  redirect("/dashboard");
+  // Do not redirect here, let the client handle it upon success.
+  // redirect("/dashboard");
 }
 
 export async function generateDocumentAction(formData: unknown) {

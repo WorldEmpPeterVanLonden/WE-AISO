@@ -158,6 +158,7 @@ export function NewProjectWizard() {
         title: "Oh no! Something went wrong.",
         description: "Could not create the project. Please try again.",
       });
+    } finally {
       setIsSubmitting(false);
     }
   }

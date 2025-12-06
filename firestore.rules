@@ -1,3 +1,4 @@
+
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -14,25 +15,29 @@ service cloud.firestore {
       return get(/databases/$(database)/documents/projects/$(projectId)).data.owner == request.auth.uid;
     }
 
-    // Secure all paths by default
+    // By default, deny all reads and writes
     match /{document=**} {
       allow read, write: if false;
     }
     
-    // User profiles can be read by anyone but only written by the owner
+    // Allow users to read any profile, but only write to their own.
     match /users/{userId} {
       allow read: if isSignedIn();
-      allow write: if isOwner(userId);
+      allow create, update, delete: if isOwner(userId);
     }
     
-    // Projects can be read by anyone signed in, but only created, updated, or deleted by the owner.
+    // Rules for the 'projects' collection
     match /projects/{projectId} {
+      // Allow read if the user is signed in and is the owner of the project.
       allow read: if isSignedIn() && isProjectOwner(projectId);
+      
+      // Allow create if the user is signed in and the incoming document's owner is the user.
       allow create: if isSignedIn() && request.resource.data.owner == request.auth.uid;
+      
+      // Allow update and delete if the user is the project owner.
       allow update, delete: if isSignedIn() && isProjectOwner(projectId);
       
-      // Allow project owner to write to subcollections.
-      // This rule is for all subcollections EXCEPT basicInfo on create.
+      // Allow project owner to read/write to all subcollections by default
       match /{subcollection}/{docId} {
         allow read, write: if isSignedIn() && isProjectOwner(projectId);
       }
@@ -41,6 +46,7 @@ service cloud.firestore {
       // as long as the user is the owner of the parent project being created.
       match /basicInfo/{docId} {
          allow create: if isSignedIn() && request.resource.data.owner == request.auth.uid;
+         // Subsequent reads and writes still check parent ownership
          allow read, update, delete: if isSignedIn() && isProjectOwner(projectId);
       }
     }
