@@ -1,3 +1,4 @@
+
 "use client";
 
 import {
@@ -35,6 +36,7 @@ import {
 } from "@/components/ui/table";
 import { format } from "date-fns";
 import Link from "next/link";
+import { Progress } from "@/components/ui/progress";
 
 // Mock Data
 const mockProjects = [
@@ -44,6 +46,7 @@ const mockProjects = [
     status: "active",
     updatedAt: new Date(),
     version: "1.2.0",
+    complianceProgress: 75,
   },
   {
     id: "proj_2",
@@ -51,6 +54,7 @@ const mockProjects = [
     status: "draft",
     updatedAt: new Date(new Date().setDate(new Date().getDate() - 5)),
     version: "0.5.0",
+    complianceProgress: 20,
   },
   {
     id: "proj_3",
@@ -58,6 +62,7 @@ const mockProjects = [
     status: "archived",
     updatedAt: new Date(new Date().setMonth(new Date().getMonth() - 2)),
     version: "2.0.0",
+    complianceProgress: 100,
   },
   {
     id: "proj_4",
@@ -65,6 +70,7 @@ const mockProjects = [
     status: "active",
     updatedAt: new Date(new Date().setDate(new Date().getDate() - 1)),
     version: "3.1.0",
+    complianceProgress: 90,
   },
 ];
 
@@ -117,6 +123,7 @@ export function ProjectDashboard() {
                   <TableHead>Project Name</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Version</TableHead>
+                  <TableHead>Compliance Progress</TableHead>
                   <TableHead>Last Updated</TableHead>
                   <TableHead>
                     <span className="sr-only">Actions</span>
@@ -133,6 +140,12 @@ export function ProjectDashboard() {
                       <StatusBadge status={project.status as ProjectStatus} />
                     </TableCell>
                     <TableCell>{project.version}</TableCell>
+                    <TableCell>
+                        <div className="flex items-center gap-2">
+                            <Progress value={project.complianceProgress} className="w-24" />
+                            <span className="text-muted-foreground text-xs">{project.complianceProgress}%</span>
+                        </div>
+                    </TableCell>
                     <TableCell>
                       {format(project.updatedAt, "dd MMMM yyyy")}
                     </TableCell>
