@@ -1,0 +1,186 @@
+"use client";
+
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import type { z } from "zod";
+import { useRouter } from "next/navigation";
+import { Loader2, Sparkles, Save, ArrowRight } from "lucide-react";
+
+import { TrainingSchema } from "@/lib/definitions";
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { cn } from "@/lib/utils";
+
+type TrainingFormData = z.infer<typeof TrainingSchema>;
+
+export function TrainingForm() {
+  const [isSaving, setIsSaving] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const router = useRouter();
+  const { toast } = useToast();
+
+  const form = useForm<TrainingFormData>({
+    resolver: zodResolver(TrainingSchema),
+    defaultValues: {
+      hasTrainingPhase: false,
+      datasetDescription: "",
+      datasetSources: "",
+      dataQualityChecks: "",
+      biasAssessment: "",
+      privacyAssessment: "",
+      trainingProcedure: "",
+    },
+  });
+
+  const hasTrainingPhase = form.watch("hasTrainingPhase");
+
+  async function onSubmit(data: TrainingFormData) {
+    setIsSaving(true);
+    console.log("Form data submitted:", data);
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    toast({
+      title: "Saved!",
+      description: "The training details have been successfully updated.",
+    });
+    setIsSaving(false);
+
+    const projectId = "123"; // TODO: Get project ID from params
+    router.push(`/project/${projectId}/validation`);
+  }
+
+  async function handleGenerateSuggestions() {
+    setIsGenerating(true);
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    toast({
+      title: "Suggestions Generated",
+      description: "The AI has filled in some fields for you (mock).",
+    });
+    setIsGenerating(false);
+  }
+
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)}>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <div className="flex flex-col">
+              <p className="text-sm font-medium text-muted-foreground">Lifecycle Progress</p>
+              <p className="text-sm font-semibold">3/7 Stages Completed</p>
+            </div>
+            <Button onClick={handleGenerateSuggestions} disabled={isGenerating || !hasTrainingPhase} variant="outline" size="sm">
+              {isGenerating ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Generating...
+                </>
+              ) : (
+                <>
+                  <Sparkles className="mr-2 h-4 w-4" />
+                  AI Assist
+                </>
+              )}
+            </Button>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <Progress value={(3 / 7) * 100} className="mb-6" />
+
+            <FormField
+              control={form.control}
+              name="hasTrainingPhase"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                  <div className="space-y-0.5">
+                    <FormLabel className="text-base">
+                      Does this project have a training or fine-tuning phase?
+                    </FormLabel>
+                  </div>
+                  <FormControl>
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+
+            <div className={cn("space-y-6", !hasTrainingPhase && "hidden")}>
+                <FormField control={form.control} name="datasetDescription" render={({ field }) => (
+                <FormItem>
+                    <FormLabel>Dataset Description</FormLabel>
+                    <FormControl><Textarea placeholder="Describe the dataset used for training, its scope, and limitations." {...field} rows={3} /></FormControl>
+                    <FormMessage />
+                </FormItem>
+                )} />
+
+                <FormField control={form.control} name="datasetSources" render={({ field }) => (
+                <FormItem>
+                    <FormLabel>Dataset Sources</FormLabel>
+                    <FormControl><Textarea placeholder="Where did the data come from? e.g., public benchmarks, internal data, third-party." {...field} rows={3} /></FormControl>
+                    <FormMessage />
+                </FormItem>
+                )} />
+
+                <FormField control={form.control} name="dataQualityChecks" render={({ field }) => (
+                <FormItem>
+                    <FormLabel>Data Quality Checks</FormLabel>
+                    <FormControl><Textarea placeholder="What procedures were used to ensure data quality? e.g., validation scripts, manual review." {...field} rows={3} /></FormControl>
+                    <FormMessage />
+                </FormItem>
+                )} />
+
+                <FormField control={form.control} name="biasAssessment" render={({ field }) => (
+                <FormItem>
+                    <FormLabel>Bias Assessment</FormLabel>
+                    <FormControl><Textarea placeholder="How was potential bias in the data or model assessed and mitigated?" {...field} rows={3} /></FormControl>
+                    <FormMessage />
+                </FormItem>
+                )} />
+                
+                <FormField control={form.control} name="privacyAssessment" render={({ field }) => (
+                <FormItem>
+                    <FormLabel>Privacy Assessment</FormLabel>
+                    <FormControl><Textarea placeholder="What steps were taken to protect privacy? e.g., anonymization, differential privacy." {...field} rows={3} /></FormControl>
+                    <FormMessage />
+                </FormItem>
+                )} />
+
+                <FormField control={form.control} name="trainingProcedure" render={({ field }) => (
+                <FormItem>
+                    <FormLabel>Training Procedure</FormLabel>
+                    <FormControl><Textarea placeholder="Describe the training process, including hyperparameters and environment." {...field} rows={3} /></FormControl>
+                    <FormMessage />
+                </FormItem>
+                )} />
+            </div>
+
+          </CardContent>
+          <CardFooter className="flex justify-end">
+            <Button type="submit" disabled={isSaving}>
+              {isSaving ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <Save className="mr-2 h-4 w-4" />
+              )}
+              Save & Next
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          </CardFooter>
+        </Card>
+      </form>
+    </Form>
+  );
+}

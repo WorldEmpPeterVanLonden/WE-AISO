@@ -35,3 +35,21 @@ export const DevelopmentSchema = z.object({
   securityControls: z.string().min(1, "Security controls are required."),
   testApproach: z.string().min(1, "Test approach is required."),
 });
+
+export const TrainingSchema = z.object({
+    hasTrainingPhase: z.boolean().default(false),
+    datasetDescription: z.string().optional(),
+    datasetSources: z.string().optional(),
+    dataQualityChecks: z.string().optional(),
+    biasAssessment: z.string().optional(),
+    privacyAssessment: z.string().optional(),
+    trainingProcedure: z.string().optional(),
+}).refine(data => {
+    if (data.hasTrainingPhase) {
+        return !!data.datasetDescription && !!data.datasetSources && !!data.dataQualityChecks && !!data.biasAssessment && !!data.privacyAssessment && !!data.trainingProcedure;
+    }
+    return true;
+}, {
+    message: "Please fill out all fields for the training phase.",
+    path: ["datasetDescription"], // you can pick one field to show the error on
+});
