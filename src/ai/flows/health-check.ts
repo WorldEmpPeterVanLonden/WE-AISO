@@ -7,11 +7,7 @@
 
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
-
-export const AiHealthOutputSchema = z.object({
-  status: z.enum(['ok']),
-});
-export type AiHealthOutput = z.infer<typeof AiHealthOutputSchema>;
+import { AiHealthOutputSchema, type AiHealthOutput } from '@/ai/schemas/health-check';
 
 export async function healthCheck(): Promise<AiHealthOutput> {
   return healthCheckFlow();
