@@ -1,4 +1,5 @@
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import { BasicInfoForm } from "@/app/components/basic-info-form";
 
 export default function BasicInfoPage() {
   return (
@@ -8,7 +9,7 @@ export default function BasicInfoPage() {
         <CardDescription>Details about the project's context and scope.</CardDescription>
       </CardHeader>
       <CardContent>
-        <p>This is the basic info page. Form to edit details will be here.</p>
+        <BasicInfoForm />
       </CardContent>
     </Card>
   );
