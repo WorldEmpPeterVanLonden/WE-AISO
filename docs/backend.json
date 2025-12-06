@@ -666,85 +666,85 @@
     ]
   },
   "firestore": {
-    "/users/{userId}": {
+    "/aiso_users/{userId}": {
       "schema": {
         "$ref": "#/entities/UserProfile"
       },
       "description": "Stores user profile information."
     },
-    "/projects/{projectId}": {
+    "/aiso_projects/{projectId}": {
       "schema": {
         "$ref": "#/entities/Project"
       },
       "description": "Stores root information for an AI project."
     },
-    "/projects/{projectId}/basicInfo/{docId}": {
+    "/aiso_projects/{projectId}/basicInfo/{docId}": {
       "schema": {
         "$ref": "#/entities/BasicInfo"
       },
       "description": "Stores basic info for a specific project."
     },
-    "/projects/{projectId}/lifecycle/{docId}": {
+    "/aiso_projects/{projectId}/lifecycle/{docId}": {
       "schema": {
         "$ref": "#/entities/Lifecycle"
       },
       "description": "Stores lifecycle overview for a specific project."
     },
-    "/projects/{projectId}/design/{docId}": {
+    "/aiso_projects/{projectId}/design/{docId}": {
       "schema": {
         "$ref": "#/entities/Design"
       },
       "description": "Stores design phase details for a specific project."
     },
-    "/projects/{projectId}/development/{docId}": {
+    "/aiso_projects/{projectId}/development/{docId}": {
       "schema": {
         "$ref": "#/entities/Development"
       },
       "description": "Stores development phase details for a specific project."
     },
-    "/projects/{projectId}/training/{docId}": {
+    "/aiso_projects/{projectId}/training/{docId}": {
       "schema": {
         "$ref": "#/entities/Training"
       },
       "description": "Stores training phase details for a specific project."
     },
-    "/projects/{projectId}/validation/{docId}": {
+    "/aiso_projects/{projectId}/validation/{docId}": {
       "schema": {
         "$ref": "#/entities/Validation"
       },
       "description": "Stores validation phase details for a specific project."
     },
-    "/projects/{projectId}/deployment/{docId}": {
+    "/aiso_projects/{projectId}/deployment/{docId}": {
       "schema": {
         "$ref": "#/entities/Deployment"
       },
       "description": "Stores deployment phase details for a specific project."
     },
-    "/projects/{projectId}/operation/{docId}": {
+    "/aiso_projects/{projectId}/operation/{docId}": {
       "schema": {
         "$ref": "#/entities/Operation"
       },
       "description": "Stores operation phase details for a specific project."
     },
-    "/projects/{projectId}/retirement/{docId}": {
+    "/aiso_projects/{projectId}/retirement/{docId}": {
       "schema": {
         "$ref": "#/entities/Retirement"
       },
       "description": "Stores retirement phase details for a specific project."
     },
-    "/projects/{projectId}/governance/{docId}": {
+    "/aiso_projects/{projectId}/governance/{docId}": {
       "schema": {
         "$ref": "#/entities/Governance"
       },
       "description": "Stores governance and controls for a specific project."
     },
-    "/projects/{projectId}/riskRegister/{riskId}": {
+    "/aiso_projects/{projectId}/riskRegister/{riskId}": {
       "schema": {
         "$ref": "#/entities/RiskRegisterEntry"
       },
       "description": "Subcollection for the risk register of a specific project."
     },
-    "/projects/{projectId}/documents/{documentId}": {
+    "/aiso_projects/{projectId}/documents/{documentId}": {
       "schema": {
         "$ref": "#/entities/Document"
       },

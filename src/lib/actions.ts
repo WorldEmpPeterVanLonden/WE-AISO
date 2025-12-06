@@ -33,7 +33,7 @@ export async function createProject(formData: unknown) {
       updatedAt: serverTimestamp(),
       status: 'draft',
     };
-    const projectRef = await addDoc(collection(firestore, "projects"), projectData);
+    const projectRef = await addDoc(collection(firestore, "aiso_projects"), projectData);
     
     // Add the owner to the basicInfoData to satisfy security rules on create.
     const basicInfoData = {
@@ -42,7 +42,7 @@ export async function createProject(formData: unknown) {
     };
     
     // Use a specific doc ID for the singleton basic info document.
-    await setDoc(doc(firestore, "projects", projectRef.id, "basicInfo", "details"), basicInfoData);
+    await setDoc(doc(firestore, "aiso_projects", projectRef.id, "basicInfo", "details"), basicInfoData);
     
     console.log("Project created successfully with ID: ", projectRef.id);
     
@@ -94,7 +94,7 @@ export async function generateDocumentAction(formData: unknown) {
     const storagePath = `/documents/${projectId}/${documentType}_${version}.pdf`;
     
     // 4. (Future) Create a record in Firestore
-    console.log(`Creating Firestore record at /projects/${projectId}/documents`);
+    console.log(`Creating Firestore record at /aiso_projects/${projectId}/documents`);
 
   } catch(error) {
     console.error("Error during document generation:", error);

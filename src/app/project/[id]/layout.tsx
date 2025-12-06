@@ -19,7 +19,7 @@ export default async function ProjectDetailLayout({
   //   redirect(`/login?redirect=/project/${params.id}`);
   // }
 
-  const projectRef = doc(firestore, "projects", params.id);
+  const projectRef = doc(firestore, "aiso_projects", params.id);
   const projectSnap = await getDoc(projectRef);
 
   if (!projectSnap.exists()) {
