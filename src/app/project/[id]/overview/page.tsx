@@ -140,11 +140,12 @@ export default function OverviewPage() {
                     Lifecycle Progress
                 </h3>
                 <div className="space-y-4">
-                    <div className="flex justify-between items-center">
-                        <p className="text-muted-foreground">Total completion ({completedStages} of {totalStages} phases)</p>
-                        <p className="font-bold text-primary">{completionPercentage}%</p>
+                     <div className="flex items-center gap-4">
+                        <Progress value={completionPercentage} className="flex-1" />
+                        <span className="font-bold text-primary text-sm">{completionPercentage}%</span>
                     </div>
-                    <Progress value={completionPercentage} />
+                    <p className="text-sm text-muted-foreground -mt-2">Total completion ({completedStages} of {totalStages} phases)</p>
+                    
                     <div className="grid grid-cols-4 lg:grid-cols-7 gap-x-4 gap-y-2 text-xs text-muted-foreground">
                         {lifecycleStages.map(stage => (
                             <div key={stage.name} className="flex items-center gap-1.5">
