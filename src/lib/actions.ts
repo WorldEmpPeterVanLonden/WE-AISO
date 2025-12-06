@@ -7,6 +7,8 @@ import { z } from "zod";
 import { NewProjectSchema } from "./definitions";
 import { generateAiTechnicalFile } from "@/ai/ai-technical-file-generation";
 import { GenerateDocumentSchema } from "@/ai/schemas/ai-technical-file-generation";
+import { getFirebase } from "@/firebase/server";
+import { collection, addDoc, serverTimestamp, doc, setDoc } from "firebase/firestore";
 
 export async function createProject(formData: unknown) {
 
@@ -17,25 +19,37 @@ export async function createProject(formData: unknown) {
     throw new Error("Invalid form data.");
   }
   
-  // Here you would typically use the Firebase Admin SDK to create documents
-  // For example:
-  // const { getFirestore } = require('firebase-admin/firestore');
-  // const db = getFirestore();
-  // const projectRef = await db.collection('projects').add({
-  //   ...projectData,
-  //   createdAt: new Date(),
-  //   updatedAt: new Date(),
-  //   owner: 'mock-user', // Replace with actual user
-  //   status: 'draft',
-  // });
-  //
-  // await db.collection('projects').doc(projectRef.id).collection('basicInfo').add({
-  //  ...basicInfoData
-  // });
-  console.log("Project created successfully (mock)");
+  const {
+    name, version, customerId, description, useCase, systemType, riskCategory, owner,
+    intendedUsers, geographicScope, dataCategories, dataSources, legalRequirements
+  } = validatedFields.data;
 
-  revalidatePath("/");
-  redirect("/");
+  const { firestore } = await getFirebase();
+  
+  try {
+    const projectData = {
+      name, version, customerId, description, useCase, systemType, riskCategory, owner,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+      status: 'draft',
+    };
+    const projectRef = await addDoc(collection(firestore, "projects"), projectData);
+    
+    const basicInfoData = {
+      intendedUsers, geographicScope, dataCategories, dataSources, legalRequirements
+    };
+    // Use the project ID to create a document in the basicInfo subcollection
+    await setDoc(doc(firestore, "projects", projectRef.id, "basicInfo", "details"), basicInfoData);
+    
+    console.log("Project created successfully with ID: ", projectRef.id);
+    
+  } catch (error) {
+    console.error("Error creating project:", error);
+    throw new Error("Could not create project in Firestore.");
+  }
+
+  revalidatePath("/dashboard");
+  redirect("/dashboard");
 }
 
 export async function generateDocumentAction(formData: unknown) {

@@ -18,9 +18,10 @@ export const ProjectSchema = z.object({
   systemType: z.enum(["LLM", "ML", "Hybrid", "RuleBased"]),
   riskCategory: z.enum(["high", "medium", "low"]),
   auditReadiness: AuditReadinessSchema.optional(),
+  owner: z.string().min(1, "Owner is required."),
 });
 
-const BasicInfoObjectSchema = z.object({
+export const BasicInfoObjectSchema = z.object({
   businessContext: z.string().optional(),
   intendedUsers: z.array(z.string()).optional(),
   geographicScope: z.string().min(1, "Geographic scope is required."),

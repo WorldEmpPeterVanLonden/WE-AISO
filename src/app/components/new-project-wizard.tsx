@@ -39,8 +39,8 @@ import { createProject } from "@/lib/actions";
 import { toast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
-import { ProjectSchema, BasicInfoSchema, NewProjectSchema } from "@/lib/definitions";
-
+import { ProjectSchema, NewProjectSchema, BasicInfoObjectSchema } from "@/lib/definitions";
+import { useUser } from "@/firebase";
 
 type FormData = z.infer<typeof NewProjectSchema>;
 
@@ -59,13 +59,14 @@ export function NewProjectWizard() {
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
+  const { user, loading: userLoading } = useUser();
 
   const form = useForm<FormData>({
     resolver: zodResolver(
       step === 1
         ? ProjectSchema
         : step === 2
-        ? BasicInfoSchema.pick({ intendedUsers: true, geographicScope: true, dataCategories: true, dataSources: true, legalRequirements: true})
+        ? BasicInfoObjectSchema.pick({ intendedUsers: true, geographicScope: true, dataCategories: true, dataSources: true, legalRequirements: true})
         : NewProjectSchema
     ),
     defaultValues: {
@@ -118,14 +119,23 @@ export function NewProjectWizard() {
 
 
   async function onSubmit(data: FormData) {
+    if (!user) {
+        toast({
+            variant: "destructive",
+            title: "Authentication Error",
+            description: "You must be logged in to create a project.",
+        });
+        return;
+    }
     setIsSubmitting(true);
     try {
-      await createProject(data);
+      const projectDataWithOwner = { ...data, owner: user.uid };
+      await createProject(projectDataWithOwner);
       toast({
         title: "Project created!",
         description: `${data.name} has been successfully created.`,
       });
-      // The action will handle the redirect
+      router.push('/dashboard');
     } catch (error) {
       console.error(error);
       toast({
@@ -139,6 +149,10 @@ export function NewProjectWizard() {
 
   const progress = (step / 3) * 100;
 
+  if (userLoading) {
+    return <div className="flex items-center justify-center p-8"><Loader2 className="h-8 w-8 animate-spin" /></div>;
+  }
+  
   return (
     <Card className="max-w-4xl mx-auto">
         <CardHeader>
@@ -342,7 +356,7 @@ export function NewProjectWizard() {
                 Next
               </Button>
             ) : (
-              <Button type="submit" disabled={isSubmitting}>
+              <Button type="submit" disabled={isSubmitting || userLoading}>
                 {isSubmitting ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />

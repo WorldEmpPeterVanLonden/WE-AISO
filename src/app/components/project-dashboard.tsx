@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import {
@@ -10,8 +11,7 @@ import {
   FileText,
   ShieldAlert,
   Bot,
-  Database,
-  HardDrive,
+  LogOut,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -48,8 +48,9 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-
-// Mock Data Removed
+import { useUser } from "@/firebase";
+import { signOut, type Auth } from "firebase/auth";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 type ProjectStatus = "draft" | "active" | "archived";
 type RiskCategory = "low" | "medium" | "high";
@@ -99,7 +100,33 @@ const RiskBadge = ({ risk }: { risk: RiskCategory }) => {
 
 export function ProjectDashboard() {
   const router = useRouter();
-  const mockProjects: any[] = []; // Empty array instead of mock data
+  const { user, auth, loading } = useUser();
+  const mockProjects: any[] = []; 
+
+  const handleSignOut = async () => {
+    if (auth) {
+      await signOut(auth as Auth);
+      router.push('/login');
+    }
+  };
+
+  const getInitials = (name?: string | null) => {
+    if (!name) return 'U';
+    return name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+  }
+
+  if (loading) {
+    return (
+        <div className="flex items-center justify-center min-h-screen">
+            <Loader2 className="h-16 w-16 animate-spin text-primary" />
+        </div>
+    )
+  }
+
+  if (!user) {
+    router.push('/login');
+    return null;
+  }
   
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -111,13 +138,34 @@ export function ProjectDashboard() {
               AISO Compliance Manager
             </h1>
           </div>
-          <div className="flex items-center gap-6">
-            <Button asChild>
+          <div className="flex items-center gap-4">
+             <Button asChild>
               <Link href="/project/new">
                 <PlusCircle className="mr-2 h-4 w-4" />
                 New AI Project
               </Link>
             </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                 <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+                    <Avatar className="h-10 w-10">
+                        <AvatarImage src={user.photoURL || ''} alt={user.displayName || 'User'} />
+                        <AvatarFallback>{getInitials(user.displayName)}</AvatarFallback>
+                    </Avatar>
+                 </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>
+                    <p className="font-medium">{user.displayName}</p>
+                    <p className="text-xs text-muted-foreground">{user.email}</p>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleSignOut}>
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Log out</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </header>
