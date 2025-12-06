@@ -78,7 +78,7 @@ export function GovernanceForm() {
         if(result.suggestedControls) {
             const currentRefs = form.getValues("policyReferences");
             const newRefs = result.suggestedControls.filter(control => !currentRefs.includes(control));
-            form.setValue("policyReferences", (currentRefs ? currentRefs + "\n" : "") + newRefs.join("\n"), { shouldValidate: true });
+            form.setValue("policyReferences", (currentRefs ? currentRefs + "\n" : "") + newRefs.join("\n"), { shouldValidate: true, shouldDirty: true });
         }
 
         toast({
@@ -232,3 +232,5 @@ export function GovernanceForm() {
     </Form>
   );
 }
+
+    

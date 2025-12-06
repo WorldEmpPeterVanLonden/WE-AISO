@@ -79,10 +79,10 @@ export function ValidationForm() {
     try {
         const result = await generateValidationSuggestions({ useCase: mockProject.useCase });
         
-        if (result.acceptanceCriteria) form.setValue("acceptanceCriteria", result.acceptanceCriteria, { shouldValidate: true });
-        if (result.robustnessTests) form.setValue("robustnessTests", result.robustnessTests, { shouldValidate: true });
-        if (result.edgeCaseTests) form.setValue("edgeCaseTests", result.edgeCaseTests, { shouldValidate: true });
-        if (result.validationResults) form.setValue("validationResults", result.validationResults, { shouldValidate: true });
+        if (result.acceptanceCriteria) form.setValue("acceptanceCriteria", result.acceptanceCriteria, { shouldValidate: true, shouldDirty: true });
+        if (result.robustnessTests) form.setValue("robustnessTests", result.robustnessTests, { shouldValidate: true, shouldDirty: true });
+        if (result.edgeCaseTests) form.setValue("edgeCaseTests", result.edgeCaseTests, { shouldValidate: true, shouldDirty: true });
+        if (result.validationResults) form.setValue("validationResults", result.validationResults, { shouldValidate: true, shouldDirty: true });
         
         toast({
             title: "Suggestions Generated",
@@ -242,3 +242,5 @@ export function ValidationForm() {
     </Form>
   );
 }
+
+    

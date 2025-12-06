@@ -82,11 +82,11 @@ export function TrainingForm() {
     try {
         const result = await generateTrainingSuggestions({ useCase: mockProject.useCase });
         
-        if (result.datasetDescription) form.setValue("datasetDescription", result.datasetDescription, { shouldValidate: true });
-        if (result.datasetSources) form.setValue("datasetSources", result.datasetSources, { shouldValidate: true });
-        if (result.biasAssessment) form.setValue("biasAssessment", result.biasAssessment, { shouldValidate: true });
-        if (result.privacyAssessment) form.setValue("privacyAssessment", result.privacyAssessment, { shouldValidate: true });
-        if (result.trainingProcedure) form.setValue("trainingProcedure", result.trainingProcedure, { shouldValidate: true });
+        if (result.datasetDescription) form.setValue("datasetDescription", result.datasetDescription, { shouldValidate: true, shouldDirty: true });
+        if (result.datasetSources) form.setValue("datasetSources", result.datasetSources, { shouldValidate: true, shouldDirty: true });
+        if (result.biasAssessment) form.setValue("biasAssessment", result.biasAssessment, { shouldValidate: true, shouldDirty: true });
+        if (result.privacyAssessment) form.setValue("privacyAssessment", result.privacyAssessment, { shouldValidate: true, shouldDirty: true });
+        if (result.trainingProcedure) form.setValue("trainingProcedure", result.trainingProcedure, { shouldValidate: true, shouldDirty: true });
 
         // You might want to suggest a training method or quality checks too
         // For example: form.setValue("trainingMethod", "fine-tuning");
@@ -278,3 +278,5 @@ export function TrainingForm() {
     </Form>
   );
 }
+
+    

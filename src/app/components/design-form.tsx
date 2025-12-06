@@ -83,11 +83,11 @@ export function DesignForm() {
     try {
         const result = await generateDesignSuggestions({ useCase: mockProject.useCase });
         
-        if (result.functionalRequirements) form.setValue("functionalRequirements", result.functionalRequirements, { shouldValidate: true });
-        if (result.nonFunctionalRequirements) form.setValue("nonFunctionalRequirements", result.nonFunctionalRequirements, { shouldValidate: true });
-        if (result.designChoices) form.setValue("designChoices", result.designChoices, { shouldValidate: true });
-        if (result.dataArchitecture) form.setValue("dataArchitecture", result.dataArchitecture, { shouldValidate: true });
-        if (result.explainabilityStrategy) form.setValue("explainabilityStrategy", result.explainabilityStrategy, { shouldValidate: true });
+        if (result.functionalRequirements) form.setValue("functionalRequirements", result.functionalRequirements, { shouldValidate: true, shouldDirty: true });
+        if (result.nonFunctionalRequirements) form.setValue("nonFunctionalRequirements", result.nonFunctionalRequirements, { shouldValidate: true, shouldDirty: true });
+        if (result.designChoices) form.setValue("designChoices", result.designChoices, { shouldValidate: true, shouldDirty: true });
+        if (result.dataArchitecture) form.setValue("dataArchitecture", result.dataArchitecture, { shouldValidate: true, shouldDirty: true });
+        if (result.explainabilityStrategy) form.setValue("explainabilityStrategy", result.explainabilityStrategy, { shouldValidate: true, shouldDirty: true });
         
         toast({
             title: "Suggestions Generated",
@@ -243,3 +243,5 @@ export function DesignForm() {
     </Form>
   );
 }
+
+    

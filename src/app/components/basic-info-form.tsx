@@ -2,7 +2,7 @@
 "use client";
 
 import { useState } from "react";
-import { useForm } from "react";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Loader2, Sparkles, Save, Info, CheckCircle } from "lucide-react";
@@ -321,7 +321,7 @@ export function BasicInfoForm() {
                         <FormField control={form.control} name="dataSources" render={({ field }) => (
                             <FormItem>
                                 <TooltipLabel label="Data Sources" tooltipText="Enter sources, separated by commas." />
-                                <FormControl><Textarea placeholder="Describe where the data comes from (e.g. internal databases, public APIs, user-provided)." {...field} />
+                                <FormControl><Textarea placeholder="Describe where the data comes from (e.g. internal databases, public APIs, user-provided)." {...field} onChange={e => field.onChange(e.target.value.split(',').map(s => s.trim()))} value={Array.isArray(field.value) ? field.value.join(', ') : field.value} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>

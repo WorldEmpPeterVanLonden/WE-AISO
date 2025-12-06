@@ -79,10 +79,10 @@ export function DevelopmentForm() {
     try {
         const result = await generateDevelopmentSuggestions({ useCase: mockProject.useCase });
         
-        if (result.toolchain) form.setValue("toolchain", result.toolchain, { shouldValidate: true });
-        if (result.dependencies) form.setValue("dependencies", result.dependencies, { shouldValidate: true });
-        if (result.securityControls) form.setValue("securityControls", result.securityControls, { shouldValidate: true });
-        if (result.testApproach) form.setValue("testApproach", result.testApproach, { shouldValidate: true });
+        if (result.toolchain) form.setValue("toolchain", result.toolchain, { shouldValidate: true, shouldDirty: true });
+        if (result.dependencies) form.setValue("dependencies", result.dependencies, { shouldValidate: true, shouldDirty: true });
+        if (result.securityControls) form.setValue("securityControls", result.securityControls, { shouldValidate: true, shouldDirty: true });
+        if (result.testApproach) form.setValue("testApproach", result.testApproach, { shouldValidate: true, shouldDirty: true });
         
         toast({
             title: "Suggestions Generated",
@@ -261,3 +261,5 @@ export function DevelopmentForm() {
     </Form>
   );
 }
+
+    

@@ -93,12 +93,12 @@ export function RiskDialog({ isOpen, setIsOpen, onAddRisk }: RiskDialogProps) {
             riskTitle: currentTitle,
         });
 
-        if (result.description) form.setValue("description", result.description, { shouldValidate: true });
-        if (result.category) form.setValue("category", result.category, { shouldValidate: true });
-        if (result.likelihood) form.setValue("likelihood", result.likelihood, { shouldValidate: true });
-        if (result.impact) form.setValue("impact", result.impact, { shouldValidate: true });
-        if (result.mitigations) form.setValue("mitigations", result.mitigations.join("\n"), { shouldValidate: true });
-        if (result.isoControls) form.setValue("isoControls", result.isoControls.join(", "), { shouldValidate: true });
+        if (result.description) form.setValue("description", result.description, { shouldValidate: true, shouldDirty: true });
+        if (result.category) form.setValue("category", result.category, { shouldValidate: true, shouldDirty: true });
+        if (result.likelihood) form.setValue("likelihood", result.likelihood, { shouldValidate: true, shouldDirty: true });
+        if (result.impact) form.setValue("impact", result.impact, { shouldValidate: true, shouldDirty: true });
+        if (result.mitigations) form.setValue("mitigations", result.mitigations.join("\n"), { shouldValidate: true, shouldDirty: true });
+        if (result.isoControls) form.setValue("isoControls", result.isoControls.join(", "), { shouldValidate: true, shouldDirty: true });
 
         toast({
             title: "AI Suggestion Complete",
@@ -302,3 +302,5 @@ export function RiskDialog({ isOpen, setIsOpen, onAddRisk }: RiskDialogProps) {
     </Dialog>
   );
 }
+
+    
