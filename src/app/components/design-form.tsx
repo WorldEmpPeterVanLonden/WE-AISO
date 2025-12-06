@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -21,13 +22,25 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 type DesignFormData = z.infer<typeof DesignSchema>;
+
+const explainabilityItems = [
+    { id: "model-card", label: "Model card" },
+    { id: "shap", label: "SHAP" },
+    { id: "lime", label: "LIME" },
+    { id: "feature-importance", label: "Feature importance analysis" },
+    { id: "human-in-the-loop", label: "Human-in-the-loop" },
+    { id: "not-applicable", label: "Not applicable" },
+];
 
 export function DesignForm() {
   const [isSaving, setIsSaving] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const router = useRouter();
+  const { toast } = useToast();
 
   // TODO: Fetch existing data for the project
   const form = useForm<DesignFormData>({
@@ -37,7 +50,9 @@ export function DesignForm() {
       nonFunctionalRequirements: "",
       designChoices: "",
       dataArchitecture: "",
-      explainabilityStrategy: "",
+      explainabilityStrategy: [],
+      systemType: "LLM",
+      initialRiskLevel: "medium",
     },
   });
 
@@ -93,6 +108,39 @@ export function DesignForm() {
           </CardHeader>
           <CardContent className="space-y-6">
             <Progress value={(1 / 7) * 100} className="mb-6" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <FormField control={form.control} name="systemType" render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>System Type</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
+                            <SelectContent>
+                                <SelectItem value="LLM">LLM</SelectItem>
+                                <SelectItem value="ML">ML Model</SelectItem>
+                                <SelectItem value="Hybrid">Hybrid</SelectItem>
+                                <SelectItem value="RuleBased">Rule-based</SelectItem>
+                                <SelectItem value="AgentBased">Agent-based system</SelectItem>
+                            </SelectContent>
+                        </Select>
+                        <FormMessage />
+                    </FormItem>
+                )} />
+                <FormField control={form.control} name="initialRiskLevel" render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Risk Level (initial)</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
+                            <SelectContent>
+                                <SelectItem value="low">Low</SelectItem>
+                                <SelectItem value="medium">Medium</SelectItem>
+                                <SelectItem value="high">High</SelectItem>
+                            </SelectContent>
+                        </Select>
+                        <FormMessage />
+                    </FormItem>
+                )} />
+            </div>
+
             <FormField control={form.control} name="functionalRequirements" render={({ field }) => (
               <FormItem>
                 <FormLabel>Functional Requirements</FormLabel>
@@ -121,12 +169,40 @@ export function DesignForm() {
                 <FormMessage />
               </FormItem>
             )} />
-            <FormField control={form.control} name="explainabilityStrategy" render={({ field }) => (
-              <FormItem>
-                <FormLabel>Explainability Strategy</FormLabel>
-                <FormControl><Textarea placeholder="e.g., Use LIME for local explanations; Provide users with confidence scores for answers." {...field} rows={3} /></FormControl>
-                <FormMessage />
-              </FormItem>
+             <FormField control={form.control} name="explainabilityStrategy" render={() => (
+                <FormItem>
+                     <div className="mb-4">
+                        <FormLabel>Explainability Strategy</FormLabel>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                        {explainabilityItems.map((item) => (
+                            <FormField
+                                key={item.id}
+                                control={form.control}
+                                name="explainabilityStrategy"
+                                render={({ field }) => {
+                                    return (
+                                        <FormItem key={item.id} className="flex flex-row items-start space-x-3 space-y-0">
+                                            <FormControl>
+                                                <Checkbox
+                                                    checked={field.value?.includes(item.id)}
+                                                    onCheckedChange={(checked) => {
+                                                        const currentValue = field.value || [];
+                                                        return checked
+                                                            ? field.onChange([...currentValue, item.id])
+                                                            : field.onChange(currentValue.filter((value) => value !== item.id));
+                                                    }}
+                                                />
+                                            </FormControl>
+                                            <FormLabel className="font-normal">{item.label}</FormLabel>
+                                        </FormItem>
+                                    );
+                                }}
+                            />
+                        ))}
+                    </div>
+                    <FormMessage />
+                </FormItem>
             )} />
           </CardContent>
           <CardFooter className="flex justify-end">
@@ -145,3 +221,5 @@ export function DesignForm() {
     </Form>
   );
 }
+
+    

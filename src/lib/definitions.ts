@@ -72,14 +72,16 @@ export const DesignSchema = z.object({
   nonFunctionalRequirements: z.string().min(1, "Non-functional requirements are required."),
   designChoices: z.string().min(1, "Design choices are required."),
   dataArchitecture: z.string().min(1, "Data architecture is required."),
-  explainabilityStrategy: z.string().min(1, "Explainability strategy is required."),
+  explainabilityStrategy: z.array(z.string()).min(1, "Explainability strategy is required."),
+  systemType: z.enum(["LLM", "ML", "Hybrid", "RuleBased", "AgentBased"]),
+  initialRiskLevel: z.enum(["low", "medium", "high"]),
 });
 
 export const DevelopmentSchema = z.object({
   toolchain: z.array(z.string()).optional(),
   dependencies: z.string().optional(),
   securityControls: z.string().min(1, "Security controls are required."),
-  testApproach: z.string().min(1,"Test approach is required."),
+  testApproach: z.string().min(1, "Test approach is required."),
 });
 
 export const TrainingSchema = z.object({
@@ -172,3 +174,4 @@ export const GenerateDocumentSchema = z.object({
   format: z.enum(["pdf", "word"]),
 });
 
+    
