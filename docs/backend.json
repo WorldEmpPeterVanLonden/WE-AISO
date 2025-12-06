@@ -66,6 +66,33 @@
             "active",
             "archived"
           ]
+        },
+        "auditReadiness": {
+          "type": "object",
+          "description": "Stores the calculated audit readiness scores.",
+          "properties": {
+            "lifecycleScore": {
+              "type": "number",
+              "description": "Score for lifecycle completion (0-1)."
+            },
+            "riskScore": {
+              "type": "number",
+              "description": "Score for risk register completeness (0-1)."
+            },
+            "governanceScore": {
+              "type": "number",
+              "description": "Score for governance & controls completeness (0-1)."
+            },
+            "total": {
+              "type": "number",
+              "description": "Total weighted audit readiness score (0-1)."
+            },
+            "lastCalculated": {
+              "type": "string",
+              "format": "date-time",
+              "description": "Timestamp of the last score calculation."
+            }
+          }
         }
       },
       "required": [
@@ -634,3 +661,5 @@
     }
   }
 }
+
+    

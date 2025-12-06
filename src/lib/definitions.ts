@@ -1,6 +1,14 @@
 
 import { z } from "zod";
 
+const AuditReadinessSchema = z.object({
+  lifecycleScore: z.number(),
+  riskScore: z.number(),
+  governanceScore: z.number(),
+  total: z.number(),
+  lastCalculated: z.date(),
+});
+
 export const ProjectSchema = z.object({
   name: z.string().min(1, "Project name is required."),
   version: z.string().min(1, "Version is required."),
@@ -9,6 +17,7 @@ export const ProjectSchema = z.object({
   useCase: z.string().min(1, "Use-case is required."),
   systemType: z.enum(["LLM", "ML", "Hybrid", "RuleBased"]),
   riskCategory: z.enum(["high", "medium", "low"]),
+  auditReadiness: AuditReadinessSchema.optional(),
 });
 
 
@@ -34,7 +43,7 @@ export const DevelopmentSchema = z.object({
   toolchain: z.array(z.string()).optional(),
   dependencies: z.string().optional(),
   securityControls: z.string().min(1, "Security controls are required."),
-  testApproach: z.string().min(1, "Test approach is required."),
+  testApproach: z.string().min(1_,"Test approach is required."),
 });
 
 export const TrainingSchema = z.object({
@@ -126,3 +135,5 @@ export const GenerateDocumentSchema = z.object({
   version: z.string().min(1, "Version is required"),
   format: z.enum(["pdf", "word"]),
 });
+
+    
