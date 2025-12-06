@@ -3,42 +3,36 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  Bot,
-  FileText,
+  BookCopy,
+  ChevronDown,
   GitMerge,
   Home,
   LifeBuoy,
-  ListTodo,
   Rocket,
   ShieldAlert,
   ShieldCheck,
-  Siren,
   SlidersHorizontal,
   Sunset,
   Terminal,
   Telescope,
   Users,
-  Wrench,
-  BookCopy,
-  ChevronDown
+  Bot,
 } from "lucide-react";
+import { useState } from "react";
 
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Button } from "@/components/ui/button";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { useState } from "react";
 
 const topNavItems = [
   { href: "/overview", icon: Home, label: "Overview" },
