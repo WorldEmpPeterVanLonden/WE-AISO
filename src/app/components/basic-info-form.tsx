@@ -2,10 +2,10 @@
 "use client";
 
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Loader2, Sparkles, Save, Info } from "lucide-react";
+import { Loader2, Sparkles, Save, Info, CheckCircle } from "lucide-react";
 
 import { BasicInfoSchema } from "@/lib/definitions";
 import { Button } from "@/components/ui/button";
@@ -135,6 +135,7 @@ export function BasicInfoForm() {
   const geographicScopeValue = form.watch("geographicScope");
   const legalRequirementsValue = form.watch("legalRequirements");
   const retentionPolicyValue = form.watch("retentionPolicy");
+  const { isDirty, isSubmitted } = form.formState;
 
   async function onSubmit(data: BasicInfoFormData) {
     setIsSaving(true);
@@ -145,6 +146,7 @@ export function BasicInfoForm() {
       title: "Saved!",
       description: "The basic information has been successfully updated.",
     });
+    form.reset(data); // Resets the form with the new values, clearing the dirty state
     setIsSaving(false);
   }
   
@@ -160,9 +162,10 @@ export function BasicInfoForm() {
             targetField: fieldName,
         });
 
-        if (result.businessContext) form.setValue("businessContext", result.businessContext, { shouldValidate: true });
-        if (result.stakeholders) form.setValue("stakeholders", result.stakeholders, { shouldValidate: true });
-        if (result.prohibitedUse) form.setValue("prohibitedUse", result.prohibitedUse, { shouldValidate: true });
+        if (result.businessContext) form.setValue("businessContext", result.businessContext, { shouldValidate: true, shouldDirty: true });
+        if (result.stakeholders) form.setValue("stakeholders", result.stakeholders, { shouldValidate: true, shouldDirty: true });
+        if (result.prohibitedUse) form.setValue("prohibitedUse", result.prohibitedUse, { shouldValidate: true, shouldDirty: true });
+        if (result.scopeComponents) form.setValue("scopeComponents", result.scopeComponents, { shouldValidate: true, shouldDirty: true });
         
         toast({
             title: "Suggestion Generated",
@@ -220,7 +223,7 @@ export function BasicInfoForm() {
   return (
     <>
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 pb-24">
         <Accordion type="multiple" defaultValue={['item-1']} className="w-full">
             <AccordionItem value="item-1">
                 <AccordionTrigger className="text-lg font-semibold">Core Information</AccordionTrigger>
@@ -585,18 +588,31 @@ export function BasicInfoForm() {
             </AccordionItem>
         </Accordion>
         
-        <div className="flex justify-end">
-            <Button type="submit" disabled={isSaving}>
-                {isSaving ? (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : (
-                    <Save className="mr-2 h-4 w-4" />
-                )}
-                Save Changes
-            </Button>
+        <div className="fixed bottom-0 left-0 sm:left-60 right-0 border-t bg-background/95 backdrop-blur-sm z-10">
+            <div className="container flex items-center justify-end h-16 max-w-6xl gap-4">
+                <div className="text-sm text-muted-foreground">
+                    {isSaving 
+                        ? "Saving..." 
+                        : isDirty 
+                        ? "You have unsaved changes." 
+                        : isSubmitted 
+                        ? "Saved!" 
+                        : ""}
+                </div>
+                <Button type="submit" disabled={isSaving || !isDirty}>
+                    {isSaving ? (
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    ) : (
+                        <Save className="mr-2 h-4 w-4" />
+                    )}
+                    Save Changes
+                </Button>
+            </div>
         </div>
       </form>
     </Form>
     </>
   );
 }
+
+    
