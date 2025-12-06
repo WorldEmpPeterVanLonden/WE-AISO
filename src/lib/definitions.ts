@@ -1,4 +1,3 @@
-
 import { z } from "zod";
 
 const AuditReadinessSchema = z.object({
@@ -29,6 +28,15 @@ export const BasicInfoSchema = z.object({
   dataCategories: z.array(z.string()).optional(),
   dataSources: z.union([z.string(), z.array(z.string())]).optional(),
   externalDependencies: z.array(z.string()).optional(),
+  dataSensitivity: z.enum(["low", "medium", "high", "confidential"]).optional(),
+  dataSubjects: z.string().optional(),
+  scopeComponents: z.string().optional(),
+  stakeholders: z.string().optional(),
+  prohibitedUse: z.string().optional(),
+  retentionPolicy: z.string().optional(),
+  aiActClassification: z.enum(["unacceptable", "high", "limited", "minimal"]).optional(),
+  operationalEnvironment: z.string().optional(),
+  performanceGoals: z.string().optional(),
 });
 
 export const DesignSchema = z.object({
@@ -135,5 +143,3 @@ export const GenerateDocumentSchema = z.object({
   version: z.string().min(1, "Version is required"),
   format: z.enum(["pdf", "word"]),
 });
-
-    

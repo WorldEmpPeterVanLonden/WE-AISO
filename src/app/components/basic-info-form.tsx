@@ -22,6 +22,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { generateBasicInfoSuggestions } from "@/ai/flows/generate-basic-info-suggestions";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 type BasicInfoFormData = z.infer<typeof BasicInfoSchema>;
 
@@ -44,6 +45,7 @@ const dataCategoryItems = [
 export function BasicInfoForm() {
   const [isSaving, setIsSaving] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
+  const { toast } = useToast();
 
   // TODO: Fetch existing data for the project
   const form = useForm<BasicInfoFormData>({
@@ -56,6 +58,13 @@ export function BasicInfoForm() {
       dataCategories: [],
       dataSources: [],
       externalDependencies: [],
+      stakeholders: "",
+      prohibitedUse: "",
+      retentionPolicy: "",
+      operationalEnvironment: "",
+      performanceGoals: "",
+      scopeComponents: "",
+      dataSubjects: "",
     },
   });
 
@@ -149,6 +158,24 @@ export function BasicInfoForm() {
                 </FormItem>
             )} />
             
+            <FormField control={form.control} name="dataSubjects" render={({ field }) => (
+                <FormItem>
+                    <FormLabel>Data Subjects</FormLabel>
+                    <FormControl><Input placeholder="e.g. Customers, employees, patients" {...field} /></FormControl>
+                    <FormDescription>Who is the data about?</FormDescription>
+                    <FormMessage />
+                </FormItem>
+            )} />
+
+             <FormField control={form.control} name="stakeholders" render={({ field }) => (
+                <FormItem className="md:col-span-2">
+                    <FormLabel>Stakeholders</FormLabel>
+                    <FormControl><Textarea placeholder="e.g. Product Owner, Legal department, Data Protection Officer" {...field} rows={2} /></FormControl>
+                    <FormDescription>List the key stakeholders involved.</FormDescription>
+                    <FormMessage />
+                </FormItem>
+            )} />
+
             <FormField control={form.control} name="geographicScope" render={({ field }) => (
                 <FormItem>
                     <FormLabel>Geographic Scope</FormLabel>
@@ -159,10 +186,43 @@ export function BasicInfoForm() {
             )} />
             
             <FormField control={form.control} name="legalRequirements" render={({ field }) => (
-                <FormItem className="md:col-span-2">
+                <FormItem>
                     <FormLabel>Relevant Legislation</FormLabel>
                     <FormControl><Input placeholder="e.g. GDPR, AI Act, MDR" {...field} /></FormControl>
                     <FormDescription>Which legal frameworks apply?</FormDescription>
+                    <FormMessage />
+                </FormItem>
+            )} />
+
+             <FormField control={form.control} name="aiActClassification" render={({ field }) => (
+              <FormItem>
+                <FormLabel>AI Act Classification</FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormControl><SelectTrigger><SelectValue placeholder="Select a classification" /></SelectTrigger></FormControl>
+                  <SelectContent>
+                    <SelectItem value="unacceptable">Unacceptable Risk</SelectItem>
+                    <SelectItem value="high">High Risk</SelectItem>
+                    <SelectItem value="limited">Limited Risk</SelectItem>
+                    <SelectItem value="minimal">Minimal Risk</SelectItem>
+                  </SelectContent>
+                </Select>
+                 <FormDescription>Classification according to the EU AI Act.</FormDescription>
+                <FormMessage />
+              </FormItem>
+            )} />
+
+            <FormField control={form.control} name="dataSensitivity" render={({ field }) => (
+                <FormItem>
+                    <FormLabel>Data Sensitivity Level</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl><SelectTrigger><SelectValue placeholder="Select a sensitivity level" /></SelectTrigger></FormControl>
+                    <SelectContent>
+                        <SelectItem value="low">Low</SelectItem>
+                        <SelectItem value="medium">Medium</SelectItem>
+                        <SelectItem value="high">High</SelectItem>
+                        <SelectItem value="confidential">Confidential</SelectItem>
+                    </SelectContent>
+                    </Select>
                     <FormMessage />
                 </FormItem>
             )} />
@@ -213,11 +273,54 @@ export function BasicInfoForm() {
                 </FormItem>
             )} />
 
+            <FormField control={form.control} name="retentionPolicy" render={({ field }) => (
+                <FormItem className="md:col-span-2">
+                    <FormLabel>Retention Policy</FormLabel>
+                    <FormControl><Textarea placeholder="e.g., Anonymized data is retained for 1 year for model improvement." {...field} /></FormControl>
+                    <FormDescription>Describe the data retention policy.</FormDescription>
+                    <FormMessage />
+                </FormItem>
+            )} />
+
+             <FormField control={form.control} name="scopeComponents" render={({ field }) => (
+                <FormItem className="md:col-span-2">
+                    <FormLabel>In-scope / Out-of-scope Components</FormLabel>
+                    <FormControl><Textarea placeholder="Clearly define what is and isn't part of the AI system." {...field} /></FormControl>
+                    <FormDescription>e.g., 'In-scope: the model API. Out-of-scope: the front-end application.'</FormDescription>
+                    <FormMessage />
+                </FormItem>
+            )} />
+
             <FormField control={form.control} name="externalDependencies" render={({ field }) => (
                 <FormItem className="md:col-span-2">
                     <FormLabel>External Dependencies</FormLabel>
-                    <FormControl><Textarea placeholder="e.g. External APIs (Google Maps), cloud services (Azure), open-source libraries." {...field} /></FormControl>
+                    <FormControl><Textarea placeholder="e.g., External APIs (Google Maps), cloud services (Azure), open-source libraries." {...field} /></FormControl>
                     <FormDescription>List of external systems or components, separated by commas.</FormDescription>
+                    <FormMessage />
+                </FormItem>
+            )} />
+
+             <FormField control={form.control} name="prohibitedUse" render={({ field }) => (
+                <FormItem className="md:col-span-2">
+                    <FormLabel>Prohibited Use</FormLabel>
+                    <FormControl><Textarea placeholder="e.g., The system must not be used for financial advice or medical diagnosis." {...field} /></FormControl>
+                    <FormDescription>Clearly state any prohibited uses of the AI system.</FormDescription>
+                    <FormMessage />
+                </FormItem>
+            )} />
+
+            <FormField control={form.control} name="operationalEnvironment" render={({ field }) => (
+                <FormItem>
+                    <FormLabel>High-level Operational Environment</FormLabel>
+                    <FormControl><Input placeholder="e.g., Cloud-based, on-premise, embedded device" {...field} /></FormControl>
+                    <FormMessage />
+                </FormItem>
+            )} />
+            
+            <FormField control={form.control} name="performanceGoals" render={({ field }) => (
+                <FormItem>
+                    <FormLabel>High-level Performance Goals</FormLabel>
+                    <FormControl><Input placeholder="e.g., Reduce ticket response time by 50%" {...field} /></FormControl>
                     <FormMessage />
                 </FormItem>
             )} />

@@ -143,6 +143,44 @@
             "type": "string"
           },
           "description": "External dependencies of the project."
+        },
+        "dataSensitivity": {
+          "type": "string",
+          "enum": ["low", "medium", "high", "confidential"],
+          "description": "The sensitivity level of the data."
+        },
+        "dataSubjects": {
+            "type": "string",
+            "description": "The subjects of the data (e.g., customers, employees)."
+        },
+        "scopeComponents": {
+            "type": "string",
+            "description": "In-scope and out-of-scope components."
+        },
+        "stakeholders": {
+            "type": "string",
+            "description": "Key stakeholders involved in the project."
+        },
+        "prohibitedUse": {
+            "type": "string",
+            "description": "Prohibited uses of the AI system."
+        },
+        "retentionPolicy": {
+            "type": "string",
+            "description": "The data retention policy."
+        },
+        "aiActClassification": {
+            "type": "string",
+            "enum": ["unacceptable", "high", "limited", "minimal"],
+            "description": "Classification according to the AI Act."
+        },
+        "operationalEnvironment": {
+            "type": "string",
+            "description": "The high-level operational environment."
+        },
+        "performanceGoals": {
+            "type": "string",
+            "description": "High-level performance requirements and goals."
         }
       }
     },
@@ -661,5 +699,3 @@
     }
   }
 }
-
-    
