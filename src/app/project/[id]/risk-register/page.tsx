@@ -115,84 +115,73 @@ export default function RiskRegisterPage() {
     setRisks(prev => [riskToAdd, ...prev]);
   };
 
--  return (
--    <Card>
--      <CardHeader>
--        <CardTitle>Risk Register</CardTitle>
--        <CardDescription>Manage the project's risk register.</CardDescription>
--      </CardHeader>
--      <CardContent>
--        <p>This is the risk register page. Content to be added.</p>
--      </CardContent>
--    </Card>
--  );
-+  return (
-+    <>
-+      <RiskDialog
-+        isOpen={isDialogOpen}
-+        setIsOpen={setIsDialogOpen}
-+        onAddRisk={handleAddRisk}
-+      />
-+      <Card>
-+        <CardHeader className="flex flex-row items-center justify-between">
-+          <div>
-+            <CardTitle>Risk Register (ISO 42001 §5)</CardTitle>
-+            <CardDescription>
-+              Identify, analyze, and evaluate risks associated with the AI system.
-+            </CardDescription>
-+          </div>
-+          <Button onClick={() => setIsDialogOpen(true)}>
-+            <PlusCircle className="mr-2 h-4 w-4" />
-+            New Risk
-+          </Button>
-+        </CardHeader>
-+        <CardContent>
-+          <Table>
-+            <TableHeader>
-+              <TableRow>
-+                <TableHead>Risk</TableHead>
-+                <TableHead>Category</TableHead>
-+                <TableHead className="text-center">Impact</TableHead>
-+                <TableHead className="text-center">Likelihood</TableHead>
-+                <TableHead>Risk Level</TableHead>
-+                <TableHead>Status</TableHead>
-+                <TableHead>
-+                  <span className="sr-only">Actions</span>
-+                </TableHead>
-+              </TableRow>
-+            </TableHeader>
-+            <TableBody>
-+              {risks.map((risk) => (
-+                <TableRow key={risk.id}>
-+                  <TableCell className="font-medium">{risk.title}</TableCell>
-+                  <TableCell className="capitalize">{risk.category}</TableCell>
-+                  <TableCell className="text-center">{risk.impact}</TableCell>
-+                  <TableCell className="text-center">{risk.likelihood}</TableCell>
-+                  <TableCell>
-+                    <RiskLevelBadge level={risk.impact * risk.likelihood} />
-+                  </TableCell>
-+                  <TableCell>
-+                    <StatusBadge status={risk.status as "open" | "mitigated" | "accepted"} />
-+                  </TableCell>
-+                  <TableCell>
-+                    <DropdownMenu>
-+                      <DropdownMenuTrigger asChild>
-+                        <Button variant="ghost" size="icon">
-+                          <MoreHorizontal className="h-4 w-4" />
-+                        </Button>
-+                      </DropdownMenuTrigger>
-+                      <DropdownMenuContent>
-+                        <DropdownMenuItem>Edit</DropdownMenuItem>
-+                        <DropdownMenuItem>Delete</DropdownMenuItem>
-+                      </DropdownMenuContent>
-+                    </DropdownMenu>
-+                  </TableCell>
-+                </TableRow>
-+              ))}
-+            </TableBody>
-+          </Table>
-+        </CardContent>
-+      </Card>
-+    </>
-+  );
- }
+  return (
+    <>
+      <RiskDialog
+        isOpen={isDialogOpen}
+        setIsOpen={setIsDialogOpen}
+        onAddRisk={handleAddRisk}
+      />
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <div>
+            <CardTitle>Risk Register (ISO 42001 §5)</CardTitle>
+            <CardDescription>
+              Identify, analyze, and evaluate risks associated with the AI system.
+            </CardDescription>
+          </div>
+          <Button onClick={() => setIsDialogOpen(true)}>
+            <PlusCircle className="mr-2 h-4 w-4" />
+            New Risk
+          </Button>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Risk</TableHead>
+                <TableHead>Category</TableHead>
+                <TableHead className="text-center">Impact</TableHead>
+                <TableHead className="text-center">Likelihood</TableHead>
+                <TableHead>Risk Level</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>
+                  <span className="sr-only">Actions</span>
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {risks.map((risk) => (
+                <TableRow key={risk.id}>
+                  <TableCell className="font-medium">{risk.title}</TableCell>
+                  <TableCell className="capitalize">{risk.category}</TableCell>
+                  <TableCell className="text-center">{risk.impact}</TableCell>
+                  <TableCell className="text-center">{risk.likelihood}</TableCell>
+                  <TableCell>
+                    <RiskLevelBadge level={risk.impact * risk.likelihood} />
+                  </TableCell>
+                  <TableCell>
+                    <StatusBadge status={risk.status as "open" | "mitigated" | "accepted"} />
+                  </TableCell>
+                  <TableCell>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon">
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent>
+                        <DropdownMenuItem>Edit</DropdownMenuItem>
+                        <DropdownMenuItem>Delete</DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+    </>
+  );
+}
