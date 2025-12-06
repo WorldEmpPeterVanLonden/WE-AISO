@@ -12,3 +12,4 @@ import '@/ai/ai-technical-file-generation';
 import '@/ai/flows/generate-development-suggestions';
 import '@/ai/flows/generate-training-suggestions';
 import '@/ai/flows/generate-validation-suggestions';
+import '@/ai/flows/health-check';
