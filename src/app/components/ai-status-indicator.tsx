@@ -14,7 +14,7 @@ export function AiStatusIndicator() {
       case 'connected':
         return {
           color: 'bg-blue-500',
-          text: 'AI Ready',
+          text: 'AI Connected',
           tooltip: 'Connection to the AI service is active.',
           icon: <Bot className="h-4 w-4 text-blue-500" />
         };
@@ -46,7 +46,7 @@ export function AiStatusIndicator() {
             <span
               className={cn(
                 'h-3 w-3 rounded-full',
-                status !== 'checking' && 'animate-pulse',
+                status === 'connected' && 'animate-pulse',
                 color
               )}
             />
