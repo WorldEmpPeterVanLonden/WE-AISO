@@ -10,6 +10,9 @@ import {
   ShieldCheck,
   FileText,
   ShieldAlert,
+  Database,
+  Bot,
+  HardDrive
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -58,6 +61,9 @@ const mockProjects = [
     version: "1.2.0",
     complianceProgress: 75,
     riskCategory: "medium",
+    usesAi: true,
+    usesFirestore: true,
+    usesStorage: false,
   },
   {
     id: "proj_2",
@@ -68,6 +74,9 @@ const mockProjects = [
     version: "0.5.0",
     complianceProgress: 20,
     riskCategory: "high",
+    usesAi: true,
+    usesFirestore: true,
+    usesStorage: true,
   },
   {
     id: "proj_3",
@@ -78,6 +87,9 @@ const mockProjects = [
     version: "2.0.0",
     complianceProgress: 100,
     riskCategory: "high",
+    usesAi: true,
+    usesFirestore: false,
+    usesStorage: false,
   },
   {
     id: "proj_4",
@@ -88,6 +100,9 @@ const mockProjects = [
     version: "3.1.0",
     complianceProgress: 90,
     riskCategory: "low",
+    usesAi: true,
+    usesFirestore: true,
+    usesStorage: true,
   },
 ];
 
@@ -137,6 +152,24 @@ const RiskBadge = ({ risk }: { risk: RiskCategory }) => {
     return <Badge variant={variant} className="border">{riskText}</Badge>;
 };
 
+const ServiceIndicator = ({ active, tooltip, children }: { active: boolean; tooltip: string; children: React.ReactNode }) => {
+    if (!active) return null;
+
+    return (
+        <TooltipProvider>
+            <Tooltip>
+                <TooltipTrigger asChild>
+                    <span className="text-muted-foreground">{children}</span>
+                </TooltipTrigger>
+                <TooltipContent>
+                    <p>{tooltip}</p>
+                </TooltipContent>
+            </Tooltip>
+        </TooltipProvider>
+    );
+};
+
+
 export function ProjectDashboard() {
   const router = useRouter();
   
@@ -174,9 +207,8 @@ export function ProjectDashboard() {
                   <TableHead>Customer</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Risk Level</TableHead>
-                  <TableHead>Version</TableHead>
                   <TableHead>Compliance Progress</TableHead>
-                  <TableHead>Last Updated</TableHead>
+                  <TableHead>Services</TableHead>
                   <TableHead>
                     <span className="sr-only">Actions</span>
                   </TableHead>
@@ -199,7 +231,6 @@ export function ProjectDashboard() {
                     <TableCell>
                         <RiskBadge risk={project.riskCategory as RiskCategory} />
                     </TableCell>
-                    <TableCell>{project.version}</TableCell>
                     <TableCell>
                         <div className="flex items-center gap-2">
                             <Progress value={project.complianceProgress} className="w-24" />
@@ -207,7 +238,17 @@ export function ProjectDashboard() {
                         </div>
                     </TableCell>
                     <TableCell>
-                      {format(project.updatedAt, "dd MMMM yyyy")}
+                        <div className="flex items-center gap-3">
+                             <ServiceIndicator active={project.usesAi} tooltip="Uses AI/Genkit">
+                                <Bot className="h-4 w-4" />
+                            </ServiceIndicator>
+                             <ServiceIndicator active={project.usesFirestore} tooltip="Uses Firestore">
+                                <Database className="h-4 w-4" />
+                            </ServiceIndicator>
+                             <ServiceIndicator active={project.usesStorage} tooltip="Uses Cloud Storage">
+                                <HardDrive className="h-4 w-4" />
+                            </ServiceIndicator>
+                        </div>
                     </TableCell>
                     <TableCell onClick={(e) => e.stopPropagation()}>
                       <DropdownMenu>
@@ -257,3 +298,4 @@ export function ProjectDashboard() {
     </div>
   );
 }
+
