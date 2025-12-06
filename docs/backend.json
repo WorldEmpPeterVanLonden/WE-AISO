@@ -224,6 +224,10 @@
         "performanceGoals": {
           "type": "string",
           "description": "High-level performance requirements and goals."
+        },
+        "owner": {
+          "type": "string",
+          "description": "The owner of the project, inherited from the parent project for validation purposes."
         }
       }
     },

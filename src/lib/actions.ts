@@ -35,10 +35,12 @@ export async function createProject(formData: unknown) {
     };
     const projectRef = await addDoc(collection(firestore, "projects"), projectData);
     
+    // Add the owner to the basicInfoData as well to satisfy security rules on create.
     const basicInfoData = {
-      intendedUsers, geographicScope, dataCategories, dataSources, legalRequirements
+      intendedUsers, geographicScope, dataCategories, dataSources, legalRequirements,
+      owner: owner,
     };
-    // Use the project ID to create a document in the basicInfo subcollection
+    
     await setDoc(doc(firestore, "projects", projectRef.id, "basicInfo", "details"), basicInfoData);
     
     console.log("Project created successfully with ID: ", projectRef.id);

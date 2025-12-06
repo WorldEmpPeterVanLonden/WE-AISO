@@ -31,9 +31,17 @@ service cloud.firestore {
       allow create: if isSignedIn() && request.resource.data.owner == request.auth.uid;
       allow update, delete: if isSignedIn() && isProjectOwner(projectId);
       
-      // Subcollections of projects can be read and written by the project owner.
-      match /{allChildren=**} {
+      // Allow project owner to write to subcollections.
+      // This rule is for all subcollections EXCEPT basicInfo on create.
+      match /{subcollection}/{docId} {
         allow read, write: if isSignedIn() && isProjectOwner(projectId);
+      }
+
+      // Explicitly allow creating the initial basicInfo document
+      // as long as the user is the owner of the parent project being created.
+      match /basicInfo/{docId} {
+         allow create: if isSignedIn() && request.resource.data.owner == request.auth.uid;
+         allow read, update, delete: if isSignedIn() && isProjectOwner(projectId);
       }
     }
   }
