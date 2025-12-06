@@ -25,7 +25,8 @@ export const BasicInfoSchema = z.object({
   intendedUsers: z.array(z.string()).optional(),
   geographicScope: z.string().min(1, "Geographic scope is required."),
   geographicScopeOther: z.string().optional(),
-  legalRequirements: z.string().optional(),
+  legalRequirements: z.array(z.string()).optional(),
+  legalRequirementsOther: z.string().optional(),
   dataCategories: z.array(z.string()).optional(),
   dataSources: z.union([z.string(), z.array(z.string())]).optional(),
   externalDependencies: z.union([z.string(), z.array(z.string())]).optional(),
@@ -46,6 +47,14 @@ export const BasicInfoSchema = z.object({
 }, {
     message: "Please specify the geographic scope.",
     path: ["geographicScopeOther"],
+}).refine(data => {
+    if (data.legalRequirements?.includes('other')) {
+        return !!data.legalRequirementsOther && data.legalRequirementsOther.length > 0;
+    }
+    return true;
+}, {
+    message: "Please specify other legislation.",
+    path: ["legalRequirementsOther"],
 });
 
 export const DesignSchema = z.object({
@@ -60,7 +69,7 @@ export const DevelopmentSchema = z.object({
   toolchain: z.array(z.string()).optional(),
   dependencies: z.string().optional(),
   securityControls: z.string().min(1, "Security controls are required."),
-  testApproach: z.string().min(1,"Test approach is required."),
+  testApproach: z.string().min(1, "Test approach is required."),
 });
 
 export const TrainingSchema = z.object({

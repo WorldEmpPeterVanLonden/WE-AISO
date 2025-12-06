@@ -43,15 +43,28 @@ const intendedUserItems = [
     { id: "vulnerable_groups", label: "Vulnerable groups" },
 ];
 
+const legislationItems = [
+    { id: "gdpr", label: "GDPR" },
+    { id: "ai_act", label: "EU AI Act" },
+    { id: "mdr", label: "MDR (Medical Device Regulation)" },
+    { id: "ivdr", label: "IVDR" },
+    { id: "nis2", label: "NIS2" },
+    { id: "iso42001", label: "ISO 42001" },
+    { id: "iso27001", label: "ISO 27001" },
+    { id: "local_law", label: "Local Data Protection Law" },
+    { id: "other", label: "Other" },
+];
+
 const dataCategoryItems = [
     { id: "personal", label: "Personal Data" },
     { id: "financial", label: "Financial Data" },
     { id: "health", label: "Health Data" },
-    { id: "sensitive", label: "Sensitive Data (race, religion, etc.)" },
     { id: "location", label: "Location Data" },
+    { id: "sensitive", label: "Sensitive Data (race, religion, etc.)" },
     { id: "technical", label: "Technical Data (IP, logs)" },
+    { id: "behavioral", label: "Behavioral Data" },
     { id: "other", label: "Other" },
-]
+];
 
 export function BasicInfoForm() {
   const [isSaving, setIsSaving] = useState(false);
@@ -65,7 +78,7 @@ export function BasicInfoForm() {
       businessContext: "",
       intendedUsers: [],
       geographicScope: "EU",
-      legalRequirements: "",
+      legalRequirements: [],
       dataCategories: [],
       dataSources: [],
       externalDependencies: [],
@@ -80,6 +93,7 @@ export function BasicInfoForm() {
   });
   
   const geographicScopeValue = form.watch("geographicScope");
+  const legalRequirementsValue = form.watch("legalRequirements");
 
   async function onSubmit(data: BasicInfoFormData) {
     setIsSaving(true);
@@ -106,9 +120,15 @@ export function BasicInfoForm() {
 
         // Set suggested values in the form
         if(result.businessContext) form.setValue("businessContext", result.businessContext, { shouldValidate: true });
-        if(result.legalRequirements) form.setValue("legalRequirements", result.legalRequirements, { shouldValidate: true });
         
         // This is a simple mapping. A more robust implementation might be needed.
+        if (result.legalRequirements) {
+            const suggestedLegislation = legislationItems
+                .filter(item => result.legalRequirements.toLowerCase().includes(item.label.toLowerCase().split(' ')[0]))
+                .map(item => item.id);
+            form.setValue("legalRequirements", suggestedLegislation, { shouldValidate: true });
+        }
+        
         const suggestedCategories = result.dataCategories.map(cat => {
             if (cat.toLowerCase().includes('personal')) return 'personal';
             if (cat.toLowerCase().includes('financial')) return 'financial';
@@ -259,14 +279,56 @@ export function BasicInfoForm() {
               />
             )}
             
-            <FormField control={form.control} name="legalRequirements" render={({ field }) => (
-                <FormItem>
-                    <FormLabel>Relevant Legislation</FormLabel>
-                    <FormControl><Input placeholder="e.g. GDPR, AI Act, MDR" {...field} /></FormControl>
-                    <FormDescription>Which legal frameworks apply?</FormDescription>
+            <FormField control={form.control} name="legalRequirements" render={() => (
+                <FormItem className="md:col-span-2">
+                    <div className="mb-4">
+                        <FormLabel>Relevant Legislation</FormLabel>
+                        <FormDescription>Which legal frameworks apply?</FormDescription>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                        {legislationItems.map((item) => (
+                            <FormField
+                                key={item.id}
+                                control={form.control}
+                                name="legalRequirements"
+                                render={({ field }) => (
+                                    <FormItem key={item.id} className="flex flex-row items-start space-x-3 space-y-0">
+                                        <FormControl>
+                                            <Checkbox
+                                                checked={field.value?.includes(item.id)}
+                                                onCheckedChange={(checked) => {
+                                                    const currentValue = field.value || [];
+                                                    return checked
+                                                        ? field.onChange([...currentValue, item.id])
+                                                        : field.onChange(currentValue.filter((value) => value !== item.id));
+                                                }}
+                                            />
+                                        </FormControl>
+                                        <FormLabel className="font-normal">{item.label}</FormLabel>
+                                    </FormItem>
+                                )}
+                            />
+                        ))}
+                    </div>
                     <FormMessage />
                 </FormItem>
             )} />
+            
+            {legalRequirementsValue?.includes('other') && (
+              <FormField
+                control={form.control}
+                name="legalRequirementsOther"
+                render={({ field }) => (
+                  <FormItem className="md:col-span-2">
+                    <FormLabel>Please specify other legislation</FormLabel>
+                    <FormControl>
+                      <Input placeholder="e.g. HIPAA" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
 
              <FormField control={form.control} name="aiActClassification" render={({ field }) => (
               <FormItem>
