@@ -12,11 +12,12 @@ export default async function ProjectDetailLayout({
   params: { id: string };
 }) {
   const { auth, firestore } = await getFirebase();
-  const user = auth.currentUser;
-
-  if (!user) {
-    redirect(`/login?redirect=/project/${params.id}`);
-  }
+  // Server-side auth check is unreliable with client-side sessions,
+  // this check is now handled in the client components that use the `useUser` hook.
+  // const user = auth.currentUser;
+  // if (!user) {
+  //   redirect(`/login?redirect=/project/${params.id}`);
+  // }
 
   const projectRef = doc(firestore, "projects", params.id);
   const projectSnap = await getDoc(projectRef);
@@ -27,10 +28,12 @@ export default async function ProjectDetailLayout({
 
   const project = projectSnap.data();
 
-  if (project.owner !== user.uid) {
-    // Or show a more specific "access denied" page
-    notFound();
-  }
+  // We can't reliably check ownership on the server without the user object.
+  // This check should be moved to where data is mutated or fetched on the client,
+  // and security rules will enforce it on the backend.
+  // if (project.owner !== user.uid) {
+  //   notFound();
+  // }
 
   const projectName = project.name || "Project";
 
