@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -21,8 +22,18 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 type ValidationFormData = z.infer<typeof ValidationSchema>;
+
+const validationMethodItems = [
+    { id: "human-evaluation", label: "Human evaluation" },
+    { id: "automated-test-suite", label: "Automated test suite" },
+    { id: "performance-benchmarks", label: "Performance benchmarks" },
+    { id: "robustness-testing", label: "Robustness testing" },
+    { id: "adversarial-testing", label: "Adversarial testing" },
+];
 
 export function ValidationForm() {
   const [isSaving, setIsSaving] = useState(false);
@@ -33,8 +44,9 @@ export function ValidationForm() {
   const form = useForm<ValidationFormData>({
     resolver: zodResolver(ValidationSchema),
     defaultValues: {
-      validationMethods: "",
+      validationMethods: [],
       acceptanceCriteria: "",
+      acceptanceCriteriaStatus: "partially-met",
       robustnessTests: "",
       edgeCaseTests: "",
       validationResults: "",
@@ -91,20 +103,78 @@ export function ValidationForm() {
           </CardHeader>
           <CardContent className="space-y-6">
             <Progress value={(4 / 7) * 100} className="mb-6" />
-            <FormField control={form.control} name="validationMethods" render={({ field }) => (
-              <FormItem>
-                <FormLabel>Validation Methods</FormLabel>
-                <FormControl><Textarea placeholder="e.g., Cross-validation, hold-out set, A/B testing." {...field} rows={3} /></FormControl>
-                <FormMessage />
-              </FormItem>
-            )} />
-            <FormField control={form.control} name="acceptanceCriteria" render={({ field }) => (
-              <FormItem>
-                <FormLabel>Acceptance Criteria</FormLabel>
-                <FormControl><Textarea placeholder="e.g., Accuracy > 95%, F1 score > 0.9, latency < 500ms." {...field} rows={3} /></FormControl>
-                <FormMessage />
-              </FormItem>
-            )} />
+            <FormField
+              control={form.control}
+              name="validationMethods"
+              render={() => (
+                <FormItem>
+                  <div className="mb-4">
+                    <FormLabel>Validation Methods</FormLabel>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    {validationMethodItems.map((item) => (
+                      <FormField
+                        key={item.id}
+                        control={form.control}
+                        name="validationMethods"
+                        render={({ field }) => {
+                          return (
+                            <FormItem
+                              key={item.id}
+                              className="flex flex-row items-start space-x-3 space-y-0"
+                            >
+                              <FormControl>
+                                <Checkbox
+                                  checked={field.value?.includes(item.id)}
+                                  onCheckedChange={(checked) => {
+                                    const currentValue = field.value || [];
+                                    return checked
+                                      ? field.onChange([...currentValue, item.id])
+                                      : field.onChange(
+                                          currentValue.filter(
+                                            (value) => value !== item.id
+                                          )
+                                        );
+                                  }}
+                                />
+                              </FormControl>
+                              <FormLabel className="font-normal">
+                                {item.label}
+                              </FormLabel>
+                            </FormItem>
+                          );
+                        }}
+                      />
+                    ))}
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <FormField control={form.control} name="acceptanceCriteria" render={({ field }) => (
+                <FormItem>
+                    <FormLabel>Acceptance Criteria</FormLabel>
+                    <FormControl><Textarea placeholder="e.g., Accuracy > 95%, F1 score > 0.9, latency < 500ms." {...field} rows={3} /></FormControl>
+                    <FormMessage />
+                </FormItem>
+                )} />
+                 <FormField control={form.control} name="acceptanceCriteriaStatus" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Acceptance Criteria Status</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
+                        <SelectContent>
+                            <SelectItem value="met">Met</SelectItem>
+                            <SelectItem value="partially-met">Partially Met</SelectItem>
+                            <SelectItem value="not-met">Not Met</SelectItem>
+                        </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+            </div>
+
              <FormField control={form.control} name="robustnessTests" render={({ field }) => (
               <FormItem>
                 <FormLabel>Robustness Tests</FormLabel>

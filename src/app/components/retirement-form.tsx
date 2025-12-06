@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -21,6 +22,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 type RetirementFormData = z.infer<typeof RetirementSchema>;
 
@@ -34,6 +36,7 @@ export function RetirementForm() {
     resolver: zodResolver(RetirementSchema),
     defaultValues: {
         retirementPlan: "",
+        retirementType: "end-of-life",
         dataMigrationPlan: "",
         dataDestructionProcedures: "",
         userCommunicationPlan: "",
@@ -89,6 +92,21 @@ export function RetirementForm() {
           </CardHeader>
           <CardContent className="space-y-6">
             <Progress value={(7 / 7) * 100} className="mb-6" />
+            <FormField control={form.control} name="retirementType" render={({ field }) => (
+                <FormItem>
+                    <FormLabel>Retirement Type</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
+                        <SelectContent>
+                            <SelectItem value="end-of-life">End-of-life</SelectItem>
+                            <SelectItem value="decommissioning">Decommissioning</SelectItem>
+                            <SelectItem value="replacement">Replacement</SelectItem>
+                            <SelectItem value="migration">Migration</SelectItem>
+                        </SelectContent>
+                    </Select>
+                    <FormMessage />
+                </FormItem>
+            )} />
             <FormField control={form.control} name="retirementPlan" render={({ field }) => (
               <FormItem>
                 <FormLabel>Retirement Plan</FormLabel>

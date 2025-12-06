@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -21,6 +22,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 type OperationFormData = z.infer<typeof OperationSchema>;
 
@@ -37,6 +39,7 @@ export function OperationForm() {
       driftDetection: "",
       incidentHandling: "",
       modelUpdatePolicy: "",
+      updateStrategy: "manual",
       userFeedbackProcess: "",
       loggingRetention: "",
     },
@@ -118,6 +121,21 @@ export function OperationForm() {
                 <FormControl><Textarea placeholder="e.g., Scheduled quarterly re-training, continuous deployment based on performance." {...field} rows={3} /></FormControl>
                 <FormMessage />
               </FormItem>
+            )} />
+             <FormField control={form.control} name="updateStrategy" render={({ field }) => (
+                <FormItem>
+                    <FormLabel>Update Strategy</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
+                        <SelectContent>
+                            <SelectItem value="manual">Manual updates</SelectItem>
+                            <SelectItem value="scheduled">Scheduled updates</SelectItem>
+                            <SelectItem value="continuous">Continuous deployment</SelectItem>
+                            <SelectItem value="none">No updates planned</SelectItem>
+                        </SelectContent>
+                    </Select>
+                    <FormMessage />
+                </FormItem>
             )} />
             <FormField control={form.control} name="userFeedbackProcess" render={({ field }) => (
               <FormItem>

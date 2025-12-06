@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -22,8 +23,17 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 
 type DeploymentFormData = z.infer<typeof DeploymentSchema>;
+
+const monitoringMethodItems = [
+    { id: "automated-outputs-check", label: "Automated outputs check" },
+    { id: "performance-metrics", label: "Performance metrics" },
+    { id: "human-moderation", label: "Human moderation" },
+    { id: "no-monitoring", label: "No monitoring" },
+];
 
 export function DeploymentForm() {
   const [isSaving, setIsSaving] = useState(false);
@@ -36,10 +46,12 @@ export function DeploymentForm() {
     defaultValues: {
       infrastructure: "",
       region: "",
+      deploymentType: "cloud",
       ciCdPipeline: "",
       accessControl: "",
       loggingPolicy: "",
       secretsManagement: "",
+      monitoringMethod: [],
       monitoringSetup: "",
     },
   });
@@ -110,6 +122,22 @@ export function DeploymentForm() {
                     <FormMessage />
                   </FormItem>
                 )} />
+                
+                <FormField control={form.control} name="deploymentType" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Deployment Type</FormLabel>
+                     <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
+                        <SelectContent>
+                            <SelectItem value="cloud">Cloud-based</SelectItem>
+                            <SelectItem value="on-premise">On-premise</SelectItem>
+                            <SelectItem value="hybrid">Hybrid deployment</SelectItem>
+                            <SelectItem value="edge">Edge deployment</SelectItem>
+                        </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )} />
             </div>
 
             <FormField control={form.control} name="ciCdPipeline" render={({ field }) => (
@@ -143,6 +171,55 @@ export function DeploymentForm() {
                 <FormMessage />
               </FormItem>
             )} />
+
+            <FormField
+              control={form.control}
+              name="monitoringMethod"
+              render={() => (
+                <FormItem>
+                  <div className="mb-4">
+                    <FormLabel>Monitoring Method</FormLabel>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    {monitoringMethodItems.map((item) => (
+                      <FormField
+                        key={item.id}
+                        control={form.control}
+                        name="monitoringMethod"
+                        render={({ field }) => {
+                          return (
+                            <FormItem
+                              key={item.id}
+                              className="flex flex-row items-start space-x-3 space-y-0"
+                            >
+                              <FormControl>
+                                <Checkbox
+                                  checked={field.value?.includes(item.id)}
+                                  onCheckedChange={(checked) => {
+                                    const currentValue = field.value || [];
+                                    return checked
+                                      ? field.onChange([...currentValue, item.id])
+                                      : field.onChange(
+                                          currentValue.filter(
+                                            (value) => value !== item.id
+                                          )
+                                        );
+                                  }}
+                                />
+                              </FormControl>
+                              <FormLabel className="font-normal">
+                                {item.label}
+                              </FormLabel>
+                            </FormItem>
+                          );
+                        }}
+                      />
+                    ))}
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             <FormField control={form.control} name="monitoringSetup" render={({ field }) => (
               <FormItem>

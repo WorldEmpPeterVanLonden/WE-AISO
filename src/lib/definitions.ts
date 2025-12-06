@@ -105,8 +105,9 @@ export const TrainingSchema = z.object({
 });
 
 export const ValidationSchema = z.object({
-    validationMethods: z.string().min(1, "Validation methods are required."),
+    validationMethods: z.array(z.string()).min(1, "Validation methods are required."),
     acceptanceCriteria: z.string().min(1, "Acceptance criteria are required."),
+    acceptanceCriteriaStatus: z.enum(["met", "partially-met", "not-met"]),
     robustnessTests: z.string().min(1, "Robustness tests are required."),
     edgeCaseTests: z.string().min(1, "Edge case tests are required."),
     validationResults: z.string().min(1, "Validation results are required."),
@@ -116,10 +117,12 @@ export const ValidationSchema = z.object({
 export const DeploymentSchema = z.object({
   infrastructure: z.string().min(1, "Infrastructure details are required."),
   region: z.string().optional(),
+  deploymentType: z.enum(["cloud", "on-premise", "hybrid", "edge"]),
   ciCdPipeline: z.string().min(1, "CI/CD pipeline details are required."),
   accessControl: z.string().min(1, "Access control details are required."),
   loggingPolicy: z.string().min(1, "Logging policy is required."),
   secretsManagement: z.string().min(1, "Secrets management strategy is required."),
+  monitoringMethod: z.array(z.string()).min(1, "Monitoring method is required."),
   monitoringSetup: z.string().min(1, "Monitoring setup is required."),
 });
 
@@ -128,12 +131,14 @@ export const OperationSchema = z.object({
   driftDetection: z.string().min(1, "Drift detection methods are required."),
   incidentHandling: z.string().min(1, "Incident handling process is required."),
   modelUpdatePolicy: z.string().min(1, "Model update policy is required."),
+  updateStrategy: z.enum(["manual", "scheduled", "continuous", "none"]),
   userFeedbackProcess: z.string().min(1, "User feedback process is required."),
   loggingRetention: z.string().min(1, "Logging retention policy is required."),
 });
 
 export const RetirementSchema = z.object({
   retirementPlan: z.string().min(1, "Retirement plan is required."),
+  retirementType: z.enum(["end-of-life", "decommissioning", "replacement", "migration"]),
   dataMigrationPlan: z.string().optional(),
   dataDestructionProcedures: z.string().min(1, "Data destruction procedures are required."),
   userCommunicationPlan: z.string().min(1, "User communication plan is required."),
@@ -175,5 +180,3 @@ export const GenerateDocumentSchema = z.object({
   version: z.string().min(1, "Version is required"),
   format: z.enum(["pdf", "word"]),
 });
-
-    
