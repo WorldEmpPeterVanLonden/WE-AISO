@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -178,11 +179,18 @@ export function BasicInfoForm() {
                 </FormItem>
             )} />
 
-            <FormField control={form.control} name="geographicScope" render={({ field }) => (
+            <FormField
+              control={form.control}
+              name="geographicScope"
+              render={({ field }) => (
                 <FormItem>
                   <FormLabel>Geographic Scope</FormLabel>
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl><SelectTrigger><SelectValue placeholder="Select a scope" /></SelectTrigger></FormControl>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a scope" />
+                      </SelectTrigger>
+                    </FormControl>
                     <SelectContent>
                       <SelectItem value="EU">EU</SelectItem>
                       <SelectItem value="EEA">EEA</SelectItem>
@@ -197,15 +205,20 @@ export function BasicInfoForm() {
                 </FormItem>
               )}
             />
-
             {geographicScopeValue === 'other' && (
-              <FormField control={form.control} name="geographicScopeOther" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Please specify other scope</FormLabel>
-                  <FormControl><Input placeholder="e.g. Canada" {...field} /></FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+              <FormField
+                control={form.control}
+                name="geographicScopeOther"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Please specify other scope</FormLabel>
+                    <FormControl>
+                      <Input placeholder="e.g. Canada" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             )}
             
             <FormField control={form.control} name="legalRequirements" render={({ field }) => (
