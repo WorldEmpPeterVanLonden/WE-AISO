@@ -61,9 +61,6 @@ const mockProjects = [
     version: "1.2.0",
     complianceProgress: 75,
     riskCategory: "medium",
-    usesAi: true,
-    usesFirestore: true,
-    usesStorage: false,
   },
   {
     id: "proj_2",
@@ -74,9 +71,6 @@ const mockProjects = [
     version: "0.5.0",
     complianceProgress: 20,
     riskCategory: "high",
-    usesAi: true,
-    usesFirestore: true,
-    usesStorage: true,
   },
   {
     id: "proj_3",
@@ -87,9 +81,6 @@ const mockProjects = [
     version: "2.0.0",
     complianceProgress: 100,
     riskCategory: "high",
-    usesAi: true,
-    usesFirestore: false,
-    usesStorage: false,
   },
   {
     id: "proj_4",
@@ -100,9 +91,6 @@ const mockProjects = [
     version: "3.1.0",
     complianceProgress: 90,
     riskCategory: "low",
-    usesAi: true,
-    usesFirestore: true,
-    usesStorage: true,
   },
 ];
 
@@ -183,12 +171,25 @@ export function ProjectDashboard() {
               AISO Compliance Manager
             </h1>
           </div>
-          <Button asChild>
-            <Link href="/project/new">
-              <PlusCircle className="mr-2 h-4 w-4" />
-              New AI Project
-            </Link>
-          </Button>
+          <div className="flex items-center gap-6">
+            <div className="flex items-center gap-4">
+              <ServiceIndicator active={true} tooltip="Uses AI/Genkit">
+                <Bot className="h-5 w-5" />
+              </ServiceIndicator>
+              <ServiceIndicator active={true} tooltip="Uses Firestore">
+                <Database className="h-5 w-5" />
+              </ServiceIndicator>
+              <ServiceIndicator active={true} tooltip="Uses Cloud Storage">
+                <HardDrive className="h-5 w-5" />
+              </ServiceIndicator>
+            </div>
+            <Button asChild>
+              <Link href="/project/new">
+                <PlusCircle className="mr-2 h-4 w-4" />
+                New AI Project
+              </Link>
+            </Button>
+          </div>
         </div>
       </header>
        <main className="container mx-auto flex-1 p-4 md:p-8">
@@ -208,7 +209,6 @@ export function ProjectDashboard() {
                   <TableHead>Status</TableHead>
                   <TableHead>Risk Level</TableHead>
                   <TableHead>Compliance Progress</TableHead>
-                  <TableHead>Services</TableHead>
                   <TableHead>
                     <span className="sr-only">Actions</span>
                   </TableHead>
@@ -235,19 +235,6 @@ export function ProjectDashboard() {
                         <div className="flex items-center gap-2">
                             <Progress value={project.complianceProgress} className="w-24" />
                             <span className="text-muted-foreground text-xs">{project.complianceProgress}%</span>
-                        </div>
-                    </TableCell>
-                    <TableCell>
-                        <div className="flex items-center gap-3">
-                             <ServiceIndicator active={project.usesAi} tooltip="Uses AI/Genkit">
-                                <Bot className="h-4 w-4" />
-                            </ServiceIndicator>
-                             <ServiceIndicator active={project.usesFirestore} tooltip="Uses Firestore">
-                                <Database className="h-4 w-4" />
-                            </ServiceIndicator>
-                             <ServiceIndicator active={project.usesStorage} tooltip="Uses Cloud Storage">
-                                <HardDrive className="h-4 w-4" />
-                            </ServiceIndicator>
                         </div>
                     </TableCell>
                     <TableCell onClick={(e) => e.stopPropagation()}>
