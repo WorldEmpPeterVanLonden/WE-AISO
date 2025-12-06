@@ -48,6 +48,14 @@ interface RiskDialogProps {
   onAddRisk: (risk: RiskRegisterEntry) => void;
 }
 
+const impactLikelihoodLabels: { [key: number]: string } = {
+    1: "1 (Very Low)",
+    2: "2 (Low)",
+    3: "3 (Medium)",
+    4: "4 (High)",
+    5: "5 (Very High)",
+};
+
 export function RiskDialog({ isOpen, setIsOpen, onAddRisk }: RiskDialogProps) {
   const [isGenerating, setIsGenerating] = useState(false);
 
@@ -125,35 +133,55 @@ export function RiskDialog({ isOpen, setIsOpen, onAddRisk }: RiskDialogProps) {
                   </FormItem>
                 )}
               />
-              <FormField
-                control={form.control}
-                name="category"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Category</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
-                      <SelectContent>
-                        <SelectItem value="accuracy">Accuracy</SelectItem>
-                        <SelectItem value="bias">Bias</SelectItem>
-                        <SelectItem value="legal">Legal</SelectItem>
-                        <SelectItem value="misuse">Misuse</SelectItem>
-                        <SelectItem value="privacy">Privacy</SelectItem>
-                        <SelectItem value="robustness">Robustness</SelectItem>
-                        <SelectItem value="security">Security</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+               <div className="grid grid-cols-2 gap-4">
+                <FormField
+                    control={form.control}
+                    name="category"
+                    render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Category</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
+                        <SelectContent>
+                            <SelectItem value="accuracy">Accuracy</SelectItem>
+                            <SelectItem value="bias">Bias</SelectItem>
+                            <SelectItem value="legal">Legal / Compliance</SelectItem>
+                            <SelectItem value="misuse">Misuse</SelectItem>
+                            <SelectItem value="privacy">Privacy</SelectItem>
+                            <SelectItem value="robustness">Robustness</SelectItem>
+                            <SelectItem value="security">Security</SelectItem>
+                        </SelectContent>
+                        </Select>
+                        <FormMessage />
+                    </FormItem>
+                    )}
+                />
+                <FormField
+                    control={form.control}
+                    name="status"
+                    render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Status</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
+                        <SelectContent>
+                            <SelectItem value="open">Open</SelectItem>
+                            <SelectItem value="mitigated">Mitigated</SelectItem>
+                            <SelectItem value="accepted">Accepted</SelectItem>
+                        </SelectContent>
+                        </Select>
+                        <FormMessage />
+                    </FormItem>
+                    )}
+                />
+              </div>
               <div className="grid grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
                   name="impact"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Impact: {field.value}</FormLabel>
+                      <FormLabel>Impact: {impactLikelihoodLabels[field.value]}</FormLabel>
                       <FormControl>
                         <Slider
                           min={1}
@@ -171,7 +199,7 @@ export function RiskDialog({ isOpen, setIsOpen, onAddRisk }: RiskDialogProps) {
                   name="likelihood"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Likelihood: {field.value}</FormLabel>
+                      <FormLabel>Likelihood: {impactLikelihoodLabels[field.value]}</FormLabel>
                       <FormControl>
                         <Slider
                           min={1}
