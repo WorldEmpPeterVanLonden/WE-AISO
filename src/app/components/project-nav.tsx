@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import Link from "next/link";
@@ -80,7 +81,7 @@ export function ProjectNav({
 
   return (
     <aside className={cn(
-        "fixed inset-y-0 left-0 z-10 hidden flex-col border-r bg-background transition-[width] sm:flex",
+        "fixed inset-y-0 left-0 z-20 hidden flex-col border-r bg-background transition-[width] sm:flex",
         isCollapsed ? "w-14" : "w-60"
       )}>
        <nav className="flex flex-col items-center gap-4 px-2 sm:py-5">
@@ -97,7 +98,7 @@ export function ProjectNav({
         <Button
             variant="ghost"
             size="icon"
-            className="absolute top-3 right-0 translate-x-1/2 rounded-full border hidden sm:flex bg-background hover:bg-background h-8 w-8 items-center justify-center p-0"
+            className="absolute top-3 right-0 translate-x-1/2 rounded-full border hidden sm:flex bg-background hover:bg-background h-8 w-8 items-center justify-center p-0 z-30"
             onClick={toggleCollapse}
         >
             <PanelLeft className={cn("h-5 w-5 transition-transform", isCollapsed && "rotate-180")} />
