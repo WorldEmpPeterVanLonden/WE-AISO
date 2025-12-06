@@ -24,8 +24,14 @@ import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { generateDesignSuggestions } from "@/ai/flows/generate-design-suggestions";
 
 type DesignFormData = z.infer<typeof DesignSchema>;
+
+// Mock data, replace with actual data fetching
+const mockProject = {
+  useCase: "A customer support chatbot for an e-commerce platform that handles order tracking, returns, and product questions."
+};
 
 const explainabilityItems = [
     { id: "model-card", label: "Model card" },
@@ -74,12 +80,28 @@ export function DesignForm() {
 
   async function handleGenerateSuggestions() {
     setIsGenerating(true);
-    // TODO: Implement AI suggestion generation
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    toast({
-      title: "Suggestions Generated",
-      description: "The AI has filled in some fields for you (mock).",
-    });
+    try {
+        const result = await generateDesignSuggestions({ useCase: mockProject.useCase });
+        
+        if (result.functionalRequirements) form.setValue("functionalRequirements", result.functionalRequirements, { shouldValidate: true });
+        if (result.nonFunctionalRequirements) form.setValue("nonFunctionalRequirements", result.nonFunctionalRequirements, { shouldValidate: true });
+        if (result.designChoices) form.setValue("designChoices", result.designChoices, { shouldValidate: true });
+        if (result.dataArchitecture) form.setValue("dataArchitecture", result.dataArchitecture, { shouldValidate: true });
+        if (result.explainabilityStrategy) form.setValue("explainabilityStrategy", result.explainabilityStrategy, { shouldValidate: true });
+        
+        toast({
+            title: "Suggestions Generated",
+            description: "The AI has filled in the design fields for you.",
+        });
+
+    } catch (error) {
+        console.error("Error generating design suggestions:", error);
+        toast({
+            variant: "destructive",
+            title: "Generation Error",
+            description: "Could not generate AI suggestions for the design phase.",
+        });
+    }
     setIsGenerating(false);
   }
 
@@ -221,5 +243,3 @@ export function DesignForm() {
     </Form>
   );
 }
-
-    

@@ -39,6 +39,7 @@ import {
   RiskRegisterEntrySchema,
   type RiskRegisterEntry,
 } from "@/lib/definitions";
+import { suggestRisk } from "@/ai/flows/suggest-risk";
 
 type RiskFormData = z.infer<typeof RiskRegisterEntrySchema>;
 
@@ -55,6 +56,11 @@ const impactLikelihoodLabels: { [key: number]: string } = {
     4: "4 (High)",
     5: "5 (Very High)",
 };
+
+const mockProject = {
+    useCase: "A customer support chatbot for an e-commerce platform that handles order tracking, returns, and product questions.",
+    dataCategories: ["Personal Data", "Technical Data (IP, logs)"],
+}
 
 export function RiskDialog({ isOpen, setIsOpen, onAddRisk }: RiskDialogProps) {
   const [isGenerating, setIsGenerating] = useState(false);
@@ -76,6 +82,40 @@ export function RiskDialog({ isOpen, setIsOpen, onAddRisk }: RiskDialogProps) {
   const likelihood = form.watch("likelihood");
   const impact = form.watch("impact");
   const riskLevel = likelihood * impact;
+
+  async function handleGenerateSuggestions() {
+    setIsGenerating(true);
+    try {
+        const currentTitle = form.getValues("title");
+        const result = await suggestRisk({
+            useCase: mockProject.useCase,
+            dataCategories: mockProject.dataCategories,
+            riskTitle: currentTitle,
+        });
+
+        if (result.description) form.setValue("description", result.description, { shouldValidate: true });
+        if (result.category) form.setValue("category", result.category, { shouldValidate: true });
+        if (result.likelihood) form.setValue("likelihood", result.likelihood, { shouldValidate: true });
+        if (result.impact) form.setValue("impact", result.impact, { shouldValidate: true });
+        if (result.mitigations) form.setValue("mitigations", result.mitigations.join("\n"), { shouldValidate: true });
+        if (result.isoControls) form.setValue("isoControls", result.isoControls.join(", "), { shouldValidate: true });
+
+        toast({
+            title: "AI Suggestion Complete",
+            description: "The AI has suggested details for this risk.",
+        });
+
+    } catch (error) {
+        console.error("Error generating risk suggestion:", error);
+        toast({
+            variant: "destructive",
+            title: "Suggestion Error",
+            description: "Could not generate AI suggestion. Please try again.",
+        });
+    }
+    setIsGenerating(false);
+  }
+
 
   function onSubmit(data: RiskFormData) {
     const riskData: RiskRegisterEntry = {
@@ -100,7 +140,7 @@ export function RiskDialog({ isOpen, setIsOpen, onAddRisk }: RiskDialogProps) {
             <DialogHeader>
               <DialogTitle>Add New Risk</DialogTitle>
               <DialogDescription>
-                Describe the risk, its impact, and how to mitigate it.
+                Describe the risk, its impact, and how to mitigate it. You can enter a title and use AI to suggest the rest.
               </DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">
@@ -249,7 +289,7 @@ export function RiskDialog({ isOpen, setIsOpen, onAddRisk }: RiskDialogProps) {
             </div>
             <DialogFooter>
                 <div className="flex justify-between w-full">
-                    <Button variant="outline" type="button" disabled={isGenerating}>
+                    <Button variant="outline" type="button" disabled={isGenerating} onClick={handleGenerateSuggestions}>
                         {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Sparkles className="mr-2 h-4 w-4" />}
                         AI Suggest
                     </Button>
