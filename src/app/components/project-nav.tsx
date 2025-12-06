@@ -96,7 +96,7 @@ export function ProjectNav({
         <Button
             variant="ghost"
             size="icon"
-            className="absolute top-3 right-0 translate-x-1/2 rounded-full border hidden sm:block bg-background hover:bg-background"
+            className="absolute top-3 right-0 translate-x-1/2 rounded-full border hidden sm:flex bg-background hover:bg-background h-8 w-8 items-center justify-center p-0"
             onClick={toggleCollapse}
         >
             <PanelLeft className={cn("h-5 w-5 transition-transform", isCollapsed && "rotate-180")} />
