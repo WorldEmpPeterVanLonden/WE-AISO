@@ -112,7 +112,7 @@ export function NewProjectWizard() {
   };
 
   const prevStep = () => {
-    setStep(1);
+    setStep(step - 1);
   };
   
   const jumpToStep = async (targetStep: number) => {
@@ -163,6 +163,14 @@ export function NewProjectWizard() {
     }
   }
 
+  const handleNextToReview = async () => {
+    const fieldsToValidate = Object.keys(BasicInfoObjectSchema.pick({ intendedUsers: true, geographicScope: true, dataCategories: true, dataSources: true, legalRequirements: true}).shape) as (keyof FormData)[];
+    const isValid = await form.trigger(fieldsToValidate);
+    if (isValid) {
+      setStep(3);
+    }
+  };
+
   const progress = (step / 3) * 100;
 
   if (userLoading) {
@@ -176,7 +184,19 @@ export function NewProjectWizard() {
             <div className="flex justify-between font-medium text-sm text-muted-foreground">
                 <button onClick={() => jumpToStep(1)} className={step >= 1 ? "text-primary font-semibold" : ""}>Step 1: Basic Details</button>
                 <button onClick={() => jumpToStep(2)} className={step >= 2 ? "text-primary font-semibold" : ""}>Step 2: Scope & Context</button>
-                <button onClick={() => setStep(3)} className={step >= 3 ? "text-primary font-semibold" : ""}>Step 3: Review</button>
+                <button onClick={async () => {
+                     const isStep1Valid = await form.trigger(Object.keys(Step1Schema.pick({ name: true, version: true, customerId: true, description: true, useCase: true, systemType: true, riskCategory: true }).shape) as (keyof FormData)[]);
+                     if (!isStep1Valid) {
+                         setStep(1);
+                         return;
+                     }
+                     const isStep2Valid = await form.trigger(Object.keys(BasicInfoObjectSchema.pick({ intendedUsers: true, geographicScope: true, dataCategories: true, dataSources: true, legalRequirements: true}).shape) as (keyof FormData)[]);
+                     if (!isStep2Valid) {
+                         setStep(2);
+                         return;
+                     }
+                     setStep(3)
+                }} className={step >= 3 ? "text-primary font-semibold" : ""}>Step 3: Review</button>
             </div>
         </CardHeader>
       <Form {...form}>
@@ -367,11 +387,17 @@ export function NewProjectWizard() {
               </Button>
             )}
             {step === 1 && <div></div>}
-            {step < 3 ? (
-              <Button onClick={step === 1 ? nextStep : () => setStep(3)} type="button">
+            {step === 1 && (
+              <Button onClick={nextStep} type="button">
                 Next
               </Button>
-            ) : (
+            )}
+             {step === 2 && (
+              <Button onClick={handleNextToReview} type="button">
+                Next
+              </Button>
+            )}
+            {step === 3 && (
               <Button type="submit" disabled={isSubmitting || userLoading}>
                 {isSubmitting ? (
                   <>
