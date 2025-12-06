@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from "next/link";
@@ -88,7 +89,7 @@ export function ProjectNav({
               className="group flex items-center justify-center gap-2 shrink-0 md:h-8"
             >
               <ShieldCheck className="h-5 w-5 transition-all group-hover:scale-110" />
-              <span className={cn("sr-only", !isCollapsed && "sm:not-sr-only sm:font-semibold")}>AI Projects</span>
+              <span className={cn("sr-only", !isCollapsed && "sm:not-sr-only sm:font-semibold")}>AISO Manager</span>
             </Link>
         </div>
 

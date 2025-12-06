@@ -123,7 +123,7 @@ export function ProjectDashboard() {
           <div className="flex items-center gap-3">
             <ShieldCheck className="h-8 w-8 text-primary" />
             <h1 className="font-headline text-2xl font-bold text-primary">
-              AI Compliance Projects
+              AISO Compliance Manager
             </h1>
           </div>
           <Button asChild>
@@ -137,7 +137,7 @@ export function ProjectDashboard() {
        <main className="container mx-auto flex-1 p-4 md:p-8">
          <Card>
           <CardHeader>
-            <CardTitle>Projects</CardTitle>
+            <CardTitle>AI Compliance Projects</CardTitle>
             <CardDescription>
               An overview of all your AI compliance projects.
             </CardDescription>
