@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
-import { FileDown, Clock, CheckCircle2, ShieldCheck, GitMerge, Calendar, Edit, Minus, Bot } from "lucide-react";
+import { FileDown, Clock, CheckCircle2, ShieldCheck, GitMerge, Calendar, Edit, Minus, Bot, ShieldAlert } from "lucide-react";
 import { format, subDays } from "date-fns";
 
 const mockProjectDetails = {
@@ -114,7 +114,7 @@ export default function OverviewPage() {
                 </div>
                 <div className="flex flex-col justify-center gap-3 p-4 bg-muted/50 rounded-lg h-full">
                     <div className="flex items-center gap-3">
-                        <Edit className="h-6 w-6 text-primary" />
+                        <Clock className="h-6 w-6 text-primary" />
                         <div>
                             <div className="text-muted-foreground">Last Change</div>
                             <div className="font-semibold">{format(mockProjectDetails.lastChange, "dd.MM.yy")}</div>
@@ -123,7 +123,7 @@ export default function OverviewPage() {
                 </div>
                 <div className="flex flex-col justify-center gap-3 p-4 bg-muted/50 rounded-lg h-full">
                     <div className="flex items-center gap-3">
-                        <ShieldCheck className="h-6 w-6 text-primary" />
+                        <ShieldAlert className="h-6 w-6 text-primary" />
                         <div>
                             <div className="text-muted-foreground">Risk</div>
                             <div className="font-semibold"><RiskBadge risk={mockProjectDetails.riskCategory as RiskCategory} /></div>
@@ -132,7 +132,7 @@ export default function OverviewPage() {
                 </div>
             </div>
 
-            <Separator />
+            <Separator className="opacity-20" />
             
             <div>
                 <h3 className="text-lg font-semibold flex items-center gap-2 mb-3">
