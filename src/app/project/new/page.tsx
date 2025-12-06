@@ -1,3 +1,4 @@
+
 import { NewProjectWizard } from "@/app/components/new-project-wizard";
 import { ShieldCheck } from "lucide-react";
 import { redirect } from 'next/navigation';
@@ -21,7 +22,7 @@ export default async function NewProjectPage() {
     const user = auth.currentUser;
 
     if (!user) {
-        redirect('/login');
+        redirect('/login?redirect=/project/new');
     }
 
     const getInitials = (name?: string | null) => {
