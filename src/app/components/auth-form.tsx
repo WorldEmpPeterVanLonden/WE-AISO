@@ -6,6 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import {
   createUserWithEmailAndPassword,
+  sendPasswordResetEmail,
   signInWithEmailAndPassword,
   type Auth,
 } from 'firebase/auth';
@@ -49,6 +50,32 @@ export function AuthForm({ mode }: AuthFormProps) {
     defaultValues: { email: '', password: '' },
   });
 
+  const handlePasswordReset = async () => {
+    const email = form.getValues('email');
+    if (!email) {
+      form.setError('email', { type: 'manual', message: 'Please enter your email to reset the password.' });
+      return;
+    }
+    
+    setIsLoading(true);
+    try {
+      await sendPasswordResetEmail(auth as Auth, email);
+      toast({
+        title: 'Password Reset Email Sent',
+        description: 'Check your inbox for a link to reset your password.',
+      });
+    } catch (error: any) {
+      console.error(error);
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: error.message || 'Could not send password reset email.',
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const onSubmit = async (data: FormData) => {
     setIsLoading(true);
     try {
@@ -65,7 +92,8 @@ export function AuthForm({ mode }: AuthFormProps) {
             : 'You have been successfully signed in.',
       });
       router.push('/dashboard');
-    } catch (error: any) {
+    } catch (error: any)
+{
       console.error(error);
       toast({
         variant: 'destructive',
@@ -106,6 +134,19 @@ export function AuthForm({ mode }: AuthFormProps) {
             </FormItem>
           )}
         />
+        {mode === 'login' && (
+           <div className="text-right">
+             <Button
+              type="button"
+              variant="link"
+              className="p-0 h-auto font-normal text-sm"
+              onClick={handlePasswordReset}
+              disabled={isLoading}
+             >
+               Forgot password?
+             </Button>
+           </div>
+        )}
         <Button type="submit" className="w-full" disabled={isLoading}>
           {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           {mode === 'login' ? 'Sign In' : 'Sign Up'}

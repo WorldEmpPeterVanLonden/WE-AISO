@@ -1,8 +1,6 @@
 
 import { AuthForm } from '@/app/components/auth-form';
-import { GoogleSignInButton } from '@/app/components/google-signin-button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
 import { ShieldCheck } from 'lucide-react';
 import Link from 'next/link';
 
@@ -20,13 +18,6 @@ export default function SignupPage() {
           </CardHeader>
           <CardContent>
             <AuthForm mode="signup" />
-            <div className="relative my-6">
-              <Separator />
-              <span className="absolute left-1/2 -top-3 -translate-x-1/2 bg-card px-2 text-sm text-muted-foreground">
-                OR
-              </span>
-            </div>
-            <GoogleSignInButton />
             <p className="mt-6 text-center text-sm text-muted-foreground">
               Already have an account?{' '}
               <Link href="/login" className="font-semibold text-primary hover:underline">
