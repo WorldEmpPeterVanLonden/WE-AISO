@@ -22,7 +22,7 @@ export const ProjectSchema = z.object({
 
 export const BasicInfoSchema = z.object({
   businessContext: z.string().optional(),
-  intendedUsers: z.string().min(1, "Intended users are required."),
+  intendedUsers: z.array(z.string()).optional(),
   geographicScope: z.string().min(1, "Geographic scope is required."),
   geographicScopeOther: z.string().optional(),
   legalRequirements: z.string().optional(),

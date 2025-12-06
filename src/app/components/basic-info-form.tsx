@@ -33,6 +33,16 @@ const mockProject = {
   useCase: "Automate responses to common customer questions and escalate complex issues to human agents.",
 };
 
+const intendedUserItems = [
+    { id: "external_customers", label: "External customers" },
+    { id: "internal_employees", label: "Internal employees" },
+    { id: "vendors_partners", label: "Vendors / Partners" },
+    { id: "children", label: "Children" },
+    { id: "general_public", label: "General public" },
+    { id: "specialists", label: "Specialists / Professionals" },
+    { id: "vulnerable_groups", label: "Vulnerable groups" },
+];
+
 const dataCategoryItems = [
     { id: "personal", label: "Personal Data" },
     { id: "financial", label: "Financial Data" },
@@ -53,7 +63,7 @@ export function BasicInfoForm() {
     resolver: zodResolver(BasicInfoSchema),
     defaultValues: {
       businessContext: "",
-      intendedUsers: "",
+      intendedUsers: [],
       geographicScope: "EU",
       legalRequirements: "",
       dataCategories: [],
@@ -90,7 +100,7 @@ export function BasicInfoForm() {
         const result = await generateBasicInfoSuggestions({
             projectName: mockProject.name,
             useCase: mockProject.useCase,
-            intendedUsers: currentValues.intendedUsers,
+            intendedUsers: currentValues.intendedUsers?.join(', ') || '',
             geographicScope: currentValues.geographicScope,
         });
 
@@ -152,11 +162,39 @@ export function BasicInfoForm() {
                 </FormItem>
             )} />
 
-            <FormField control={form.control} name="intendedUsers" render={({ field }) => (
-                <FormItem>
-                    <FormLabel>Intended Users</FormLabel>
-                    <FormControl><Input placeholder="e.g. Customers, internal employees, doctors" {...field} /></FormControl>
-                    <FormDescription>Who are the end users of the system?</FormDescription>
+            <FormField control={form.control} name="intendedUsers" render={() => (
+                <FormItem className="md:col-span-2">
+                    <div className="mb-4">
+                        <FormLabel>Intended Users</FormLabel>
+                        <FormDescription>Who are the end users of the system?</FormDescription>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                        {intendedUserItems.map((item) => (
+                            <FormField
+                                key={item.id}
+                                control={form.control}
+                                name="intendedUsers"
+                                render={({ field }) => {
+                                    return (
+                                        <FormItem key={item.id} className="flex flex-row items-start space-x-3 space-y-0">
+                                            <FormControl>
+                                                <Checkbox
+                                                    checked={field.value?.includes(item.id)}
+                                                    onCheckedChange={(checked) => {
+                                                        const currentValue = field.value || [];
+                                                        return checked
+                                                            ? field.onChange([...currentValue, item.id])
+                                                            : field.onChange(currentValue?.filter((value) => value !== item.id));
+                                                    }}
+                                                />
+                                            </FormControl>
+                                            <FormLabel className="font-normal">{item.label}</FormLabel>
+                                        </FormItem>
+                                    );
+                                }}
+                            />
+                        ))}
+                    </div>
                     <FormMessage />
                 </FormItem>
             )} />
