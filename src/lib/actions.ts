@@ -41,7 +41,14 @@ async function createProjectInFirestore(
 
 export async function createProject(formData: unknown) {
   
-  const combinedSchema = ProjectSchema.merge(BasicInfoSchema);
+  const combinedSchema = ProjectSchema.extend({
+    intendedUsers: BasicInfoSchema.shape.intendedUsers,
+    geographicScope: BasicInfoSchema.shape.geographicScope,
+    dataCategories: BasicInfoSchema.shape.dataCategories,
+    dataSources: BasicInfoSchema.shape.dataSources,
+    legalRequirements: BasicInfoSchema.shape.legalRequirements,
+  });
+
   const validatedFields = combinedSchema.safeParse(formData);
 
   if (!validatedFields.success) {
@@ -61,14 +68,12 @@ export async function createProject(formData: unknown) {
       riskCategory: data.riskCategory,
   }
 
-  const basicInfoData: z.infer<typeof BasicInfoSchema> = {
-      businessContext: "", // Not in form, can be added later
+  const basicInfoData: Partial<z.infer<typeof BasicInfoSchema>> = {
       intendedUsers: data.intendedUsers,
       geographicScope: data.geographicScope,
       legalRequirements: data.legalRequirements,
       dataCategories: data.dataCategories,
-      dataSources: data.dataSources ? data.dataSources.split(',').map(s => s.trim()) : [],
-      externalDependencies: [], // Not in form
+      dataSources: typeof data.dataSources === 'string' ? data.dataSources.split(',').map(s => s.trim()) : [],
   }
 
   try {
@@ -81,9 +86,7 @@ export async function createProject(formData: unknown) {
   }
 
   revalidatePath("/");
-  // Redirect is called outside of try/catch to avoid issues.
-  // We are not redirecting yet, we stay on the page.
-  // redirect("/");
+  redirect("/");
 }
 
 export async function generateDocumentAction(formData: unknown) {

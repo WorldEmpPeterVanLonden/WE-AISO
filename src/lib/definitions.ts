@@ -2,11 +2,11 @@
 import { z } from "zod";
 
 export const ProjectSchema = z.object({
-  name: z.string(),
-  version: z.string(),
+  name: z.string().min(1, "Project name is required."),
+  version: z.string().min(1, "Version is required."),
   customerId: z.string().optional(),
   description: z.string().optional(),
-  useCase: z.string(),
+  useCase: z.string().min(1, "Use-case is required."),
   systemType: z.enum(["LLM", "ML", "Hybrid", "RuleBased"]),
   riskCategory: z.enum(["high", "medium", "low"]),
 });
@@ -14,11 +14,11 @@ export const ProjectSchema = z.object({
 
 export const BasicInfoSchema = z.object({
   businessContext: z.string().optional(),
-  intendedUsers: z.string(),
-  geographicScope: z.string(),
+  intendedUsers: z.string().min(1, "Intended users are required."),
+  geographicScope: z.string().min(1, "Geographic scope is required."),
   legalRequirements: z.string().optional(),
   dataCategories: z.array(z.string()).optional(),
-  dataSources: z.array(z.string()).optional(),
+  dataSources: z.union([z.string(), z.array(z.string())]).optional(),
   externalDependencies: z.array(z.string()).optional(),
 });
 

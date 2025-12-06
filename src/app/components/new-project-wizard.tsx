@@ -38,26 +38,17 @@ import { createProject } from "@/lib/actions";
 import { toast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
+import { ProjectSchema, BasicInfoSchema } from "@/lib/definitions";
 
-const projectSchema = z.object({
-  name: z.string().min(3, "Project name is too short"),
-  version: z.string().min(1, "Version is required"),
-  customerId: z.string().optional(),
-  description: z.string().optional(),
-  useCase: z.string().min(1, "Use-case is required"),
-  systemType: z.enum(["LLM", "ML", "Hybrid", "RuleBased"]),
-  riskCategory: z.enum(["high", "medium", "low"]),
-});
 
-const basicInfoSchema = z.object({
-  intendedUsers: z.string().min(1, "Intended users are required"),
-  geographicScope: z.string().min(1, "Geographic scope is required"),
-  dataCategories: z.array(z.string()).optional(),
-  dataSources: z.string().optional(),
-  legalRequirements: z.string().optional(),
-});
+const formSchema = ProjectSchema.merge(z.object({
+    intendedUsers: BasicInfoSchema.shape.intendedUsers,
+    geographicScope: BasicInfoSchema.shape.geographicScope,
+    dataCategories: BasicInfoSchema.shape.dataCategories,
+    dataSources: BasicInfoSchema.shape.dataSources,
+    legalRequirements: BasicInfoSchema.shape.legalRequirements,
+}));
 
-const formSchema = projectSchema.merge(basicInfoSchema);
 
 type FormData = z.infer<typeof formSchema>;
 
@@ -79,9 +70,9 @@ export function NewProjectWizard() {
   const form = useForm<FormData>({
     resolver: zodResolver(
       step === 1
-        ? projectSchema
+        ? ProjectSchema
         : step === 2
-        ? basicInfoSchema
+        ? BasicInfoSchema.pick({ intendedUsers: true, geographicScope: true, dataCategories: true, dataSources: true, legalRequirements: true})
         : formSchema
     ),
     defaultValues: {
@@ -98,12 +89,14 @@ export function NewProjectWizard() {
       dataSources: "",
       legalRequirements: "",
     },
+    mode: "onChange",
   });
 
   const formData = useWatch({ control: form.control });
 
   const nextStep = async () => {
-    const isValid = await form.trigger(Object.keys(projectSchema.shape) as (keyof FormData)[]);
+    const fieldsToValidate = Object.keys(ProjectSchema.shape) as (keyof FormData)[];
+    const isValid = await form.trigger(fieldsToValidate);
     if (isValid) {
       setStep(2);
     }
@@ -121,12 +114,10 @@ export function NewProjectWizard() {
     
     let isValid = true;
     if (step === 1 && targetStep > 1) {
-        isValid = await form.trigger(Object.keys(projectSchema.shape) as (keyof FormData)[]);
+        const fields = Object.keys(ProjectSchema.shape) as (keyof FormData)[];
+        isValid = await form.trigger(fields);
     }
-     if (step === 2 && targetStep > 2) {
-        isValid = await form.trigger(Object.keys(basicInfoSchema.shape) as (keyof FormData)[]);
-    }
-
+    
     if (isValid) {
       setStep(targetStep);
     }
@@ -141,7 +132,7 @@ export function NewProjectWizard() {
         title: "Project created!",
         description: `${data.name} has been successfully created.`,
       });
-      router.push("/");
+      // The action will handle the redirect
     } catch (error) {
       console.error(error);
       toast({
@@ -160,14 +151,14 @@ export function NewProjectWizard() {
         <CardHeader>
             <Progress value={progress} className="mb-4" />
             <div className="flex justify-between font-medium text-sm text-muted-foreground">
-                <button onClick={() => jumpToStep(1)} className={step >= 1 ? "text-primary" : ""}>Step 1: Basic Details</button>
-                <button onClick={() => jumpToStep(2)} className={step >= 2 ? "text-primary" : ""}>Step 2: Scope & Context</button>
-                <button onClick={() => jumpToStep(3)} className={step >= 3 ? "text-primary" : ""}>Step 3: Review</button>
+                <button onClick={() => jumpToStep(1)} className={step >= 1 ? "text-primary font-semibold" : ""}>Step 1: Basic Details</button>
+                <button onClick={() => jumpToStep(2)} className={step >= 2 ? "text-primary font-semibold" : ""}>Step 2: Scope & Context</button>
+                <button onClick={() => setStep(3)} className={step >= 3 ? "text-primary font-semibold" : ""}>Step 3: Review</button>
             </div>
         </CardHeader>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
-          <CardContent className="space-y-8">
+          <CardContent className="space-y-8 pt-6">
             {step === 1 && (
               <>
                 <CardTitle>Step 1: Basic Details</CardTitle>
@@ -270,7 +261,7 @@ export function NewProjectWizard() {
                     <FormField control={form.control} name="dataSources" render={({ field }) => (
                         <FormItem className="md:col-span-2">
                             <FormLabel>Data Sources</FormLabel>
-                            <FormControl><Textarea placeholder="Where does the data come from?" {...field} /></FormControl>
+                            <FormControl><Textarea placeholder="Where does the data come from? (comma-separated)" {...field} /></FormControl>
                              <FormMessage />
                         </FormItem>
                     )} />
@@ -320,25 +311,25 @@ export function NewProjectWizard() {
                     <div className="space-y-2">
                         <h3 className="font-semibold text-lg">Basic Details</h3>
                         <div className="rounded-lg border bg-muted/30 p-4 grid grid-cols-2 gap-4 text-sm">
-                            <p><strong>Project Name:</strong> {formData.name}</p>
-                            <p><strong>Version:</strong> {formData.version}</p>
-                            <p><strong>Customer:</strong> {formData.customerId || "-"}</p>
-                            <p><strong>System Type:</strong> {formData.systemType}</p>
-                            <p><strong>Risk Category:</strong> {formData.riskCategory}</p>
-                            <p className="col-span-2"><strong>Description:</strong> {formData.description || "-"}</p>
-                            <p className="col-span-2"><strong>Use-case:</strong> {formData.useCase}</p>
+                            <div><strong>Project Name:</strong> {formData.name}</div>
+                            <div><strong>Version:</strong> {formData.version}</div>
+                            <div><strong>Customer:</strong> {formData.customerId || "-"}</div>
+                            <div><strong>System Type:</strong> {formData.systemType}</div>
+                            <div className="col-span-2"><strong>Risk Category:</strong> <span className="capitalize">{formData.riskCategory}</span></div>
+                            <div className="col-span-2"><strong>Description:</strong> {formData.description || "-"}</div>
+                            <div className="col-span-2"><strong>Use-case:</strong> {formData.useCase}</div>
                         </div>
                     </div>
                     <div className="space-y-2">
                         <h3 className="font-semibold text-lg">Scope & Context</h3>
                          <div className="rounded-lg border bg-muted/30 p-4 grid grid-cols-2 gap-4 text-sm">
-                            <p><strong>Intended Users:</strong> {formData.intendedUsers}</p>
-                            <p><strong>Geographic Scope:</strong> {formData.geographicScope}</p>
-                            <p className="col-span-2"><strong>Legislation:</strong> {formData.legalRequirements || "-"}</p>
-                            <p className="col-span-2"><strong>Data Sources:</strong> {formData.dataSources || "-"}</p>
-                            <p className="col-span-2">
+                            <div><strong>Intended Users:</strong> {formData.intendedUsers}</div>
+                            <div><strong>Geographic Scope:</strong> {formData.geographicScope}</div>
+                            <div className="col-span-2"><strong>Legislation:</strong> {formData.legalRequirements || "-"}</div>
+                            <div className="col-span-2"><strong>Data Sources:</strong> {formData.dataSources || "-"}</div>
+                            <div className="col-span-2">
                                 <strong>Data Categories:</strong> {formData.dataCategories?.map(id => dataCategoryItems.find(item => item.id === id)?.label).join(', ') || "-"}
-                            </p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -354,7 +345,7 @@ export function NewProjectWizard() {
             )}
             {step === 1 && <div></div>}
             {step < 3 ? (
-              <Button onClick={nextStep} type="button">
+              <Button onClick={step === 1 ? nextStep : () => setStep(3)} type="button">
                 Next
               </Button>
             ) : (

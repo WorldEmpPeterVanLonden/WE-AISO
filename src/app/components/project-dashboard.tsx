@@ -127,7 +127,7 @@ export function ProjectDashboard() {
                 {mockProjects.map((project) => (
                   <TableRow key={project.id}>
                     <TableCell className="font-medium">
-                       <Link href={`/project/${project.id}`} className="hover:underline">{project.name}</Link>
+                       <Link href={`/project/${project.id}/overview`} className="hover:underline">{project.name}</Link>
                     </TableCell>
                     <TableCell>
                       <StatusBadge status={project.status as ProjectStatus} />
@@ -147,19 +147,23 @@ export function ProjectDashboard() {
                         <DropdownMenuContent align="end">
                           <DropdownMenuLabel>Actions</DropdownMenuLabel>
                           <DropdownMenuItem asChild>
-                            <Link href={`/project/${project.id}`}>
+                            <Link href={`/project/${project.id}/overview`}>
                               <Eye className="mr-2 h-4 w-4" />
                               Open Project
                             </Link>
                           </DropdownMenuItem>
-                          <DropdownMenuItem>
-                            <FileText className="mr-2 h-4 w-4" />
-                            View Lifecycle
+                          <DropdownMenuItem asChild>
+                             <Link href={`/project/${project.id}/design`}>
+                                <FileText className="mr-2 h-4 w-4" />
+                                View Lifecycle
+                            </Link>
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
-                          <DropdownMenuItem>
-                            <Download className="mr-2 h-4 w-4" />
-                            Export Documents
+                          <DropdownMenuItem asChild>
+                             <Link href={`/project/${project.id}/documents`}>
+                                <Download className="mr-2 h-4 w-4" />
+                                Export Documents
+                            </Link>
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
