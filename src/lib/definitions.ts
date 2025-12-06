@@ -62,3 +62,13 @@ export const ValidationSchema = z.object({
     validationResults: z.string().min(1, "Validation results are required."),
     independentReview: z.string().optional(),
 });
+
+export const DeploymentSchema = z.object({
+  infrastructure: z.string().min(1, "Infrastructure details are required."),
+  region: z.string().optional(),
+  ciCdPipeline: z.string().min(1, "CI/CD pipeline details are required."),
+  accessControl: z.string().min(1, "Access control details are required."),
+  loggingPolicy: z.string().min(1, "Logging policy is required."),
+  secretsManagement: z.string().min(1, "Secrets management strategy is required."),
+  monitoringSetup: z.string().min(1, "Monitoring setup is required."),
+});
