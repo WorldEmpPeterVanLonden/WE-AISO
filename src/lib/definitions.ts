@@ -20,8 +20,7 @@ export const ProjectSchema = z.object({
   auditReadiness: AuditReadinessSchema.optional(),
 });
 
-
-export const BasicInfoSchema = z.object({
+const BasicInfoObjectSchema = z.object({
   businessContext: z.string().optional(),
   intendedUsers: z.array(z.string()).optional(),
   geographicScope: z.string().min(1, "Geographic scope is required."),
@@ -41,7 +40,9 @@ export const BasicInfoSchema = z.object({
   aiActClassification: z.enum(["unacceptable", "high", "limited", "minimal"]).optional(),
   operationalEnvironment: z.string().optional(),
   performanceGoals: z.string().optional(),
-}).refine(data => {
+});
+
+export const BasicInfoSchema = BasicInfoObjectSchema.refine(data => {
     if (data.geographicScope === 'other') {
         return !!data.geographicScopeOther && data.geographicScopeOther.length > 0;
     }
@@ -66,6 +67,7 @@ export const BasicInfoSchema = z.object({
     message: "Please specify the retention policy.",
     path: ["retentionPolicyOther"],
 });
+
 
 export const DesignSchema = z.object({
   functionalRequirements: z.string().min(1, "Functional requirements are required."),
@@ -175,7 +177,7 @@ export const RiskRegisterEntrySchema = z.object({
 export type RiskRegisterEntry = z.infer<typeof RiskRegisterEntrySchema>;
 
 
-export const NewProjectSchema = ProjectSchema.merge(BasicInfoSchema.pick({
+export const NewProjectSchema = ProjectSchema.merge(BasicInfoObjectSchema.pick({
     intendedUsers: true,
     geographicScope: true,
     dataCategories: true,
