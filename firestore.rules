@@ -9,6 +9,10 @@ service cloud.firestore {
     function isOwner(userId) {
       return request.auth.uid == userId;
     }
+    
+    function isProjectOwner(projectId) {
+      return get(/databases/$(database)/documents/projects/$(projectId)).data.owner == request.auth.uid;
+    }
 
     // Secure all paths by default
     match /{document=**} {
@@ -21,12 +25,15 @@ service cloud.firestore {
       allow write: if isOwner(userId);
     }
     
-    // Projects and their subcollections can be read and written by the owner
+    // Projects can be read by anyone signed in, but only created, updated, or deleted by the owner.
     match /projects/{projectId} {
-      allow read, write: if isSignedIn() && resource.data.owner == request.auth.uid;
+      allow read: if isSignedIn() && isProjectOwner(projectId);
+      allow create: if isSignedIn() && request.resource.data.owner == request.auth.uid;
+      allow update, delete: if isSignedIn() && isProjectOwner(projectId);
       
+      // Subcollections of projects can be read and written by the project owner.
       match /{allChildren=**} {
-        allow read, write: if isSignedIn() && get(/databases/$(database)/documents/projects/$(projectId)).data.owner == request.auth.uid;
+        allow read, write: if isSignedIn() && isProjectOwner(projectId);
       }
     }
   }
