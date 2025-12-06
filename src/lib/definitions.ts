@@ -88,3 +88,12 @@ export const RetirementSchema = z.object({
   dataDestructionProcedures: z.string().min(1, "Data destruction procedures are required."),
   userCommunicationPlan: z.string().min(1, "User communication plan is required."),
 });
+
+export const GovernanceSchema = z.object({
+  policyReferences: z.string().optional(),
+  rolesAndResponsibilities: z.string().min(1, "Roles and Responsibilities are required."),
+  documentationVersioning: z.string().min(1, "Documentation Versioning is required."),
+  auditRequirements: z.string().min(1, "Audit Requirements are required."),
+  changeManagement: z.string().min(1, "Change Management is required."),
+  qualityControls: z.string().min(1, "Quality Controls are required."),
+});
