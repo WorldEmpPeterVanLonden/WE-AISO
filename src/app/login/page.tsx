@@ -2,7 +2,6 @@
 import { AuthForm } from '@/app/components/auth-form';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { ShieldCheck } from 'lucide-react';
-import Link from 'next/link';
 
 export default function LoginPage() {
   return (
@@ -17,13 +16,7 @@ export default function LoginPage() {
             <CardDescription>Sign in to manage your AI compliance projects.</CardDescription>
           </CardHeader>
           <CardContent>
-            <AuthForm mode="login" />
-             <p className="mt-6 text-center text-sm text-muted-foreground">
-              Don&apos;t have an account?{' '}
-              <Link href="/signup" className="font-semibold text-primary hover:underline">
-                Sign up
-              </Link>
-            </p>
+            <AuthForm />
           </CardContent>
         </Card>
       </div>

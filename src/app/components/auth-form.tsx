@@ -5,7 +5,6 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import {
-  createUserWithEmailAndPassword,
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
   type Auth,
@@ -35,11 +34,7 @@ const formSchema = z.object({
 
 type FormData = z.infer<typeof formSchema>;
 
-interface AuthFormProps {
-  mode: 'login' | 'signup';
-}
-
-export function AuthForm({ mode }: AuthFormProps) {
+export function AuthForm() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
@@ -79,17 +74,10 @@ export function AuthForm({ mode }: AuthFormProps) {
   const onSubmit = async (data: FormData) => {
     setIsLoading(true);
     try {
-      if (mode === 'signup') {
-        await createUserWithEmailAndPassword(auth as Auth, data.email, data.password);
-      } else {
-        await signInWithEmailAndPassword(auth as Auth, data.email, data.password);
-      }
+      await signInWithEmailAndPassword(auth as Auth, data.email, data.password);
       toast({
-        title: mode === 'signup' ? 'Account Created!' : 'Signed In!',
-        description:
-          mode === 'signup'
-            ? 'You have been successfully signed up.'
-            : 'You have been successfully signed in.',
+        title: 'Signed In!',
+        description: 'You have been successfully signed in.',
       });
       router.push('/dashboard');
     } catch (error: any)
@@ -134,22 +122,20 @@ export function AuthForm({ mode }: AuthFormProps) {
             </FormItem>
           )}
         />
-        {mode === 'login' && (
-           <div className="text-right">
-             <Button
-              type="button"
-              variant="link"
-              className="p-0 h-auto font-normal text-sm"
-              onClick={handlePasswordReset}
-              disabled={isLoading}
-             >
-               Forgot password?
-             </Button>
-           </div>
-        )}
+        <div className="text-right">
+            <Button
+            type="button"
+            variant="link"
+            className="p-0 h-auto font-normal text-sm"
+            onClick={handlePasswordReset}
+            disabled={isLoading}
+            >
+            Forgot password?
+            </Button>
+        </div>
         <Button type="submit" className="w-full" disabled={isLoading}>
           {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          {mode === 'login' ? 'Sign In' : 'Sign Up'}
+          Sign In
         </Button>
       </form>
     </Form>
