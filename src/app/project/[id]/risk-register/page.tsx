@@ -19,7 +19,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { MoreHorizontal, PlusCircle } from "lucide-react";
+import { MoreHorizontal, PlusCircle, UserCheck, Shield, Lock, Target, AlertTriangle, Scale, BarChart2 } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { RiskDialog } from "@/app/components/risk-dialog";
 import type { RiskRegisterEntry } from "@/lib/definitions";
+import React from "react";
 
 const mockRisks: (RiskRegisterEntry & { id: string })[] = [
   {
@@ -103,6 +104,26 @@ const StatusBadge = ({ status }: { status: "open" | "mitigated" | "accepted" }) 
   return <Badge variant={variant} className="capitalize">{status}</Badge>;
 };
 
+const categoryIcons: Record<RiskRegisterEntry['category'], React.ElementType> = {
+    privacy: UserCheck,
+    security: Lock,
+    bias: BarChart2,
+    robustness: Shield,
+    misuse: AlertTriangle,
+    legal: Scale,
+    accuracy: Target,
+};
+
+const CategoryCell = ({ category }: { category: RiskRegisterEntry['category'] }) => {
+    const Icon = categoryIcons[category] || AlertTriangle;
+    return (
+        <div className="flex items-center gap-2">
+            <Icon className="h-4 w-4 text-muted-foreground" />
+            <span className="capitalize">{category}</span>
+        </div>
+    );
+};
+
 export default function RiskRegisterPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [risks, setRisks] = useState(mockRisks);
@@ -154,7 +175,9 @@ export default function RiskRegisterPage() {
               {risks.map((risk) => (
                 <TableRow key={risk.id}>
                   <TableCell className="font-medium">{risk.title}</TableCell>
-                  <TableCell className="capitalize">{risk.category}</TableCell>
+                  <TableCell>
+                      <CategoryCell category={risk.category} />
+                  </TableCell>
                   <TableCell className="text-center">{risk.impact}</TableCell>
                   <TableCell className="text-center">{risk.likelihood}</TableCell>
                   <TableCell>

@@ -19,6 +19,7 @@ import {
   Telescope,
   Users,
   Bot,
+  FileText,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -38,7 +39,7 @@ import {
 
 const topNavItems = [
   { href: "/overview", icon: Home, label: "Overview" },
-  { href: "/basic-info", icon: Users, label: "Basic Info" },
+  { href: "/basic-info", icon: FileText, label: "Basic Info" },
 ];
 
 const lifecycleNavItems = [
