@@ -73,7 +73,7 @@ export default function OverviewPage() {
                 <Clock className="h-6 w-6 text-primary" />
                 <div>
                     <span className="text-muted-foreground">Last Review</span>
-                    <p className="font-semibold">{format(mockProjectDetails.lastReview, "dd MMMM yyyy")}</p>
+                    <div className="font-semibold">{format(mockProjectDetails.lastReview, "dd.MM.yy")}</div>
                 </div>
             </div>
              <div className="flex items-center gap-3 p-4 bg-muted/50 rounded-lg">
