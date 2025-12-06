@@ -188,14 +188,14 @@ export function NewProjectWizard() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <FormField control={form.control} name="name" render={({ field }) => (
                         <FormItem className="md:col-span-2">
-                            <FormLabel>Project Name</FormLabel>
+                            <FormLabel>Project Name <span className="text-destructive">*</span></FormLabel>
                             <FormControl><Input placeholder="e.g. Customer Service Chatbot" {...field} /></FormControl>
                             <FormMessage />
                         </FormItem>
                     )} />
                     <FormField control={form.control} name="version" render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Version</FormLabel>
+                            <FormLabel>Version <span className="text-destructive">*</span></FormLabel>
                             <FormControl><Input placeholder="e.g. 1.0.0" {...field} /></FormControl>
                             <FormMessage />
                         </FormItem>
@@ -216,7 +216,7 @@ export function NewProjectWizard() {
                     )} />
                     <FormField control={form.control} name="useCase" render={({ field }) => (
                         <FormItem className="md:col-span-2">
-                            <FormLabel>Use-case</FormLabel>
+                            <FormLabel>Use-case <span className="text-destructive">*</span></FormLabel>
                             <FormControl><Textarea placeholder="What is the purpose of the AI system?" {...field} /></FormControl>
                             <FormMessage />
                         </FormItem>
@@ -268,7 +268,7 @@ export function NewProjectWizard() {
                     )} />
                     <FormField control={form.control} name="geographicScope" render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Geographic Scope</FormLabel>
+                            <FormLabel>Geographic Scope <span className="text-destructive">*</span></FormLabel>
                             <FormControl><Input placeholder="e.g. Netherlands, EU, Worldwide" {...field} /></FormControl>
                             <FormMessage />
                         </FormItem>
