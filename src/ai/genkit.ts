@@ -2,7 +2,7 @@
 import { genkit } from 'genkit';
 import { vertexAI } from '@genkit-ai/vertexai';
 
-// helper voor env-vars met fallback
+// helper for env-vars with fallback
 function requireEnv(key: string, fallback: string): string {
   const val = process.env[key];
   return typeof val === 'string' && val.length > 0 ? val : fallback;
