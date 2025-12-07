@@ -9,18 +9,23 @@ import { GenerateDocumentSchema } from "@/ai/schemas/ai-technical-file-generatio
 import { getApps, initializeApp, type App, getApp } from "firebase-admin/app";
 import { getFirestore, serverTimestamp } from "firebase-admin/firestore";
 
-// Initialize Firebase Admin SDK
-let app: App;
-if (!getApps().length) {
-  app = initializeApp();
-} else {
-  app = getApp();
-}
-const firestore = getFirestore(app);
-
 
 export async function createProject(formData: unknown) {
   console.log("[Action] createProject received data:", formData);
+
+  // Initialize Firebase Admin SDK inside the function
+  let app: App;
+  if (!getApps().length) {
+    console.log("[Action DEBUG] Initializing Firebase Admin SDK...");
+    app = initializeApp();
+    console.log("[Action DEBUG] Firebase Admin SDK initialized.");
+  } else {
+    console.log("[Action DEBUG] Re-using existing Firebase Admin SDK app instance.");
+    app = getApp();
+  }
+  const firestore = getFirestore(app);
+  console.log("[Action DEBUG] Firestore instance obtained.");
+
 
   const validatedFields = NewProjectSchema.safeParse(formData);
 
