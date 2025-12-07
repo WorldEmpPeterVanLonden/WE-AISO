@@ -1,3 +1,4 @@
+
 'use server';
 
 import { revalidatePath } from "next/cache";
@@ -64,19 +65,19 @@ export async function createProject(formData: unknown) {
       status: 'draft',
     };
     
-    // DEBUG: Log het object dat naar de hoofdcollectie wordt geschreven
-    console.log("[Action DEBUG] Data voor 'aiso_projects' collectie:", JSON.stringify(projectData, null, 2));
-
-    const projectRef = await firestore.collection("aiso_projects").add(projectData);
-    console.log("[Action] 12. Project document succesvol aangemaakt met ID: ", projectRef.id);
-
     const basicInfoData = {
       intendedUsers, geographicScope, dataCategories, dataSources, legalRequirements,
       owner: owner,
     };
     
-    // DEBUG: Log het object dat naar de subcollectie wordt geschreven
-    console.log("[Action DEBUG] Data voor 'basicInfo' subcollectie:", JSON.stringify(basicInfoData, null, 2));
+    // --- VALIDATION AND LOGGING AS REQUESTED ---
+    console.log("[Action] 11. INSPECT: Data wordt naar 'aiso_projects' collectie geschreven:", JSON.stringify(projectData, null, 2));
+
+    const projectRef = await firestore.collection("aiso_projects").add(projectData);
+    console.log("[Action] 12. Project document succesvol aangemaakt met ID: ", projectRef.id);
+    
+    // --- LOGGING FOR SUB-COLLECTION ---
+    console.log("[Action] 13. INSPECT: Data wordt naar 'basicInfo' subcollectie geschreven:", JSON.stringify(basicInfoData, null, 2));
     
     await firestore.collection("aiso_projects").doc(projectRef.id).collection("basicInfo").doc("details").set(basicInfoData);
     console.log("[Action] 14. BasicInfo sub-document succesvol aangemaakt.");
