@@ -11,9 +11,8 @@ import { getFirestore, serverTimestamp } from "firebase-admin/firestore";
 
 
 export async function createProject(formData: unknown) {
-  console.log("[Action] createProject received data:", formData);
-
   // Initialize Firebase Admin SDK inside the function
+  // to ensure it's only done when the action is called.
   let app: App;
   if (!getApps().length) {
     console.log("[Action DEBUG] Initializing Firebase Admin SDK...");
@@ -27,6 +26,7 @@ export async function createProject(formData: unknown) {
   console.log("[Action DEBUG] Firestore instance obtained.");
 
 
+  console.log("[Action] createProject received data:", formData);
   const validatedFields = NewProjectSchema.safeParse(formData);
 
   if (!validatedFields.success) {
