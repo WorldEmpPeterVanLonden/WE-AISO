@@ -2,13 +2,22 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 import { z } from "zod";
 import { NewProjectSchema } from "./definitions";
 import { generateAiTechnicalFile } from "@/ai/ai-technical-file-generation";
 import { GenerateDocumentSchema } from "@/ai/schemas/ai-technical-file-generation";
-import { getFirebase } from "@/firebase/server";
-import { collection, addDoc, serverTimestamp, doc, setDoc } from "firebase/firestore";
+import { getApps, initializeApp, type App, getApp } from "firebase-admin/app";
+import { getFirestore, serverTimestamp } from "firebase-admin/firestore";
+
+// Initialize Firebase Admin SDK
+let app: App;
+if (!getApps().length) {
+  app = initializeApp();
+} else {
+  app = getApp();
+}
+const firestore = getFirestore(app);
+
 
 export async function createProject(formData: unknown) {
   console.log("[Action] createProject received data:", formData);
@@ -25,8 +34,6 @@ export async function createProject(formData: unknown) {
     name, version, customerId, description, useCase, systemType, riskCategory, owner,
     intendedUsers, geographicScope, dataCategories, dataSources, legalRequirements
   } = validatedFields.data;
-
-  const { firestore } = await getFirebase();
   
   try {
     const projectData = {
@@ -36,7 +43,7 @@ export async function createProject(formData: unknown) {
       status: 'draft',
     };
     console.log("[Action] Attempting to create project document with data:", projectData);
-    const projectRef = await addDoc(collection(firestore, "aiso_projects"), projectData);
+    const projectRef = await firestore.collection("aiso_projects").add(projectData);
     console.log("[Action] Project document created successfully with ID: ", projectRef.id);
     
     // Add the owner to the basicInfoData to satisfy security rules on create.
@@ -47,7 +54,7 @@ export async function createProject(formData: unknown) {
     
     console.log("[Action] Attempting to create basicInfo sub-document with data:", basicInfoData);
     // Use a specific doc ID for the singleton basic info document.
-    await setDoc(doc(firestore, "aiso_projects", projectRef.id, "basicInfo", "details"), basicInfoData);
+    await firestore.collection("aiso_projects").doc(projectRef.id).collection("basicInfo").doc("details").set(basicInfoData);
     console.log("[Action] basicInfo sub-document created successfully.");
     
   } catch (error) {
@@ -56,8 +63,6 @@ export async function createProject(formData: unknown) {
   }
 
   revalidatePath("/dashboard");
-  // Do not redirect here, let the client handle it upon success.
-  // redirect("/dashboard");
 }
 
 export async function generateDocumentAction(formData: unknown) {
