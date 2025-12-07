@@ -134,7 +134,9 @@ export function NewProjectWizard() {
 
 
   async function onSubmit(data: FormData) {
+    console.log("[Wizard] onSubmit triggered.");
     if (!user) {
+        console.error("[Wizard] User not authenticated during onSubmit.");
         toast({
             variant: "destructive",
             title: "Authentication Error",
@@ -142,6 +144,8 @@ export function NewProjectWizard() {
         });
         return;
     }
+    console.log("[Wizard] User object available:", { uid: user.uid, email: user.email });
+    console.log("[Wizard] Form data being submitted:", data);
     setIsSubmitting(true);
     try {
       const projectDataWithOwner = { ...data, owner: user.uid };
@@ -152,11 +156,11 @@ export function NewProjectWizard() {
       });
       router.push('/dashboard');
     } catch (error) {
-      console.error(error);
+      console.error("[Wizard] Error caught during createProject call:", error);
       toast({
         variant: "destructive",
         title: "Oh no! Something went wrong.",
-        description: "Could not create the project. Please try again.",
+        description: "Could not create the project. Please check the console for more details.",
       });
     } finally {
       setIsSubmitting(false);

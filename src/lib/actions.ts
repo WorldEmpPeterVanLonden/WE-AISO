@@ -11,13 +11,15 @@ import { getFirebase } from "@/firebase/server";
 import { collection, addDoc, serverTimestamp, doc, setDoc } from "firebase/firestore";
 
 export async function createProject(formData: unknown) {
+  console.log("[Action] createProject received data:", formData);
 
   const validatedFields = NewProjectSchema.safeParse(formData);
 
   if (!validatedFields.success) {
-    console.error(validatedFields.error.flatten().fieldErrors);
+    console.error("[Action] Zod validation failed:", validatedFields.error.flatten().fieldErrors);
     throw new Error("Invalid form data.");
   }
+  console.log("[Action] Zod validation successful:", validatedFields.data);
   
   const {
     name, version, customerId, description, useCase, systemType, riskCategory, owner,
@@ -33,7 +35,9 @@ export async function createProject(formData: unknown) {
       updatedAt: serverTimestamp(),
       status: 'draft',
     };
+    console.log("[Action] Attempting to create project document with data:", projectData);
     const projectRef = await addDoc(collection(firestore, "aiso_projects"), projectData);
+    console.log("[Action] Project document created successfully with ID: ", projectRef.id);
     
     // Add the owner to the basicInfoData to satisfy security rules on create.
     const basicInfoData = {
@@ -41,13 +45,13 @@ export async function createProject(formData: unknown) {
       owner: owner, // Ensure owner is present for the security rule check
     };
     
+    console.log("[Action] Attempting to create basicInfo sub-document with data:", basicInfoData);
     // Use a specific doc ID for the singleton basic info document.
     await setDoc(doc(firestore, "aiso_projects", projectRef.id, "basicInfo", "details"), basicInfoData);
-    
-    console.log("Project created successfully with ID: ", projectRef.id);
+    console.log("[Action] basicInfo sub-document created successfully.");
     
   } catch (error) {
-    console.error("Error creating project:", error);
+    console.error("[Action] Error creating project in Firestore:", error);
     throw new Error("Could not create project in Firestore.");
   }
 
