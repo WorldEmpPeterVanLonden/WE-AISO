@@ -11,7 +11,7 @@ export async function getFirebase() {
     // In this environment, the service account is automatically discovered.
     // We don't need to manually parse the service account JSON.
     app = initializeApp({
-      projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+      projectId: "we-portal-b9e8d",
     });
     auth = getAuth(app);
     firestore = getFirestore(app);
