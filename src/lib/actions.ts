@@ -6,27 +6,37 @@ import { z } from "zod";
 import { NewProjectSchema } from "./definitions";
 import { generateAiTechnicalFile } from "@/ai/ai-technical-file-generation";
 import { GenerateDocumentSchema } from "@/ai/schemas/ai-technical-file-generation";
-import { getApps, initializeApp, type App, getApp } from "firebase-admin/app";
-import { getFirestore, serverTimestamp } from "firebase-admin/firestore";
-
+import * as admin from 'firebase-admin';
 
 export async function createProject(formData: unknown) {
-  // Initialize Firebase Admin SDK inside the function
-  // to ensure it's only done when the action is called.
-  let app: App;
-  if (!getApps().length) {
+  console.log("[Action] createProject received data:", formData);
+
+  // Initialize Firebase Admin SDK if not already initialized
+  if (!admin.apps.length) {
     console.log("[Action DEBUG] Initializing Firebase Admin SDK...");
-    app = initializeApp();
-    console.log("[Action DEBUG] Firebase Admin SDK initialized.");
+    const serviceAccountString = process.env.FIREBASE_SERVICE_ACCOUNT;
+    if (!serviceAccountString) {
+      console.error("[Action ERROR] FIREBASE_SERVICE_ACCOUNT environment variable is not set.");
+      throw new Error("Firebase Admin credentials not configured.");
+    }
+    try {
+      // The cert function can handle a JSON string directly. No need to parse.
+      admin.initializeApp({
+        credential: admin.credential.cert(serviceAccountString),
+        projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+      });
+      console.log("[Action DEBUG] Firebase Admin SDK initialized successfully.");
+    } catch (e: any) {
+      console.error("[Action ERROR] Failed to initialize Firebase Admin SDK:", e.message);
+      throw new Error(`Failed to initialize Firebase Admin SDK. Please check the service account configuration. Original error: ${e.message}`);
+    }
   } else {
     console.log("[Action DEBUG] Re-using existing Firebase Admin SDK app instance.");
-    app = getApp();
   }
-  const firestore = getFirestore(app);
+  
+  const firestore = admin.firestore();
   console.log("[Action DEBUG] Firestore instance obtained.");
 
-
-  console.log("[Action] createProject received data:", formData);
   const validatedFields = NewProjectSchema.safeParse(formData);
 
   if (!validatedFields.success) {
@@ -34,35 +44,34 @@ export async function createProject(formData: unknown) {
     throw new Error("Invalid form data.");
   }
   console.log("[Action] Zod validation successful:", validatedFields.data);
-  
+
   const {
     name, version, customerId, description, useCase, systemType, riskCategory, owner,
     intendedUsers, geographicScope, dataCategories, dataSources, legalRequirements
   } = validatedFields.data;
-  
+
   try {
     console.log("[Action DEBUG] Entering try block to create project.");
     const projectData = {
       name, version, customerId, description, useCase, systemType, riskCategory, owner,
-      createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp(),
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
       status: 'draft',
     };
     console.log("[Action DEBUG] Project data object prepared:", projectData);
+
     const projectRef = await firestore.collection("aiso_projects").add(projectData);
     console.log("[Action DEBUG] Project document created successfully with ID: ", projectRef.id);
-    
-    // Add the owner to the basicInfoData to satisfy security rules on create.
+
     const basicInfoData = {
       intendedUsers, geographicScope, dataCategories, dataSources, legalRequirements,
-      owner: owner, // Ensure owner is present for the security rule check
+      owner: owner,
     };
-    
+
     console.log("[Action DEBUG] BasicInfo data object prepared:", basicInfoData);
-    // Use a specific doc ID for the singleton basic info document.
     await firestore.collection("aiso_projects").doc(projectRef.id).collection("basicInfo").doc("details").set(basicInfoData);
     console.log("[Action DEBUG] BasicInfo sub-document created successfully.");
-    
+
   } catch (error) {
     console.error("[Action] Error creating project in Firestore:", error);
     throw new Error("Could not create project in Firestore.");
@@ -84,7 +93,6 @@ export async function generateDocumentAction(formData: unknown) {
   console.log(`Generating document for project ${projectId}...`);
 
   try {
-    // TODO: 1. Fetch all data from Firestore 
     console.log("Fetching project data from Firestore...");
     const DATA = {
         systemDefinition: "Mock System Definition: Customer support chatbot...",
@@ -97,18 +105,15 @@ export async function generateDocumentAction(formData: unknown) {
         datasetSummary: "Mock Dataset: Anonymized customer conversations...",
     };
 
-    // 2. Call the AI flow
     console.log("Calling AI generation flow...");
     const generatedFile = await generateAiTechnicalFile({
       ...DATA,
       format,
     });
     
-    // 3. (Future) Generate PDF and save to Firebase Storage
     console.log("Simulating PDF generation and upload to Firebase Storage...");
     const storagePath = `/documents/${projectId}/${documentType}_${version}.pdf`;
     
-    // 4. (Future) Create a record in Firestore
     console.log(`Creating Firestore record at /aiso_projects/${projectId}/documents`);
 
   } catch(error) {
@@ -122,10 +127,6 @@ export async function generateDocumentAction(formData: unknown) {
 
 export type AiHealthOutput = { status: 'ok' };
 
-/**
- * A simple health check function to verify that the server action endpoint is reachable.
- * @returns A promise that resolves to an object with a status of 'ok'.
- */
 export async function healthCheck(): Promise<AiHealthOutput> {
   return { status: 'ok' };
 }
