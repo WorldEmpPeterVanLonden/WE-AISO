@@ -36,15 +36,16 @@ export async function createProject(formData: unknown) {
   } = validatedFields.data;
   
   try {
+    console.log("[Action DEBUG] Entering try block to create project.");
     const projectData = {
       name, version, customerId, description, useCase, systemType, riskCategory, owner,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
       status: 'draft',
     };
-    console.log("[Action] Attempting to create project document with data:", projectData);
+    console.log("[Action DEBUG] Project data object prepared:", projectData);
     const projectRef = await firestore.collection("aiso_projects").add(projectData);
-    console.log("[Action] Project document created successfully with ID: ", projectRef.id);
+    console.log("[Action DEBUG] Project document created successfully with ID: ", projectRef.id);
     
     // Add the owner to the basicInfoData to satisfy security rules on create.
     const basicInfoData = {
@@ -52,10 +53,10 @@ export async function createProject(formData: unknown) {
       owner: owner, // Ensure owner is present for the security rule check
     };
     
-    console.log("[Action] Attempting to create basicInfo sub-document with data:", basicInfoData);
+    console.log("[Action DEBUG] BasicInfo data object prepared:", basicInfoData);
     // Use a specific doc ID for the singleton basic info document.
     await firestore.collection("aiso_projects").doc(projectRef.id).collection("basicInfo").doc("details").set(basicInfoData);
-    console.log("[Action] basicInfo sub-document created successfully.");
+    console.log("[Action DEBUG] BasicInfo sub-document created successfully.");
     
   } catch (error) {
     console.error("[Action] Error creating project in Firestore:", error);
