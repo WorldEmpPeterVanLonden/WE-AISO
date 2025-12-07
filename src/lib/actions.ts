@@ -23,11 +23,9 @@ export async function createProject(formData: unknown) {
       }
       console.log("[Action] 4. Service Account String gevonden.");
 
-      const serviceAccount = JSON.parse(serviceAccountString);
-      console.log("[Action] 5. Service Account JSON succesvol geparsed.");
-
+      // DE FOUT ZAT HIER: JSON.parse is niet nodig. De cert() functie kan de string direct verwerken.
       admin.initializeApp({
-        credential: admin.credential.cert(serviceAccount),
+        credential: admin.credential.cert(serviceAccountString),
         projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
       });
       console.log("[Action] 6. Firebase Admin SDK succesvol geïnitialiseerd.");
@@ -35,7 +33,8 @@ export async function createProject(formData: unknown) {
       console.log("[Action] 3. Bestaande Firebase Admin SDK instantie wordt hergebruikt.");
     }
   } catch (e: any) {
-    console.error("[Action ERROR] Fout bij initialiseren van Firebase Admin SDK:", e.message);
+    console.error("[Action ERROR] Fout bij initialiseren van Firebase Admin SDK:", e);
+    // Verpak de originele foutmelding voor betere debugging
     throw new Error(`Initialisatie van Firebase Admin SDK mislukt. Error: ${e.message}`);
   }
 
