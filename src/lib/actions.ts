@@ -20,8 +20,10 @@ export async function createProject(formData: unknown) {
         throw new Error("Firebase Admin credentials not configured on the server.");
       }
       
+      const serviceAccount = JSON.parse(serviceAccountString);
+
       admin.initializeApp({
-        credential: admin.credential.cert(serviceAccountString),
+        credential: admin.credential.cert(serviceAccount),
         projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
       });
       console.log("[Action DEBUG] Firebase Admin SDK initialized successfully.");
