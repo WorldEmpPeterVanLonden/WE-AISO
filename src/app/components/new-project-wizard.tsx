@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect }from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -37,8 +37,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { createProject } from "@/lib/actions";
 import { toast } from "@/hooks/use-toast";
-import { Loader2 } from "lucide-react";
-import { Progress } from "@/components/ui/progress";
+import { Loader2, Progress, AlertTriangle, CheckCircle } from "lucide-react";
 import { ProjectSchema as Step1Schema, NewProjectSchema, BasicInfoObjectSchema } from "@/lib/definitions";
 import { useUser } from "@/firebase";
 
@@ -73,6 +72,7 @@ const dataCategoryItems = [
 export function NewProjectWizard() {
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isFormValid, setIsFormValid] = useState(false);
   const router = useRouter();
   const { user, loading: userLoading } = useUser();
 
@@ -100,6 +100,19 @@ export function NewProjectWizard() {
     },
     mode: "onChange",
   });
+  
+  useEffect(() => {
+    const checkFormValidity = async () => {
+        const isValid = await form.trigger();
+        setIsFormValid(isValid);
+    };
+
+    if (step === 3) {
+      // Re-validate the entire form when entering step 3
+      checkFormValidity();
+    }
+  }, [step, form]);
+
 
   const formData = useWatch({ control: form.control });
 
@@ -354,6 +367,19 @@ export function NewProjectWizard() {
                 <>
                 <CardTitle>Step 3: Review & Confirm</CardTitle>
                 <CardDescription>Review the entered details and create the project.</CardDescription>
+                
+                {isFormValid ? (
+                    <div className="rounded-lg border border-green-300 bg-green-50 p-3 text-sm text-green-800 flex items-center gap-3">
+                        <CheckCircle className="h-5 w-5"/>
+                        <p>All required fields are filled. You are ready to create the project.</p>
+                    </div>
+                ) : (
+                    <div className="rounded-lg border border-yellow-300 bg-yellow-50 p-3 text-sm text-yellow-800 flex items-center gap-3">
+                        <AlertTriangle className="h-5 w-5"/>
+                        <p>One or more required fields are missing. Please go back to fill them in.</p>
+                    </div>
+                )}
+                
                 <div className="space-y-6">
                     <div className="space-y-2">
                         <h3 className="font-semibold text-lg">Basic Details</h3>
@@ -402,7 +428,7 @@ export function NewProjectWizard() {
               </Button>
             )}
             {step === 3 && (
-              <Button type="submit" disabled={isSubmitting || userLoading}>
+              <Button type="submit" disabled={isSubmitting || userLoading || !isFormValid}>
                 {isSubmitting ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
