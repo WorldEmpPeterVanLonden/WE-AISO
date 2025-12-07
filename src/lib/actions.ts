@@ -6,34 +6,33 @@ import { z } from "zod";
 import { NewProjectSchema } from "./definitions";
 import { generateAiTechnicalFile } from "@/ai/ai-technical-file-generation";
 import { GenerateDocumentSchema } from "@/ai/schemas/ai-technical-file-generation";
-import * as admin from 'firebase-admin';
+import *dmin from 'firebase-admin';
 
 export async function createProject(formData: unknown) {
   console.log("[Action] createProject received data:", formData);
 
-  // Initialize Firebase Admin SDK if not already initialized
-  if (!admin.apps.length) {
-    console.log("[Action DEBUG] Initializing Firebase Admin SDK...");
-    const serviceAccountString = process.env.FIREBASE_SERVICE_ACCOUNT;
-    if (!serviceAccountString) {
-      console.error("[Action ERROR] FIREBASE_SERVICE_ACCOUNT environment variable is not set.");
-      throw new Error("Firebase Admin credentials not configured.");
-    }
-    try {
-      // The cert function can handle a JSON string directly. No need to parse.
+  try {
+    if (!admin.apps.length) {
+      console.log("[Action DEBUG] Initializing Firebase Admin SDK...");
+      const serviceAccountString = process.env.ADMIN_FIREBASE_SERVICE_ACCOUNT;
+      if (!serviceAccountString) {
+        console.error("[Action ERROR] ADMIN_FIREBASE_SERVICE_ACCOUNT environment variable is not set.");
+        throw new Error("Firebase Admin credentials not configured on the server.");
+      }
+      
       admin.initializeApp({
         credential: admin.credential.cert(serviceAccountString),
         projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
       });
       console.log("[Action DEBUG] Firebase Admin SDK initialized successfully.");
-    } catch (e: any) {
-      console.error("[Action ERROR] Failed to initialize Firebase Admin SDK:", e.message);
-      throw new Error(`Failed to initialize Firebase Admin SDK. Please check the service account configuration. Original error: ${e.message}`);
+    } else {
+      console.log("[Action DEBUG] Re-using existing Firebase Admin SDK app instance.");
     }
-  } else {
-    console.log("[Action DEBUG] Re-using existing Firebase Admin SDK app instance.");
+  } catch (e: any) {
+    console.error("[Action ERROR] Failed to initialize Firebase Admin SDK:", e.message);
+    throw new Error(`Failed to initialize Firebase Admin SDK. Please check the service account configuration. Original error: ${e.message}`);
   }
-  
+
   const firestore = admin.firestore();
   console.log("[Action DEBUG] Firestore instance obtained.");
 
