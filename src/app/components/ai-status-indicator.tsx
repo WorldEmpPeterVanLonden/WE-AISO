@@ -13,10 +13,10 @@ export function AiStatusIndicator() {
     switch (status) {
       case 'connected':
         return {
-          color: 'bg-blue-500',
+          color: 'bg-green-500',
           text: 'AI Connected',
           tooltip: 'Connection to the AI service is active.',
-          icon: <Bot className="h-4 w-4 text-blue-500" />
+          icon: <Bot className="h-4 w-4 text-green-500" />
         };
       case 'disconnected':
         return {
