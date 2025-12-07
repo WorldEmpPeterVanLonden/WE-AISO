@@ -3,9 +3,17 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Allow any authenticated user to read and write to any document.
-    // This is a permissive rule suitable for development.
-    match /{document=**} {
+
+    // Explicitly allow authenticated users to manage their profiles.
+    match /aiso_user-profiles/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Rules for the main projects collection and all its subcollections.
+    match /aiso_projects/{projectId}/{document=**} {
+      // Allow any authenticated user to create, read, update, and delete.
+      // This is suitable for the development phase.
+      // For production, you would restrict this to project owners/members.
       allow read, write: if request.auth != null;
     }
   }
