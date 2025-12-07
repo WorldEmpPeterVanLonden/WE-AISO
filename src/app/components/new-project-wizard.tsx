@@ -37,7 +37,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { createProject } from "@/lib/actions";
 import { toast } from "@/hooks/use-toast";
-import { Loader2, Progress, AlertTriangle, CheckCircle } from "lucide-react";
+import { Loader2, AlertTriangle, CheckCircle } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
 import { ProjectSchema as Step1Schema, NewProjectSchema, BasicInfoObjectSchema } from "@/lib/definitions";
 import { useUser } from "@/firebase";
 
