@@ -1,8 +1,6 @@
-
 'use server';
 
 import { revalidatePath } from "next/cache";
-import { z } from "zod";
 import { NewProjectSchema } from "./definitions";
 import { generateAiTechnicalFile } from "@/ai/ai-technical-file-generation";
 import { GenerateDocumentSchema } from "@/ai/schemas/ai-technical-file-generation";
@@ -15,6 +13,7 @@ export async function createProject(formData: unknown) {
   try {
     if (!admin.apps.length) {
       console.log("[Action] 3. Firebase Admin SDK wordt geïnitialiseerd...");
+      
       const serviceAccountString = process.env.ADMIN_FIREBASE_SERVICE_ACCOUNT;
       
       if (!serviceAccountString) {
@@ -23,8 +22,11 @@ export async function createProject(formData: unknown) {
       }
       console.log("[Action] 4. Service Account String gevonden.");
 
+      const serviceAccount = JSON.parse(serviceAccountString); 
+      console.log("[Action] 5. Service Account String succesvol geparsed naar object.");
+
       admin.initializeApp({
-        credential: admin.credential.cert(serviceAccountString),
+        credential: admin.credential.cert(serviceAccount),
         projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
       });
       console.log("[Action] 6. Firebase Admin SDK succesvol geïnitialiseerd.");
@@ -61,7 +63,9 @@ export async function createProject(formData: unknown) {
       updatedAt: admin.firestore.FieldValue.serverTimestamp(),
       status: 'draft',
     };
-    console.log("[Action] 11. Project data die wordt weggeschreven:", projectData);
+    
+    // DEBUG: Log het object dat naar de hoofdcollectie wordt geschreven
+    console.log("[Action DEBUG] Data voor 'aiso_projects' collectie:", JSON.stringify(projectData, null, 2));
 
     const projectRef = await firestore.collection("aiso_projects").add(projectData);
     console.log("[Action] 12. Project document succesvol aangemaakt met ID: ", projectRef.id);
@@ -70,8 +74,10 @@ export async function createProject(formData: unknown) {
       intendedUsers, geographicScope, dataCategories, dataSources, legalRequirements,
       owner: owner,
     };
-    console.log("[Action] 13. BasicInfo data die wordt weggeschreven:", basicInfoData);
-
+    
+    // DEBUG: Log het object dat naar de subcollectie wordt geschreven
+    console.log("[Action DEBUG] Data voor 'basicInfo' subcollectie:", JSON.stringify(basicInfoData, null, 2));
+    
     await firestore.collection("aiso_projects").doc(projectRef.id).collection("basicInfo").doc("details").set(basicInfoData);
     console.log("[Action] 14. BasicInfo sub-document succesvol aangemaakt.");
 
