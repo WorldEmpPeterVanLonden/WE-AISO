@@ -1,5 +1,5 @@
 
-"use server";
+'use server';
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
@@ -9,42 +9,47 @@ import { GenerateDocumentSchema } from "@/ai/schemas/ai-technical-file-generatio
 import * as admin from 'firebase-admin';
 
 export async function createProject(formData: unknown) {
-  console.log("[Action] createProject received data:", formData);
+  console.log("[Action] 1. --- createProject functie gestart ---");
+  console.log("[Action] 2. Ontvangen formulier data:", formData);
 
   try {
     if (!admin.apps.length) {
-      console.log("[Action DEBUG] Initializing Firebase Admin SDK...");
+      console.log("[Action] 3. Firebase Admin SDK wordt geïnitialiseerd...");
       const serviceAccountString = process.env.ADMIN_FIREBASE_SERVICE_ACCOUNT;
-      if (!serviceAccountString) {
-        console.error("[Action ERROR] ADMIN_FIREBASE_SERVICE_ACCOUNT environment variable is not set.");
-        throw new Error("Firebase Admin credentials not configured on the server.");
-      }
       
+      if (!serviceAccountString) {
+        console.error("[Action ERROR] Omgevingsvariabele ADMIN_FIREBASE_SERVICE_ACCOUNT is niet gevonden.");
+        throw new Error("Firebase Admin credentials niet geconfigureerd op de server.");
+      }
+      console.log("[Action] 4. Service Account String gevonden.");
+
       const serviceAccount = JSON.parse(serviceAccountString);
+      console.log("[Action] 5. Service Account JSON succesvol geparsed.");
 
       admin.initializeApp({
         credential: admin.credential.cert(serviceAccount),
         projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
       });
-      console.log("[Action DEBUG] Firebase Admin SDK initialized successfully.");
+      console.log("[Action] 6. Firebase Admin SDK succesvol geïnitialiseerd.");
     } else {
-      console.log("[Action DEBUG] Re-using existing Firebase Admin SDK app instance.");
+      console.log("[Action] 3. Bestaande Firebase Admin SDK instantie wordt hergebruikt.");
     }
   } catch (e: any) {
-    console.error("[Action ERROR] Failed to initialize Firebase Admin SDK:", e.message);
-    throw new Error(`Failed to initialize Firebase Admin SDK. Please check the service account configuration. Original error: ${e.message}`);
+    console.error("[Action ERROR] Fout bij initialiseren van Firebase Admin SDK:", e.message);
+    throw new Error(`Initialisatie van Firebase Admin SDK mislukt. Error: ${e.message}`);
   }
 
   const firestore = admin.firestore();
-  console.log("[Action DEBUG] Firestore instance obtained.");
+  console.log("[Action] 7. Firestore instantie verkregen.");
 
+  console.log("[Action] 8. Starten van Zod validatie...");
   const validatedFields = NewProjectSchema.safeParse(formData);
 
   if (!validatedFields.success) {
-    console.error("[Action] Zod validation failed:", validatedFields.error.flatten().fieldErrors);
-    throw new Error("Invalid form data.");
+    console.error("[Action ERROR] 9. Zod validatie mislukt:", validatedFields.error.flatten().fieldErrors);
+    throw new Error("Ongeldige formulier data.");
   }
-  console.log("[Action] Zod validation successful:", validatedFields.data);
+  console.log("[Action] 9. Zod validatie succesvol.");
 
   const {
     name, version, customerId, description, useCase, systemType, riskCategory, owner,
@@ -52,33 +57,35 @@ export async function createProject(formData: unknown) {
   } = validatedFields.data;
 
   try {
-    console.log("[Action DEBUG] Entering try block to create project.");
+    console.log("[Action] 10. Voorbereiden van project data voor Firestore...");
     const projectData = {
       name, version, customerId, description, useCase, systemType, riskCategory, owner,
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
       updatedAt: admin.firestore.FieldValue.serverTimestamp(),
       status: 'draft',
     };
-    console.log("[Action DEBUG] Project data object prepared:", projectData);
+    console.log("[Action] 11. Project data die wordt weggeschreven:", projectData);
 
     const projectRef = await firestore.collection("aiso_projects").add(projectData);
-    console.log("[Action DEBUG] Project document created successfully with ID: ", projectRef.id);
+    console.log("[Action] 12. Project document succesvol aangemaakt met ID: ", projectRef.id);
 
     const basicInfoData = {
       intendedUsers, geographicScope, dataCategories, dataSources, legalRequirements,
       owner: owner,
     };
+    console.log("[Action] 13. BasicInfo data die wordt weggeschreven:", basicInfoData);
 
-    console.log("[Action DEBUG] BasicInfo data object prepared:", basicInfoData);
     await firestore.collection("aiso_projects").doc(projectRef.id).collection("basicInfo").doc("details").set(basicInfoData);
-    console.log("[Action DEBUG] BasicInfo sub-document created successfully.");
+    console.log("[Action] 14. BasicInfo sub-document succesvol aangemaakt.");
 
   } catch (error) {
-    console.error("[Action] Error creating project in Firestore:", error);
+    console.error("[Action ERROR] 15. Fout bij het schrijven naar Firestore:", error);
     throw new Error("Could not create project in Firestore.");
   }
 
+  console.log("[Action] 16. Revalidating pad: /dashboard");
   revalidatePath("/dashboard");
+  console.log("[Action] 17. --- createProject functie succesvol afgerond ---");
 }
 
 export async function generateDocumentAction(formData: unknown) {
