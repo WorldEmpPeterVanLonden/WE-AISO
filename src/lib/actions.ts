@@ -6,7 +6,7 @@ import { z } from "zod";
 import { NewProjectSchema } from "./definitions";
 import { generateAiTechnicalFile } from "@/ai/ai-technical-file-generation";
 import { GenerateDocumentSchema } from "@/ai/schemas/ai-technical-file-generation";
-import *dmin from 'firebase-admin';
+import * as admin from 'firebase-admin';
 
 export async function createProject(formData: unknown) {
   console.log("[Action] createProject received data:", formData);
