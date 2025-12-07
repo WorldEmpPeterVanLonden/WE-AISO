@@ -1,6 +1,8 @@
-import { initializeApp, getApps, getApp, type FirebaseApp } from 'firebase-admin/app';
+
+import { initializeApp, getApps, getApp, type FirebaseApp, type ServiceAccount } from 'firebase-admin/app';
 import { getAuth, type Auth } from 'firebase-admin/auth';
 import { getFirestore, type Firestore } from 'firebase-admin/firestore';
+import serviceAccount from '@/../keys/service-account.json';
 
 let app: FirebaseApp;
 let auth: Auth;
@@ -8,10 +10,13 @@ let firestore: Firestore;
 
 export async function getFirebase() {
   if (getApps().length === 0) {
-    // In this environment, the service account is automatically discovered.
-    // We don't need to manually parse the service account JSON.
     app = initializeApp({
-      projectId: "we-portal-b9e8d",
+      credential: {
+        projectId: (serviceAccount as ServiceAccount).project_id,
+        clientEmail: (serviceAccount as ServiceAccount).client_email,
+        privateKey: (serviceAccount as ServiceAccount).private_key,
+      },
+      projectId: serviceAccount.project_id,
     });
     auth = getAuth(app);
     firestore = getFirestore(app);

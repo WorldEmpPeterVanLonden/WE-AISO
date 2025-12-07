@@ -6,6 +6,7 @@ import { NewProjectSchema } from "./definitions";
 import { generateAiTechnicalFile } from "@/ai/ai-technical-file-generation";
 import { GenerateDocumentSchema } from "@/ai/schemas/ai-technical-file-generation";
 import * as admin from 'firebase-admin';
+import serviceAccount from '@/../keys/service-account.json';
 
 export async function createProject(formData: unknown) {
   console.log("[Action] 1. --- createProject functie gestart ---");
@@ -14,18 +15,6 @@ export async function createProject(formData: unknown) {
   try {
     if (!admin.apps.length) {
       console.log("[Action] 3. Firebase Admin SDK wordt geïnitialiseerd...");
-      
-      const serviceAccountString = process.env.ADMIN_FIREBASE_SERVICE_ACCOUNT;
-      
-      if (!serviceAccountString) {
-        console.error("[Action ERROR] Omgevingsvariabele ADMIN_FIREBASE_SERVICE_ACCOUNT is niet gevonden.");
-        throw new Error("Firebase Admin credentials niet geconfigureerd op de server.");
-      }
-      console.log("[Action] 4. Service Account String gevonden.");
-
-      const serviceAccount = JSON.parse(serviceAccountString); 
-      console.log("[Action] 5. Service Account String succesvol geparsed naar object.");
-
       admin.initializeApp({
         credential: admin.credential.cert(serviceAccount),
         projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
@@ -57,7 +46,6 @@ export async function createProject(formData: unknown) {
   } = validatedFields.data;
 
   try {
-    console.log("[Action] 10. Voorbereiden van project data voor Firestore...");
     const projectData = {
       name, version, customerId, description, useCase, systemType, riskCategory, owner,
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
@@ -70,13 +58,11 @@ export async function createProject(formData: unknown) {
       owner: owner,
     };
     
-    // --- VALIDATION AND LOGGING AS REQUESTED ---
     console.log("[Action] 11. INSPECT: Data wordt naar 'aiso_projects' collectie geschreven:", JSON.stringify(projectData, null, 2));
 
     const projectRef = await firestore.collection("aiso_projects").add(projectData);
     console.log("[Action] 12. Project document succesvol aangemaakt met ID: ", projectRef.id);
     
-    // --- LOGGING FOR SUB-COLLECTION ---
     console.log("[Action] 13. INSPECT: Data wordt naar 'basicInfo' subcollectie geschreven:", JSON.stringify(basicInfoData, null, 2));
     
     await firestore.collection("aiso_projects").doc(projectRef.id).collection("basicInfo").doc("details").set(basicInfoData);
