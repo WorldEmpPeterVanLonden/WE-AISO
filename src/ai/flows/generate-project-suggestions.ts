@@ -19,6 +19,7 @@ export async function generateProjectSuggestions(input: ProjectSuggestionsInput)
     name: 'projectSuggestionsPrompt',
     input: { schema: ProjectSuggestionsInputSchema },
     output: { schema: ProjectSuggestionsOutputSchema },
+    model: "gemini-2.5-flash",
     prompt: `You are an expert project manager for AI systems. Based on the provided use case, generate a concise and descriptive project name and a brief, one-sentence project description.
 
     Use Case: {{{useCase}}}

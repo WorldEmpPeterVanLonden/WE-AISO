@@ -40,11 +40,12 @@ export async function generateBasicInfoSuggestions(input: BasicInfoSuggestionsIn
     name: 'basicInfoSuggestionsPrompt',
     input: { schema: BasicInfoSuggestionsInputSchema },
     output: { schema: BasicInfoSuggestionsOutputSchema },
+    model: "gemini-2.5-flash",
     prompt: `
-    Project Name: {{{projectName}}}
-    Use Case: {{{useCase}}}
-    Intended Users: {{{intendedUsers}}}
-    Geographic Scope: {{{geographicScope}}}
+      Project Name: {{{projectName}}}
+      Use Case: {{{useCase}}}
+      Intended Users: {{{intendedUsers}}}
+      Geographic Scope: {{{geographicScope}}}
     
     ${promptText()}
 
