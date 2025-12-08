@@ -1,4 +1,3 @@
-'use client';
 
 /**
  * @fileOverview Zod schemas for the governance suggestions flow.
