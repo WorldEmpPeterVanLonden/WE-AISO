@@ -123,19 +123,16 @@ export function ProjectDashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (userLoading) return;
+    if (userLoading || !firestore) {
+        setLoading(true);
+        return;
+    }
+
     if (!user) {
       router.push('/login');
       return;
     }
     
-    // Ensure firestore is initialized before using it.
-    if (!firestore) {
-      return;
-    }
-    
-    setLoading(true);
-
     const projectsRef = collection(firestore as Firestore, "aiso_projects");
     const userProjectsQuery = query(projectsRef, where("owner", "==", user.uid));
 
@@ -156,7 +153,7 @@ export function ProjectDashboard() {
   }, [user, userLoading, firestore, router]);
 
 
-  if (userLoading || loading) {
+  if (loading) {
     return (
         <div className="flex items-center justify-center min-h-screen">
             <Loader2 className="h-16 w-16 animate-spin text-primary" />
