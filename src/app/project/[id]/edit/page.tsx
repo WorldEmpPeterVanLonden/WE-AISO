@@ -15,8 +15,8 @@ type ProjectFormDataForClient = Omit<z.infer<typeof ProjectSchema>, 'createdAt' 
 
 // This is the type we get from Firestore, with Timestamps
 type ProjectDataFromFirestore = Omit<ProjectFormDataForClient, 'createdAt' | 'updatedAt'> & {
-    createdAt?: Timestamp;
-    updatedAt?: Timestamp;
+    createdAt?: Timestamp | string;
+    updatedAt?: Timestamp | string;
 };
 
 async function getProjectDetails(projectId: string): Promise<ProjectFormDataForClient | null> {
@@ -29,11 +29,21 @@ async function getProjectDetails(projectId: string): Promise<ProjectFormDataForC
 
   const data = snap.data() as ProjectDataFromFirestore;
 
-  // Convert Timestamp objects to ISO strings for serialization
+  // Convert Timestamp objects to ISO strings for serialization, only if they are not already strings
+  const convertTimestampToString = (ts: any) => {
+    if (typeof ts === 'string') {
+      return ts; // Already a string, return as is
+    }
+    if (ts && typeof ts.toDate === 'function') {
+      return ts.toDate().toISOString();
+    }
+    return undefined;
+  };
+
   return {
     ...data,
-    createdAt: data.createdAt?.toDate().toISOString(),
-    updatedAt: data.updatedAt?.toDate().toISOString(),
+    createdAt: convertTimestampToString(data.createdAt),
+    updatedAt: convertTimestampToString(data.updatedAt),
   };
 }
 
