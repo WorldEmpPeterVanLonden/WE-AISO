@@ -1,49 +1,56 @@
 
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { EditProjectForm } from "@/app/components/edit-project-form";
+import { ProjectForm } from "@/app/components/project-form";
 import { adminDb } from "@/firebase/admin";
 import { notFound } from "next/navigation";
 import type { z } from "zod";
-import { ProjectSchema } from "@/lib/definitions";
+import { NewProjectSchema } from "@/lib/definitions";
 import type { Timestamp } from "firebase-admin/firestore";
 
-// This will be the type passed to the client component, with strings for dates
-type ProjectFormDataForClient = Omit<z.infer<typeof ProjectSchema>, 'createdAt' | 'updatedAt'> & {
+type ProjectFormDataForClient = Omit<z.infer<typeof NewProjectSchema>, 'createdAt' | 'updatedAt'> & {
   createdAt?: string;
   updatedAt?: string;
 };
 
-// This is the type we get from Firestore, with Timestamps
 type ProjectDataFromFirestore = Omit<ProjectFormDataForClient, 'createdAt' | 'updatedAt'> & {
     createdAt?: Timestamp | string;
     updatedAt?: Timestamp | string;
 };
 
 async function getProjectDetails(projectId: string): Promise<ProjectFormDataForClient | null> {
-  const docRef = adminDb.collection("aiso_projects").doc(projectId);
-  const snap = await docRef.get();
+  const projectRef = adminDb.collection("aiso_projects").doc(projectId);
+  const basicInfoRef = projectRef.collection("basicInfo").doc("details");
+  
+  const [projectSnap, basicInfoSnap] = await Promise.all([
+    projectRef.get(),
+    basicInfoRef.get()
+  ]);
 
-  if (!snap.exists) {
+  if (!projectSnap.exists) {
     return null;
   }
 
-  const data = snap.data() as ProjectDataFromFirestore;
+  const projectData = projectSnap.data() as Omit<ProjectDataFromFirestore, 'intendedUsers' | 'geographicScope' | 'dataCategories' | 'dataSources' | 'legalRequirements'>;
+  const basicInfoData = basicInfoSnap.exists ? basicInfoSnap.data() as Partial<ProjectDataFromFirestore> : {};
 
-  // Convert Timestamp objects to ISO strings for serialization, only if they are not already strings
+  const combinedData = { ...projectData, ...basicInfoData };
+
   const convertTimestampToString = (ts: any) => {
-    if (typeof ts === 'string') {
-      return ts; // Already a string, return as is
-    }
-    if (ts && typeof ts.toDate === 'function') {
-      return ts.toDate().toISOString();
-    }
+    if (typeof ts === 'string') return ts;
+    if (ts && typeof ts.toDate === 'function') return ts.toDate().toISOString();
     return undefined;
   };
+  
+  const ensureArray = (field: any) => Array.isArray(field) ? field : (field ? [field] : []);
 
   return {
-    ...data,
-    createdAt: convertTimestampToString(data.createdAt),
-    updatedAt: convertTimestampToString(data.updatedAt),
+    ...combinedData,
+    createdAt: convertTimestampToString(combinedData.createdAt),
+    updatedAt: convertTimestampToString(combinedData.updatedAt),
+    intendedUsers: ensureArray(combinedData.intendedUsers),
+    legalRequirements: ensureArray(combinedData.legalRequirements),
+    dataCategories: ensureArray(combinedData.dataCategories),
+    dataSources: ensureArray(combinedData.dataSources),
   };
 }
 
@@ -55,16 +62,6 @@ export default async function EditProjectPage({ params }: { params: { id: string
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Project Settings</CardTitle>
-        <CardDescription>
-          Edit the core details of your project.
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <EditProjectForm defaultValues={projectData} projectId={params.id} />
-      </CardContent>
-    </Card>
+    <ProjectForm mode="edit" defaultValues={projectData} projectId={params.id} />
   );
 }

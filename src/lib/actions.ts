@@ -2,11 +2,11 @@
 'use server';
 
 import { revalidatePath } from "next/cache";
-import { NewProjectSchema, BasicInfoSchema, ProjectSchema } from "./definitions";
-import { generateAiTechnicalFile } from "@/ai/ai-technical-file-generation";
+import { NewProjectSchema } from "./definitions";
 import { GenerateDocumentSchema } from "@/ai/schemas/ai-technical-file-generation";
 import { adminDb } from "@/firebase/admin";
 import * as admin from 'firebase-admin';
+import { generateAiTechnicalFile } from "@/ai/ai-technical-file-generation";
 
 
 export async function createProject(formData: unknown) {
@@ -22,8 +22,6 @@ export async function createProject(formData: unknown) {
     intendedUsers, geographicScope, dataCategories, dataSources, legalRequirements
   } = validatedFields.data;
   
-  console.log("Attempting to create project with data:", validatedFields.data);
-
   try {
     const projectRef = adminDb.collection("aiso_projects").doc();
     
@@ -34,10 +32,11 @@ export async function createProject(formData: unknown) {
       status: 'draft',
     };
     
+    // The wizard now collects this data, so we save it immediately
     const basicInfoData = {
       intendedUsers, geographicScope, dataCategories, dataSources, legalRequirements,
       owner: owner,
-      businessContext: description,
+      businessContext: description, // Use project description as initial business context
     };
     
     const batch = adminDb.batch();
@@ -45,37 +44,54 @@ export async function createProject(formData: unknown) {
     batch.set(projectRef, projectData);
     
     const basicInfoRef = projectRef.collection("basicInfo").doc("details");
-    batch.set(basicInfoRef, basicInfoData);
+    batch.set(basicInfoRef, basicInfoData, { merge: true });
 
     await batch.commit();
+    
+    revalidatePath("/dashboard");
+    return { success: true, projectId: projectRef.id };
 
   } catch (error) {
     console.error("[Action ERROR] Error writing to Firestore:", error);
     return { error: "Could not create project in Firestore." };
   }
-
-  revalidatePath("/dashboard");
-  return { success: true };
 }
 
 export async function updateProject(projectId: string, formData: unknown) {
-  const validatedFields = ProjectSchema.safeParse(formData);
+  const validatedFields = NewProjectSchema.safeParse(formData);
 
   if (!validatedFields.success) {
     console.error("Zod validation failed for updateProject:", validatedFields.error.flatten().fieldErrors);
     return { error: "Invalid form data for updating project." };
   }
+  
+  const {
+    name, version, customerId, description, useCase, systemType, riskCategory,
+    intendedUsers, geographicScope, dataCategories, dataSources, legalRequirements
+  } = validatedFields.data;
 
   try {
     const projectRef = adminDb.collection("aiso_projects").doc(projectId);
-    await projectRef.update({
-      ...validatedFields.data,
+    const basicInfoRef = projectRef.collection("basicInfo").doc("details");
+
+    const projectData = {
+      name, version, customerId, description, useCase, systemType, riskCategory,
       updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-    });
+    };
+    
+    const basicInfoData = {
+      intendedUsers, geographicScope, dataCategories, dataSources, legalRequirements,
+      businessContext: description,
+    };
+    
+    const batch = adminDb.batch();
+    batch.update(projectRef, projectData);
+    batch.set(basicInfoRef, basicInfoData, { merge: true });
+    await batch.commit();
 
     revalidatePath(`/project/${projectId}/edit`);
     revalidatePath(`/project/${projectId}/overview`);
-    revalidatePath(`/dashboard`);
+    revalidatePath('/dashboard');
     return { success: "Project details updated successfully." };
   } catch (error) {
     console.error("Error updating project in Firestore:", error);
@@ -84,7 +100,26 @@ export async function updateProject(projectId: string, formData: unknown) {
 }
 
 export async function updateBasicInfo(projectId: string, formData: unknown) {
-  const validatedFields = BasicInfoSchema.safeParse(formData);
+  const validatedFields = NewProjectSchema.pick({
+      intendedUsers: true,
+      geographicScope: true,
+      dataCategories: true,
+      dataSources: true,
+      legalRequirements: true,
+      businessContext: true,
+      stakeholders: true,
+      prohibitedUse: true,
+      retentionPolicy: true,
+      operationalEnvironment: true,
+      performanceGoals: true,
+      scopeComponents: true,
+      dataSubjects: true,
+      dataSensitivity: true,
+      aiActClassification: true,
+      geographicScopeOther: true,
+      legalRequirementsOther: true,
+      retentionPolicyOther: true
+  }).partial().safeParse(formData);
 
   if (!validatedFields.success) {
     console.error("Zod validation failed:", validatedFields.error.flatten().fieldErrors);

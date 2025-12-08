@@ -179,7 +179,8 @@ export const RiskRegisterEntrySchema = z.object({
 
 export type RiskRegisterEntry = z.infer<typeof RiskRegisterEntrySchema>;
 
-
+// This is now the single source of truth for project creation AND editing.
+// It merges the core project details with the "wizard page 2" details.
 export const NewProjectSchema = ProjectSchema.merge(BasicInfoObjectSchema.pick({
     intendedUsers: true,
     geographicScope: true,
@@ -187,7 +188,9 @@ export const NewProjectSchema = ProjectSchema.merge(BasicInfoObjectSchema.pick({
     dataSources: true,
     legalRequirements: true,
 })).extend({
-    owner: z.string().min(1, "Owner is required."),
+    // owner is only required for creation, but optional for the schema itself
+    // to allow reuse for updates where owner is not changed.
+    owner: z.string().min(1, "Owner is required.").optional(),
 });
 
 export const GenerateDocumentSchema = z.object({
