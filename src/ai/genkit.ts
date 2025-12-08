@@ -11,12 +11,7 @@ function requireEnv(key: string, fallback: string): string {
 export const ai = genkit({
   plugins: [
     vertexAI({
-      projectId: "we-portal-b9e8d",
+      projectId: requireEnv('VERTEX_PROJECT', 'we-portal-b9e8d'),
       location: requireEnv('VERTEX_LOCATION', 'us-central1'),
     }),
-  ],
-  defaultModel: {
-    vendor: 'google',
-    name: requireEnv('VERTEX_MODEL', 'gemini-2.5-flash'),
-  },
-});
+  ]});
