@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -8,14 +9,15 @@ import { collection, query, where, onSnapshot, Timestamp } from "firebase/firest
 import { Loader2, MoreHorizontal, Edit } from "lucide-react";
 
 import { useUser, useFirestore } from "@/firebase";
+
 import {
   Card, CardHeader, CardTitle, CardDescription, CardContent
 } from "@/components/ui/card";
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Table, TableHead, TableHeader, TableRow, TableCell, TableBody } from "@/components/ui/table";
 import { Progress } from "@/components/ui/progress";
@@ -40,20 +42,21 @@ interface Project {
 export function ProjectDashboard() {
   const router = useRouter();
   const { user, loading: userLoading } = useUser();
-  const firestore = useFirestore();
+  const { firestore } = useFirestore();
+
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (userLoading) return;
+    if (userLoading || !firestore) {
+      return;
+    }
+
     if (!user) {
       router.push("/login");
       return;
     }
-    if (!firestore) {
-      console.log("Firestore not ready");
-      return;
-    }
+
     setLoading(true);
 
     const ref = query(
@@ -130,10 +133,13 @@ export function ProjectDashboard() {
                   projects.map((p) => (
                     <TableRow
                       key={p.id}
-                      className="cursor-pointer"
-                      onClick={() => router.push(`/project/${p.id}/overview`)}
+                      
                     >
-                      <TableCell>{p.name}</TableCell>
+                      <TableCell>
+                          <Link href={`/project/${p.id}/overview`} className="font-medium text-primary hover:underline">
+                            {p.name}
+                          </Link>
+                      </TableCell>
                       <TableCell>{p.customerName || "-"}</TableCell>
                       <TableCell><Badge>{p.status}</Badge></TableCell>
                       <TableCell><Badge>{p.riskCategory}</Badge></TableCell>
@@ -151,19 +157,25 @@ export function ProjectDashboard() {
                       <TableCell>
                         {p.updatedAt ? format(p.updatedAt.toDate(), "dd.MM.yy") : "-"}
                       </TableCell>
+
                       <TableCell className="text-right">
                         <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="icon">
-                                    <MoreHorizontal className="h-4 w-4" />
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent>
-                                <DropdownMenuItem onClick={(e) => { e.stopPropagation(); router.push(`/project/${p.id}/basic-info`); }}>
-                                    <Edit className="mr-2 h-4 w-4" />
-                                    <span>Edit</span>
-                                </DropdownMenuItem>
-                            </DropdownMenuContent>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon">
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+
+                          <DropdownMenuContent>
+                            <DropdownMenuItem
+                              onClick={(e) => {
+                                router.push(`/project/${p.id}/basic-info`);
+                              }}
+                            >
+                              <Edit className="mr-2 h-4 w-4" />
+                              Edit
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
                         </DropdownMenu>
                       </TableCell>
                     </TableRow>

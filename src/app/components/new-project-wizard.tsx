@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect }from "react";
@@ -162,18 +163,21 @@ export function NewProjectWizard() {
     setIsSubmitting(true);
     try {
       const projectDataWithOwner = { ...data, owner: user.uid };
-      await createProject(projectDataWithOwner);
+      const result = await createProject(projectDataWithOwner);
+      if (result.error) {
+        throw new Error(result.error);
+      }
       toast({
         title: "Project created!",
         description: `${data.name} has been successfully created.`,
       });
       router.push('/dashboard');
-    } catch (error) {
+    } catch (error: any) {
       console.error("[Wizard] Error caught during createProject call:", error);
       toast({
         variant: "destructive",
         title: "Oh no! Something went wrong.",
-        description: "Could not create the project. Please check the console for more details.",
+        description: error.message || "Could not create the project. Please check the console for more details.",
       });
     } finally {
       setIsSubmitting(false);
@@ -300,7 +304,7 @@ export function NewProjectWizard() {
                     <FormField control={form.control} name="intendedUsers" render={({ field }) => (
                         <FormItem>
                             <FormLabel>Intended Users</FormLabel>
-                            <FormControl><Input placeholder="e.g. End users, internal employees" value={Array.isArray(field.value) ? field.value.join(', ') : field.value || ''} onChange={e => field.onChange(e.target.value.split(',').map(s => s.trim()))} /></FormControl>
+                            <FormControl><Input placeholder="e.g. End users, internal employees" {...field} onChange={e => field.onChange(e.target.value.split(',').map(s => s.trim()))} value={Array.isArray(field.value) ? field.value.join(', ') : ''} /></FormControl>
                             <FormMessage />
                         </FormItem>
                     )} />
@@ -314,14 +318,14 @@ export function NewProjectWizard() {
                     <FormField control={form.control} name="legalRequirements" render={({ field }) => (
                         <FormItem className="md:col-span-2">
                             <FormLabel>Relevant Legislation</FormLabel>
-                            <FormControl><Input placeholder="e.g. GDPR, AI Act, MDR" value={Array.isArray(field.value) ? field.value.join(', ') : field.value || ''} onChange={e => field.onChange(e.target.value.split(',').map(s => s.trim()))} /></FormControl>
+                            <FormControl><Input placeholder="e.g. GDPR, AI Act, MDR" {...field} onChange={e => field.onChange(e.target.value.split(',').map(s => s.trim()))} value={Array.isArray(field.value) ? field.value.join(', ') : ''} /></FormControl>
                             <FormMessage />
                         </FormItem>
                     )} />
                     <FormField control={form.control} name="dataSources" render={({ field }) => (
                         <FormItem className="md:col-span-2">
                             <FormLabel>Data Sources</FormLabel>
-                            <FormControl><Textarea placeholder="Where does the data come from? (comma-separated)" value={Array.isArray(field.value) ? field.value.join(', ') : field.value || ''} onChange={e => field.onChange(e.target.value.split(',').map(s => s.trim()))} /></FormControl>
+                            <FormControl><Textarea placeholder="Where does the data come from? (comma-separated)" {...field} onChange={e => field.onChange(e.target.value.split(',').map(s => s.trim()))} value={Array.isArray(field.value) ? field.value.join(', ') : ''} /></FormControl>
                              <FormMessage />
                         </FormItem>
                     )} />

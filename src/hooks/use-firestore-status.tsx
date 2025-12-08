@@ -1,15 +1,14 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useFirestore } from '@/firebase';
+import { db } from '@/firebase/firebase'; // vaste client Firestore instance
 
 export function useFirestoreStatus() {
-  const firestore = useFirestore();
   const [isConnected, setIsConnected] = useState(true);
 
   useEffect(() => {
-    if (!firestore) {
+    // db bestaat altijd zodra firebase.ts is geladen
+    if (!db) {
       setIsConnected(false);
       return;
     }
@@ -19,15 +18,15 @@ export function useFirestoreStatus() {
 
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
-    
-    // Set initial status from the browser's navigator object
+
+    // initial browser state
     setIsConnected(navigator.onLine);
 
     return () => {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
     };
-  }, [firestore]);
+  }, []);
 
   return isConnected;
 }

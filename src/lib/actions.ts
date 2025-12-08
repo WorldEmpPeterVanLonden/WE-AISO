@@ -5,16 +5,8 @@ import { revalidatePath } from "next/cache";
 import { NewProjectSchema, BasicInfoSchema } from "./definitions";
 import { generateAiTechnicalFile } from "@/ai/ai-technical-file-generation";
 import { GenerateDocumentSchema } from "@/ai/schemas/ai-technical-file-generation";
+import { adminDb } from "@/firebase/admin";
 import * as admin from 'firebase-admin';
-import serviceAccount from '../../keys/service-account.json';
-
-if (!admin.apps.length) {
-  admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount as admin.ServiceAccount),
-    projectId: serviceAccount.project_id,
-  });
-}
-const firestore = admin.firestore();
 
 
 export async function createProject(formData: unknown) {
@@ -33,6 +25,8 @@ export async function createProject(formData: unknown) {
   console.log("Attempting to create project with data:", validatedFields.data);
 
   try {
+    const projectRef = firestore.collection("aiso_projects").doc();
+    
     const projectData = {
       name, version, customerId, description, useCase, systemType, riskCategory, owner,
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
@@ -43,10 +37,17 @@ export async function createProject(formData: unknown) {
     const basicInfoData = {
       intendedUsers, geographicScope, dataCategories, dataSources, legalRequirements,
       owner: owner,
+      businessContext: description,
     };
     
-    const projectRef = await firestore.collection("aiso_projects").add(projectData);
-    await firestore.collection("aiso_projects").doc(projectRef.id).collection("basicInfo").doc("details").set(basicInfoData);
+    const batch = firestore.batch();
+    
+    batch.set(projectRef, projectData);
+    
+    const basicInfoRef = projectRef.collection("basicInfo").doc("details");
+    batch.set(basicInfoRef, basicInfoData);
+
+    await batch.commit();
 
   } catch (error) {
     console.error("[Action ERROR] Error writing to Firestore:", error);
@@ -66,11 +67,11 @@ export async function updateBasicInfo(projectId: string, formData: unknown) {
   }
 
   try {
-    const projectRef = firestore.collection("aiso_projects").doc(projectId);
+    const projectRef = adminDb.collection("aiso_projects").doc(projectId);
     const basicInfoRef = projectRef.collection("basicInfo").doc("details");
 
-    await firestore.runTransaction(async (transaction) => {
-      transaction.update(basicInfoRef, validatedFields.data);
+    await adminDb.runTransaction(async (transaction) => {
+      transaction.set(basicInfoRef, validatedFields.data, { merge: true });
       transaction.update(projectRef, { updatedAt: admin.firestore.FieldValue.serverTimestamp() });
     });
 
