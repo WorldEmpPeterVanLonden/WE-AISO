@@ -5,6 +5,10 @@ if (!admin.apps.length) {
   // Use FIREBASE_ADMIN_KEY for local dev, fallback to FIREBASE_SERVICE_ACCOUNT for production
   const serviceAccountString = process.env.FIREBASE_ADMIN_KEY || process.env.FIREBASE_SERVICE_ACCOUNT;
   
+  console.log("🔥 Firebase Admin using:", 
+    process.env.FIREBASE_ADMIN_KEY ? "FIREBASE_ADMIN_KEY" : "FIREBASE_SERVICE_ACCOUNT"
+  );
+
   if (!serviceAccountString) {
     throw new Error("A Firebase service account environment variable (FIREBASE_ADMIN_KEY or FIREBASE_SERVICE_ACCOUNT) is not set.");
   }
