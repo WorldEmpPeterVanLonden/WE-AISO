@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useRouter } from "next/navigation";
-import { Loader2, Save, ArrowLeft, ArrowRight, Wand2 } from "lucide-react";
+import { Loader2, Save, Wand2 } from "lucide-react";
 import { useUser } from "@/firebase";
 import {
   Card,
@@ -82,7 +82,6 @@ interface ProjectFormProps {
 }
 
 export function ProjectForm({ mode, defaultValues, projectId }: ProjectFormProps) {
-  const [step, setStep] = useState(1);
   const [isSaving, setIsSaving] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
@@ -107,18 +106,7 @@ export function ProjectForm({ mode, defaultValues, projectId }: ProjectFormProps
     mode: 'onChange',
   });
 
-  const { formState: { errors, isValid, isDirty }, trigger } = form;
-
-  const handleNext = async () => {
-    const isStepValid = await trigger(["name", "version", "useCase"]);
-    if (isStepValid) {
-      setStep(2);
-    }
-  };
-
-  const handleBack = () => {
-    setStep(1);
-  };
+  const { formState: { isValid, isDirty } } = form;
 
   const onSubmit = async (data: ProjectFormData) => {
     setIsSaving(true);
@@ -156,227 +144,205 @@ export function ProjectForm({ mode, defaultValues, projectId }: ProjectFormProps
   
   const isFormSubmittable = mode === 'create' ? isValid : (isValid && isDirty);
   const cardTitle = mode === 'create' ? 'New AI Compliance Project' : 'Edit Project Settings';
-  const cardDescription = mode === 'create' ? 'Step {step} of 2: Fill in the details to start your project.' : 'Update the details of your project.';
+  const cardDescription = mode === 'create' ? 'Fill in the details to start your project.' : 'Update the details of your project.';
 
 
   return (
-    <div className="max-w-4xl mx-auto">
-      <Card>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle className="flex items-center gap-2">
-                    <Wand2 className="h-6 w-6 text-primary" />
-                    {cardTitle}
-                  </CardTitle>
-                  <CardDescription>
-                    {cardDescription.replace('{step}', step.toString())}
-                  </CardDescription>
-                </div>
-                <div className="text-sm font-medium">
-                  {step === 1 ? 'Project Details' : 'Context & Scope'}
-                </div>
+    <Card>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)}>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="flex items-center gap-2">
+                  <Wand2 className="h-6 w-6 text-primary" />
+                  {cardTitle}
+                </CardTitle>
+                <CardDescription>
+                  {cardDescription}
+                </CardDescription>
               </div>
-            </CardHeader>
+            </div>
+          </CardHeader>
 
-            <CardContent>
-              {step === 1 && (
-                <div className="space-y-6">
-                  <FormField control={form.control} name="name" render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Project Name <span className="text-destructive">*</span></FormLabel>
-                        <FormControl><Input placeholder="e.g. Customer Service Chatbot" {...field} /></FormControl>
-                        <FormMessage />
-                      </FormItem>
-                  )} />
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <FormField control={form.control} name="version" render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Version <span className="text-destructive">*</span></FormLabel>
-                          <FormControl><Input placeholder="e.g. 1.0.0" {...field} /></FormControl>
-                          <FormMessage />
-                        </FormItem>
-                    )} />
-                    <FormField control={form.control} name="customerId" render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Customer</FormLabel>
-                          <FormControl><Input placeholder="Name of the customer (optional)" {...field} /></FormControl>
-                          <FormMessage />
-                        </FormItem>
-                    )} />
-                  </div>
-                  <FormField control={form.control} name="useCase" render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Use-case <span className="text-destructive">*</span></FormLabel>
-                        <FormControl><Textarea placeholder="What is the purpose of the AI system?" {...field} /></FormControl>
-                        <FormDescription>This is a critical field for risk assessment. Be specific.</FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                  )} />
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <FormField control={form.control} name="systemType" render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>AI System Type</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
-                            <SelectContent>
-                              <SelectItem value="LLM">LLM</SelectItem>
-                              <SelectItem value="ML">ML</SelectItem>
-                              <SelectItem value="Hybrid">Hybrid</SelectItem>
-                              <SelectItem value="RuleBased">RuleBased</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                    )} />
-                    <FormField control={form.control} name="riskCategory" render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Initial Risk Category</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
-                            <SelectContent>
-                              <SelectItem value="low">Low</SelectItem>
-                              <SelectItem value="medium">Medium</SelectItem>
-                              <SelectItem value="high">High</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                    )} />
-                  </div>
-                </div>
-              )}
+          <CardContent className="space-y-6">
+            <h3 className="text-lg font-semibold border-b pb-2">Project Details</h3>
+            <FormField control={form.control} name="name" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Project Name <span className="text-destructive">*</span></FormLabel>
+                  <FormControl><Input placeholder="e.g. Customer Service Chatbot" {...field} /></FormControl>
+                  <FormMessage />
+                </FormItem>
+            )} />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <FormField control={form.control} name="version" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Version <span className="text-destructive">*</span></FormLabel>
+                    <FormControl><Input placeholder="e.g. 1.0.0" {...field} /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+              )} />
+              <FormField control={form.control} name="customerId" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Customer</FormLabel>
+                    <FormControl><Input placeholder="Name of the customer (optional)" {...field} /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+              )} />
+            </div>
+            <FormField control={form.control} name="useCase" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Use-case <span className="text-destructive">*</span></FormLabel>
+                  <FormControl><Textarea placeholder="What is the purpose of the AI system?" {...field} /></FormControl>
+                  <FormDescription>This is a critical field for risk assessment. Be specific.</FormDescription>
+                  <FormMessage />
+                </FormItem>
+            )} />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <FormField control={form.control} name="systemType" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>AI System Type</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
+                      <SelectContent>
+                        <SelectItem value="LLM">LLM</SelectItem>
+                        <SelectItem value="ML">ML</SelectItem>
+                        <SelectItem value="Hybrid">Hybrid</SelectItem>
+                        <SelectItem value="RuleBased">RuleBased</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+              )} />
+              <FormField control={form.control} name="riskCategory" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Initial Risk Category</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
+                      <SelectContent>
+                        <SelectItem value="low">Low</SelectItem>
+                        <SelectItem value="medium">Medium</SelectItem>
+                        <SelectItem value="high">High</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+              )} />
+            </div>
+             <h3 className="text-lg font-semibold border-b pb-2 pt-4">Context & Scope</h3>
+              <FormField control={form.control} name="intendedUsers" render={() => (
+                  <FormItem>
+                      <div className="mb-4">
+                          <FormLabel>Intended Users</FormLabel>
+                          <FormDescription>Who are the end users of the system?</FormDescription>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                          {intendedUserItems.map((item) => (
+                              <FormField key={item.id} control={form.control} name="intendedUsers" render={({ field }) => (
+                                  <FormItem key={item.id} className="flex flex-row items-start space-x-3 space-y-0">
+                                      <FormControl>
+                                          <Checkbox checked={field.value?.includes(item.id)}
+                                              onCheckedChange={(checked) => {
+                                                  const currentValue = field.value || [];
+                                                  return checked
+                                                  ? field.onChange([...currentValue, item.id])
+                                                  : field.onChange(currentValue.filter((value) => value !== item.id));
+                                              }}
+                                          />
+                                      </FormControl>
+                                      <FormLabel className="font-normal">{item.label}</FormLabel>
+                                  </FormItem>
+                              )} />
+                          ))}
+                      </div>
+                      <FormMessage />
+                  </FormItem>
+              )} />
+              <FormField control={form.control} name="geographicScope" render={({ field }) => (
+                  <FormItem>
+                      <FormLabel>Geographic Scope</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
+                          <SelectContent>
+                              <SelectItem value="EU">EU</SelectItem>
+                              <SelectItem value="EEA">EEA</SelectItem>
+                              <SelectItem value="Global">Global</SelectItem>
+                              <SelectItem value="US">US</SelectItem>
+                              <SelectItem value="India">India</SelectItem>
+                              <SelectItem value="other">Other</SelectItem>
+                          </SelectContent>
+                      </Select>
+                      <FormMessage />
+                  </FormItem>
+              )} />
+              <FormField control={form.control} name="legalRequirements" render={() => (
+                  <FormItem>
+                      <div className="mb-4">
+                          <FormLabel>Relevant Legislation</FormLabel>
+                          <FormDescription>Which legal frameworks might apply?</FormDescription>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                          {legislationItems.map((item) => (
+                              <FormField key={item.id} control={form.control} name="legalRequirements" render={({ field }) => (
+                                  <FormItem key={item.id} className="flex flex-row items-start space-x-3 space-y-0">
+                                      <FormControl>
+                                          <Checkbox checked={field.value?.includes(item.id)}
+                                              onCheckedChange={(checked) => {
+                                                  const currentValue = field.value || [];
+                                                  return checked
+                                                  ? field.onChange([...currentValue, item.id])
+                                                  : field.onChange(currentValue.filter((value) => value !== item.id));
+                                              }}
+                                          />
+                                      </FormControl>
+                                      <FormLabel className="font-normal">{item.label}</FormLabel>
+                                  </FormItem>
+                              )} />
+                          ))}
+                      </div>
+                      <FormMessage />
+                  </FormItem>
+              )} />
+              <FormField control={form.control} name="dataCategories" render={() => (
+                  <FormItem>
+                      <div className="mb-4">
+                          <FormLabel>Data Categories</FormLabel>
+                          <FormDescription>What kind of data will be processed?</FormDescription>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                          {dataCategoryItems.map((item) => (
+                              <FormField key={item.id} control={form.control} name="dataCategories" render={({ field }) => (
+                                  <FormItem key={item.id} className="flex flex-row items-start space-x-3 space-y-0">
+                                      <FormControl>
+                                          <Checkbox checked={field.value?.includes(item.id)}
+                                              onCheckedChange={(checked) => {
+                                                  const currentValue = field.value || [];
+                                                  return checked
+                                                  ? field.onChange([...currentValue, item.id])
+                                                  : field.onChange(currentValue.filter((value) => value !== item.id));
+                                              }}
+                                          />
+                                      </FormControl>
+                                      <FormLabel className="font-normal">{item.label}</FormLabel>
+                                  </FormItem>
+                              )} />
+                          ))}
+                      </div>
+                      <FormMessage />
+                  </FormItem>
+              )} />
+          </CardContent>
 
-              {step === 2 && (
-                <div className="space-y-6">
-                    <FormField control={form.control} name="intendedUsers" render={() => (
-                        <FormItem>
-                            <div className="mb-4">
-                                <FormLabel>Intended Users</FormLabel>
-                                <FormDescription>Who are the end users of the system?</FormDescription>
-                            </div>
-                            <div className="grid grid-cols-2 gap-4">
-                                {intendedUserItems.map((item) => (
-                                    <FormField key={item.id} control={form.control} name="intendedUsers" render={({ field }) => (
-                                        <FormItem key={item.id} className="flex flex-row items-start space-x-3 space-y-0">
-                                            <FormControl>
-                                                <Checkbox checked={field.value?.includes(item.id)}
-                                                    onCheckedChange={(checked) => {
-                                                        const currentValue = field.value || [];
-                                                        return checked
-                                                        ? field.onChange([...currentValue, item.id])
-                                                        : field.onChange(currentValue.filter((value) => value !== item.id));
-                                                    }}
-                                                />
-                                            </FormControl>
-                                            <FormLabel className="font-normal">{item.label}</FormLabel>
-                                        </FormItem>
-                                    )} />
-                                ))}
-                            </div>
-                            <FormMessage />
-                        </FormItem>
-                    )} />
-                    <FormField control={form.control} name="geographicScope" render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Geographic Scope</FormLabel>
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
-                                <SelectContent>
-                                    <SelectItem value="EU">EU</SelectItem>
-                                    <SelectItem value="EEA">EEA</SelectItem>
-                                    <SelectItem value="Global">Global</SelectItem>
-                                    <SelectItem value="US">US</SelectItem>
-                                    <SelectItem value="India">India</SelectItem>
-                                    <SelectItem value="other">Other</SelectItem>
-                                </SelectContent>
-                            </Select>
-                            <FormMessage />
-                        </FormItem>
-                    )} />
-                    <FormField control={form.control} name="legalRequirements" render={() => (
-                        <FormItem>
-                            <div className="mb-4">
-                                <FormLabel>Relevant Legislation</FormLabel>
-                                <FormDescription>Which legal frameworks might apply?</FormDescription>
-                            </div>
-                            <div className="grid grid-cols-2 gap-4">
-                                {legislationItems.map((item) => (
-                                    <FormField key={item.id} control={form.control} name="legalRequirements" render={({ field }) => (
-                                        <FormItem key={item.id} className="flex flex-row items-start space-x-3 space-y-0">
-                                            <FormControl>
-                                                <Checkbox checked={field.value?.includes(item.id)}
-                                                    onCheckedChange={(checked) => {
-                                                        const currentValue = field.value || [];
-                                                        return checked
-                                                        ? field.onChange([...currentValue, item.id])
-                                                        : field.onChange(currentValue.filter((value) => value !== item.id));
-                                                    }}
-                                                />
-                                            </FormControl>
-                                            <FormLabel className="font-normal">{item.label}</FormLabel>
-                                        </FormItem>
-                                    )} />
-                                ))}
-                            </div>
-                            <FormMessage />
-                        </FormItem>
-                    )} />
-                    <FormField control={form.control} name="dataCategories" render={() => (
-                        <FormItem>
-                            <div className="mb-4">
-                                <FormLabel>Data Categories</FormLabel>
-                                <FormDescription>What kind of data will be processed?</FormDescription>
-                            </div>
-                            <div className="grid grid-cols-2 gap-4">
-                                {dataCategoryItems.map((item) => (
-                                    <FormField key={item.id} control={form.control} name="dataCategories" render={({ field }) => (
-                                        <FormItem key={item.id} className="flex flex-row items-start space-x-3 space-y-0">
-                                            <FormControl>
-                                                <Checkbox checked={field.value?.includes(item.id)}
-                                                    onCheckedChange={(checked) => {
-                                                        const currentValue = field.value || [];
-                                                        return checked
-                                                        ? field.onChange([...currentValue, item.id])
-                                                        : field.onChange(currentValue.filter((value) => value !== item.id));
-                                                    }}
-                                                />
-                                            </FormControl>
-                                            <FormLabel className="font-normal">{item.label}</FormLabel>
-                                        </FormItem>
-                                    )} />
-                                ))}
-                            </div>
-                            <FormMessage />
-                        </FormItem>
-                    )} />
-                </div>
-              )}
-            </CardContent>
-
-            <CardFooter className="flex justify-between">
-              {step === 1 ? ( <div></div> ) : (
-                <Button type="button" variant="outline" onClick={handleBack}>
-                  <ArrowLeft className="mr-2 h-4 w-4" /> Back
-                </Button>
-              )}
-
-              {step === 1 ? (
-                <Button type="button" onClick={handleNext}>
-                  Next <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              ) : (
-                <Button type="submit" disabled={!isFormSubmittable || isSaving}>
-                  {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-                  {mode === 'create' ? 'Create Project' : 'Save Changes'}
-                </Button>
-              )}
-            </CardFooter>
-          </form>
-        </Form>
-      </Card>
-    </div>
+          <CardFooter className="flex justify-end">
+            <Button type="submit" disabled={!isFormSubmittable || isSaving}>
+              {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+              {mode === 'create' ? 'Create Project' : 'Save Changes'}
+            </Button>
+          </CardFooter>
+        </form>
+      </Form>
+    </Card>
   );
 }
+
+    

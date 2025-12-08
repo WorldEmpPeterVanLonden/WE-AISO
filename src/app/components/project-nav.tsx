@@ -18,7 +18,6 @@ import {
   Sunset,
   Terminal,
   Telescope,
-  Users,
   Bot,
   FileText,
   Settings,
@@ -42,6 +41,7 @@ import {
 const topNavItems = [
   { href: "/overview", icon: Home, label: "Overview" },
   { href: "/basic-info", icon: FileText, label: "Basic Info" },
+  { href: "/edit", icon: Settings, label: "Project Settings"},
 ];
 
 const lifecycleNavItems = [
@@ -58,7 +58,6 @@ const bottomNavItems = [
     { href: "/governance", icon: LifeBuoy, label: "Governance" },
     { href: "/risk-register", icon: ShieldAlert, label: "Risk Register" },
     { href: "/documents", icon: BookCopy, label: "Documents" },
-    { href: "/edit", icon: Settings, label: "Project Settings"},
 ];
 
 
@@ -203,3 +202,5 @@ export function ProjectNav({
     </aside>
   );
 }
+
+    

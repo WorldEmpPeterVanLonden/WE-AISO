@@ -1,5 +1,4 @@
 
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { ProjectForm } from "@/app/components/project-form";
 import { adminDb } from "@/firebase/admin";
 import { notFound } from "next/navigation";
@@ -65,3 +64,5 @@ export default async function EditProjectPage({ params }: { params: { id: string
     <ProjectForm mode="edit" defaultValues={projectData} projectId={params.id} />
   );
 }
+
+    
