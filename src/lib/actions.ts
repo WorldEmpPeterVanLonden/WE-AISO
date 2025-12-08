@@ -6,7 +6,7 @@ import { NewProjectSchema, BasicInfoSchema } from "./definitions";
 import { generateAiTechnicalFile } from "@/ai/ai-technical-file-generation";
 import { GenerateDocumentSchema } from "@/ai/schemas/ai-technical-file-generation";
 import * as admin from 'firebase-admin';
-import serviceAccount from '@/../keys/service-account.json';
+import serviceAccount from '../../keys/service-account.json';
 
 if (!admin.apps.length) {
   admin.initializeApp({
@@ -18,21 +18,19 @@ const firestore = admin.firestore();
 
 
 export async function createProject(formData: unknown) {
-  console.log("[Action] 1. --- createProject functie gestart ---");
-  console.log("[Action] 2. Ontvangen formulier data:", formData);
-
   const validatedFields = NewProjectSchema.safeParse(formData);
 
   if (!validatedFields.success) {
-    console.error("[Action ERROR] 9. Zod validatie mislukt:", validatedFields.error.flatten().fieldErrors);
-    throw new Error("Ongeldige formulier data.");
+    console.error("[Action ERROR] Zod validation failed:", validatedFields.error.flatten().fieldErrors);
+    return { error: "Invalid form data. Please check the fields and try again." };
   }
-  console.log("[Action] 9. Zod validatie succesvol.");
-
+  
   const {
     name, version, customerId, description, useCase, systemType, riskCategory, owner,
     intendedUsers, geographicScope, dataCategories, dataSources, legalRequirements
   } = validatedFields.data;
+  
+  console.log("Attempting to create project with data:", validatedFields.data);
 
   try {
     const projectData = {
@@ -47,24 +45,16 @@ export async function createProject(formData: unknown) {
       owner: owner,
     };
     
-    console.log("[Action] 11. INSPECT: Data wordt naar 'aiso_projects' collectie geschreven:", JSON.stringify(projectData, null, 2));
-
     const projectRef = await firestore.collection("aiso_projects").add(projectData);
-    console.log("[Action] 12. Project document succesvol aangemaakt met ID: ", projectRef.id);
-    
-    console.log("[Action] 13. INSPECT: Data wordt naar 'basicInfo' subcollectie geschreven:", JSON.stringify(basicInfoData, null, 2));
-    
     await firestore.collection("aiso_projects").doc(projectRef.id).collection("basicInfo").doc("details").set(basicInfoData);
-    console.log("[Action] 14. BasicInfo sub-document succesvol aangemaakt.");
 
   } catch (error) {
-    console.error("[Action ERROR] 15. Fout bij het schrijven naar Firestore:", error);
-    throw new Error("Could not create project in Firestore.");
+    console.error("[Action ERROR] Error writing to Firestore:", error);
+    return { error: "Could not create project in Firestore." };
   }
 
-  console.log("[Action] 16. Revalidating pad: /dashboard");
   revalidatePath("/dashboard");
-  console.log("[Action] 17. --- createProject functie succesvol afgerond ---");
+  return { success: true };
 }
 
 export async function updateBasicInfo(projectId: string, formData: unknown) {

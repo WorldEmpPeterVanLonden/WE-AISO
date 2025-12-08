@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect }from "react";
@@ -301,7 +300,7 @@ export function NewProjectWizard() {
                     <FormField control={form.control} name="intendedUsers" render={({ field }) => (
                         <FormItem>
                             <FormLabel>Intended Users</FormLabel>
-                            <FormControl><Input placeholder="e.g. End users, internal employees" value={Array.isArray(field.value) ? field.value.join(", ") : ""} onChange={e => field.onChange(e.target.value.split(',').map(s => s.trim()))} /></FormControl>
+                            <FormControl><Input placeholder="e.g. End users, internal employees" value={Array.isArray(field.value) ? field.value.join(', ') : field.value || ''} onChange={e => field.onChange(e.target.value.split(',').map(s => s.trim()))} /></FormControl>
                             <FormMessage />
                         </FormItem>
                     )} />
@@ -315,14 +314,14 @@ export function NewProjectWizard() {
                     <FormField control={form.control} name="legalRequirements" render={({ field }) => (
                         <FormItem className="md:col-span-2">
                             <FormLabel>Relevant Legislation</FormLabel>
-                            <FormControl><Input placeholder="e.g. GDPR, AI Act, MDR" value={Array.isArray(field.value) ? field.value.join(", ") : ""} onChange={e => field.onChange(e.target.value.split(',').map(s => s.trim()))} /></FormControl>
+                            <FormControl><Input placeholder="e.g. GDPR, AI Act, MDR" value={Array.isArray(field.value) ? field.value.join(', ') : field.value || ''} onChange={e => field.onChange(e.target.value.split(',').map(s => s.trim()))} /></FormControl>
                             <FormMessage />
                         </FormItem>
                     )} />
                     <FormField control={form.control} name="dataSources" render={({ field }) => (
                         <FormItem className="md:col-span-2">
                             <FormLabel>Data Sources</FormLabel>
-                            <FormControl><Textarea placeholder="Where does the data come from? (comma-separated)" value={Array.isArray(field.value) ? field.value.join(", ") : ""} onChange={e => field.onChange(e.target.value.split(',').map(s => s.trim()))} /></FormControl>
+                            <FormControl><Textarea placeholder="Where does the data come from? (comma-separated)" value={Array.isArray(field.value) ? field.value.join(', ') : field.value || ''} onChange={e => field.onChange(e.target.value.split(',').map(s => s.trim()))} /></FormControl>
                              <FormMessage />
                         </FormItem>
                     )} />
@@ -446,5 +445,3 @@ export function NewProjectWizard() {
     </Card>
   );
 }
-
-    
