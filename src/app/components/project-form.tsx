@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useRouter } from "next/navigation";
-import { Loader2, Save, Wand2 } from "lucide-react";
+import { Loader2, Save, Wand2, Sparkles } from "lucide-react";
 import { useUser } from "@/firebase";
 import {
   Card,
@@ -39,6 +39,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { createProject, updateProject } from "@/lib/actions";
 import { NewProjectSchema } from "@/lib/definitions";
+import { generateProjectSuggestions } from "@/ai/flows/generate-project-suggestions";
 
 type ProjectFormData = z.infer<typeof NewProjectSchema>;
 
@@ -83,6 +84,7 @@ interface ProjectFormProps {
 
 export function ProjectForm({ mode, defaultValues, projectId }: ProjectFormProps) {
   const [isSaving, setIsSaving] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
   const { user } = useUser();
@@ -106,7 +108,8 @@ export function ProjectForm({ mode, defaultValues, projectId }: ProjectFormProps
     mode: 'onChange',
   });
 
-  const { formState: { isValid, isDirty } } = form;
+  const { formState: { isValid, isDirty }, watch } = form;
+  const useCaseValue = watch("useCase");
 
   const onSubmit = async (data: ProjectFormData) => {
     setIsSaving(true);
@@ -142,6 +145,36 @@ export function ProjectForm({ mode, defaultValues, projectId }: ProjectFormProps
     setIsSaving(false);
   };
   
+  const handleGenerateSuggestions = async () => {
+    if (!useCaseValue) {
+      toast({
+        variant: "destructive",
+        title: "Use Case Required",
+        description: "Please provide a use case before using AI assist.",
+      });
+      return;
+    }
+    
+    setIsGenerating(true);
+    try {
+      const result = await generateProjectSuggestions({ useCase: useCaseValue });
+      if (result.name) form.setValue("name", result.name, { shouldValidate: true, shouldDirty: true });
+      if (result.description) form.setValue("description", result.description, { shouldValidate: true, shouldDirty: true });
+      toast({
+        title: "Suggestions Generated",
+        description: "The AI has suggested a project name and description.",
+      });
+    } catch (error) {
+      console.error("Error generating project suggestions:", error);
+      toast({
+        variant: "destructive",
+        title: "Generation Failed",
+        description: "Could not generate AI suggestions. Please try again.",
+      });
+    }
+    setIsGenerating(false);
+  };
+
   const isFormSubmittable = mode === 'create' ? isValid : (isValid && isDirty);
   const cardTitle = mode === 'create' ? 'New AI Compliance Project' : 'Edit Project Settings';
   const cardDescription = mode === 'create' ? 'Fill in the details to start your project.' : 'Update the details of your project.';
@@ -167,10 +200,38 @@ export function ProjectForm({ mode, defaultValues, projectId }: ProjectFormProps
 
           <CardContent className="space-y-6">
             <h3 className="text-lg font-semibold border-b pb-2">Project Details</h3>
+            <FormField control={form.control} name="useCase" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Use-case <span className="text-destructive">*</span></FormLabel>
+                  <FormControl><Textarea placeholder="What is the purpose of the AI system?" {...field} /></FormControl>
+                  <FormDescription>This is a critical field for risk assessment. Be specific.</FormDescription>
+                  <FormMessage />
+                </FormItem>
+            )} />
+
+             <Button 
+                type="button" 
+                variant="outline" 
+                size="sm" 
+                onClick={handleGenerateSuggestions} 
+                disabled={!useCaseValue || isGenerating}
+                className="w-full md:w-auto"
+              >
+                {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
+                AI Assist: Suggest Name & Description
+              </Button>
+
             <FormField control={form.control} name="name" render={({ field }) => (
                 <FormItem>
                   <FormLabel>Project Name <span className="text-destructive">*</span></FormLabel>
                   <FormControl><Input placeholder="e.g. Customer Service Chatbot" {...field} /></FormControl>
+                  <FormMessage />
+                </FormItem>
+            )} />
+             <FormField control={form.control} name="description" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Description</FormLabel>
+                  <FormControl><Textarea placeholder="A brief summary of the project." {...field} /></FormControl>
                   <FormMessage />
                 </FormItem>
             )} />
@@ -190,14 +251,7 @@ export function ProjectForm({ mode, defaultValues, projectId }: ProjectFormProps
                   </FormItem>
               )} />
             </div>
-            <FormField control={form.control} name="useCase" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Use-case <span className="text-destructive">*</span></FormLabel>
-                  <FormControl><Textarea placeholder="What is the purpose of the AI system?" {...field} /></FormControl>
-                  <FormDescription>This is a critical field for risk assessment. Be specific.</FormDescription>
-                  <FormMessage />
-                </FormItem>
-            )} />
+           
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <FormField control={form.control} name="systemType" render={({ field }) => (
                   <FormItem>
@@ -344,5 +398,3 @@ export function ProjectForm({ mode, defaultValues, projectId }: ProjectFormProps
     </Card>
   );
 }
-
-    
