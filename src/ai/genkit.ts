@@ -14,4 +14,9 @@ export const ai = genkit({
       projectId: "we-portal-b9e8d",
       location: requireEnv('VERTEX_LOCATION', 'us-central1'),
     }),
-  ]});
+  ],
+  defaultModel: {
+    vendor: 'google',
+    name: requireEnv('VERTEX_MODEL', 'gemini-2.5-flash'),
+  },
+});
