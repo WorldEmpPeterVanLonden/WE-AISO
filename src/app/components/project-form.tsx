@@ -188,7 +188,7 @@ export function ProjectForm({ mode, defaultValues, projectId }: ProjectFormProps
             <div className="flex items-center justify-between">
               <div>
                 <CardTitle className="flex items-center gap-2">
-                  <Wand2 className="h-6 w-6 text-accent" />
+                  <Wand2 className="h-6 w-6" />
                   {cardTitle}
                 </CardTitle>
                 <CardDescription>
@@ -202,24 +202,24 @@ export function ProjectForm({ mode, defaultValues, projectId }: ProjectFormProps
             <h3 className="text-lg font-semibold border-b pb-2">Project Details</h3>
             <FormField control={form.control} name="useCase" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Use-case <span className="text-destructive">*</span></FormLabel>
+                  <div className="flex items-center justify-between">
+                    <FormLabel>Use-case <span className="text-destructive">*</span></FormLabel>
+                     <Button 
+                        type="button" 
+                        variant="default"
+                        size="sm" 
+                        onClick={handleGenerateSuggestions} 
+                        disabled={!useCaseValue || isGenerating}
+                      >
+                        {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
+                        AI Assist
+                      </Button>
+                  </div>
                   <FormControl><Textarea placeholder="What is the purpose of the AI system?" {...field} /></FormControl>
                   <FormDescription>This is a critical field for risk assessment. Be specific.</FormDescription>
                   <FormMessage />
                 </FormItem>
             )} />
-
-             <Button 
-                type="button" 
-                variant="outline" 
-                size="sm" 
-                onClick={handleGenerateSuggestions} 
-                disabled={!useCaseValue || isGenerating}
-                className="w-full md:w-auto"
-              >
-                {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4 text-accent" />}
-                AI Assist: Suggest Name & Description
-              </Button>
 
             <FormField control={form.control} name="name" render={({ field }) => (
                 <FormItem>
