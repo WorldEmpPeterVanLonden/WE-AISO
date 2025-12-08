@@ -20,7 +20,7 @@ export function FirestoreStatusIndicator() {
               )}
             />
             <span className="text-sm text-muted-foreground sr-only sm:not-sr-only">
-              {isConnected ? 'Connected' : 'Disconnected'}
+              {isConnected ? 'FS Connected' : 'Disconnected'}
             </span>
           </div>
         </TooltipTrigger>
