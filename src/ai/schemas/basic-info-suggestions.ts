@@ -1,6 +1,3 @@
-
-'use client';
-
 /**
  * @fileOverview Zod schemas for the basic info suggestions flow.
  */
@@ -25,5 +22,3 @@ export const BasicInfoSuggestionsOutputSchema = z.object({
     scopeComponents: z.string().optional().describe("A suggestion for in-scope and out-of-scope components."),
 });
 export type BasicInfoSuggestionsOutput = z.infer<typeof BasicInfoSuggestionsOutputSchema>;
-
-    

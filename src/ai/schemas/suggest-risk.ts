@@ -1,6 +1,3 @@
-
-'use client';
-
 import { z } from 'zod';
 
 export const SuggestRiskInputSchema = z.object({

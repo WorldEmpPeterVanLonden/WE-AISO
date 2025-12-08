@@ -1,5 +1,3 @@
-'use client';
-
 /**
  * @fileOverview Zod schemas for the AI Technical File Generation flow.
  */

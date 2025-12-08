@@ -1,5 +1,3 @@
-'use client';
-
 /**
  * @fileOverview Zod schemas for the project suggestions flow.
  */
