@@ -18,7 +18,9 @@ export const ProjectSchema = z.object({
   systemType: z.enum(["LLM", "ML", "Hybrid", "RuleBased"]),
   riskCategory: z.enum(["high", "medium", "low"]),
   auditReadiness: AuditReadinessSchema.optional(),
-  owner: z.string().optional(), // Make owner optional for multi-step validation
+  owner: z.string().optional(), 
+  createdAt: z.any().optional(),
+  updatedAt: z.any().optional(),
 });
 
 export const BasicInfoObjectSchema = z.object({

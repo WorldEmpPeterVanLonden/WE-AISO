@@ -5,10 +5,21 @@ import { adminDb } from "@/firebase/admin";
 import { notFound } from "next/navigation";
 import type { z } from "zod";
 import { ProjectSchema } from "@/lib/definitions";
+import type { Timestamp } from "firebase-admin/firestore";
 
-type ProjectFormData = z.infer<typeof ProjectSchema>;
+// This will be the type passed to the client component, with strings for dates
+type ProjectFormDataForClient = Omit<z.infer<typeof ProjectSchema>, 'createdAt' | 'updatedAt'> & {
+  createdAt?: string;
+  updatedAt?: string;
+};
 
-async function getProjectDetails(projectId: string): Promise<ProjectFormData | null> {
+// This is the type we get from Firestore, with Timestamps
+type ProjectDataFromFirestore = Omit<ProjectFormDataForClient, 'createdAt' | 'updatedAt'> & {
+    createdAt?: Timestamp;
+    updatedAt?: Timestamp;
+};
+
+async function getProjectDetails(projectId: string): Promise<ProjectFormDataForClient | null> {
   const docRef = adminDb.collection("aiso_projects").doc(projectId);
   const snap = await docRef.get();
 
@@ -16,7 +27,14 @@ async function getProjectDetails(projectId: string): Promise<ProjectFormData | n
     return null;
   }
 
-  return snap.data() as ProjectFormData;
+  const data = snap.data() as ProjectDataFromFirestore;
+
+  // Convert Timestamp objects to ISO strings for serialization
+  return {
+    ...data,
+    createdAt: data.createdAt?.toDate().toISOString(),
+    updatedAt: data.updatedAt?.toDate().toISOString(),
+  };
 }
 
 export default async function EditProjectPage({ params }: { params: { id: string } }) {
