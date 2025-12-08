@@ -26,7 +26,7 @@ import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { generateTrainingSuggestions } from "@/ai/flows/generate-training-suggestions";
+import { generateTrainingSuggestions from "@/ai/flows/generate-training-suggestions";
 
 type TrainingFormData = z.infer<typeof TrainingSchema>;
 
@@ -119,7 +119,7 @@ export function TrainingForm() {
                 </>
               ) : (
                 <>
-                  <Sparkles className="mr-2 h-4 w-4" />
+                  <Sparkles className="mr-2 h-4 w-4 text-accent" />
                   AI Assist
                 </>
               )}
@@ -273,3 +273,5 @@ export function TrainingForm() {
     </Form>
   );
 }
+
+    

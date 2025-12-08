@@ -110,7 +110,7 @@ export function GovernanceForm() {
                 </>
               ) : (
                 <>
-                  <Sparkles className="mr-2 h-4 w-4" />
+                  <Sparkles className="mr-2 h-4 w-4 text-accent" />
                   Suggest ISO Controls
                 </>
               )}
@@ -232,5 +232,7 @@ export function GovernanceForm() {
     </Form>
   );
 }
+
+    
 
     

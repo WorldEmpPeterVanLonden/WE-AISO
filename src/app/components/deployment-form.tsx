@@ -97,7 +97,7 @@ export function DeploymentForm() {
                 </>
               ) : (
                 <>
-                  <Sparkles className="mr-2 h-4 w-4" />
+                  <Sparkles className="mr-2 h-4 w-4 text-accent" />
                   AI Assist
                 </>
               )}
@@ -246,5 +246,7 @@ export function DeploymentForm() {
     </Form>
   );
 }
+
+    
 
     

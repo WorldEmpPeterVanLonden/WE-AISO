@@ -192,7 +192,7 @@ export function BasicInfoForm({ defaultValues }: { defaultValues: BasicInfoFormD
                 type="button"
                 variant="ghost"
                 size="icon"
-                className="absolute bottom-2 right-2 h-7 w-7 text-muted-foreground hover:text-primary"
+                className="absolute bottom-2 right-2 h-7 w-7 text-muted-foreground hover:text-accent"
                 onClick={() => handleGenerateFieldSuggestion(fieldName)}
                 disabled={isLoading}
               >
@@ -606,3 +606,5 @@ export function BasicInfoForm({ defaultValues }: { defaultValues: BasicInfoFormD
     </>
   );
 }
+
+    

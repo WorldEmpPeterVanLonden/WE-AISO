@@ -188,7 +188,7 @@ export function ProjectForm({ mode, defaultValues, projectId }: ProjectFormProps
             <div className="flex items-center justify-between">
               <div>
                 <CardTitle className="flex items-center gap-2">
-                  <Wand2 className="h-6 w-6 text-primary" />
+                  <Wand2 className="h-6 w-6 text-accent" />
                   {cardTitle}
                 </CardTitle>
                 <CardDescription>
@@ -217,7 +217,7 @@ export function ProjectForm({ mode, defaultValues, projectId }: ProjectFormProps
                 disabled={!useCaseValue || isGenerating}
                 className="w-full md:w-auto"
               >
-                {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
+                {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4 text-accent" />}
                 AI Assist: Suggest Name & Description
               </Button>
 
@@ -398,3 +398,5 @@ export function ProjectForm({ mode, defaultValues, projectId }: ProjectFormProps
     </Card>
   );
 }
+
+    

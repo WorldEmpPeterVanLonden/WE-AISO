@@ -285,7 +285,7 @@ export function RiskDialog({ isOpen, setIsOpen, onAddRisk }: RiskDialogProps) {
             <DialogFooter>
                 <div className="flex justify-between w-full">
                     <Button variant="outline" type="button" disabled={isGenerating} onClick={handleGenerateSuggestions}>
-                        {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Sparkles className="mr-2 h-4 w-4" />}
+                        {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Sparkles className="mr-2 h-4 w-4 text-accent" />}
                         AI Suggest
                     </Button>
                     <Button type="submit">Add Risk</Button>
@@ -297,3 +297,5 @@ export function RiskDialog({ isOpen, setIsOpen, onAddRisk }: RiskDialogProps) {
     </Dialog>
   );
 }
+
+    
