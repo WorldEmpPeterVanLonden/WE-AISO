@@ -5,7 +5,8 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Loader2, Sparkles, Save, Info, CheckCircle } from "lucide-react";
+import { Loader2, Sparkles, Save, Info } from "lucide-react";
+import { useParams } from "next/navigation";
 
 import { BasicInfoSchema } from "@/lib/definitions";
 import { Button } from "@/components/ui/button";
@@ -26,6 +27,7 @@ import { generateBasicInfoSuggestions } from "@/ai/flows/generate-basic-info-sug
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { updateBasicInfo } from "@/lib/actions";
 
 type BasicInfoFormData = z.infer<typeof BasicInfoSchema>;
 
@@ -101,29 +103,16 @@ const TooltipLabel = ({ label, tooltipText }: { label: string, tooltipText: stri
 );
 
 
-export function BasicInfoForm() {
+export function BasicInfoForm({ defaultValues }: { defaultValues: BasicInfoFormData }) {
   const [isSaving, setIsSaving] = useState(false);
   const [generatingField, setGeneratingField] = useState<FieldName | null>(null);
   const { toast } = useToast();
+  const params = useParams();
+  const projectId = params.id as string;
 
   const form = useForm<BasicInfoFormData>({
     resolver: zodResolver(BasicInfoSchema),
-    defaultValues: {
-      businessContext: "",
-      intendedUsers: [],
-      geographicScope: "EU",
-      legalRequirements: [],
-      dataCategories: [],
-      dataSources: [],
-      externalDependencies: [],
-      stakeholders: "",
-      prohibitedUse: "",
-      retentionPolicy: "",
-      operationalEnvironment: "",
-      performanceGoals: "",
-      scopeComponents: "",
-      dataSubjects: [],
-    },
+    defaultValues: defaultValues,
   });
   
   const geographicScopeValue = form.watch("geographicScope");
@@ -133,14 +122,22 @@ export function BasicInfoForm() {
 
   async function onSubmit(data: BasicInfoFormData) {
     setIsSaving(true);
-    console.log("Form data submitted:", data);
-    // TODO: Implement server action to save the data
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    toast({
-      title: "Saved!",
-      description: "The basic information has been successfully updated.",
-    });
-    form.reset(data); // Resets the form with the new values, clearing the dirty state
+    const result = await updateBasicInfo(projectId, data);
+    
+    if (result.error) {
+      toast({
+        variant: "destructive",
+        title: "Oh no! Something went wrong.",
+        description: result.error,
+      });
+    } else {
+      toast({
+        title: "Saved!",
+        description: "The basic information has been successfully updated.",
+      });
+      form.reset(data); // Resets the form with the new values, clearing the dirty state
+    }
+    
     setIsSaving(false);
   }
   

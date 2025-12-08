@@ -2,36 +2,25 @@
 'use server';
 
 import { revalidatePath } from "next/cache";
-import { NewProjectSchema } from "./definitions";
+import { NewProjectSchema, BasicInfoSchema } from "./definitions";
 import { generateAiTechnicalFile } from "@/ai/ai-technical-file-generation";
 import { GenerateDocumentSchema } from "@/ai/schemas/ai-technical-file-generation";
 import * as admin from 'firebase-admin';
 import serviceAccount from '@/../keys/service-account.json';
 
+if (!admin.apps.length) {
+  admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount as admin.ServiceAccount),
+    projectId: serviceAccount.project_id,
+  });
+}
+const firestore = admin.firestore();
+
+
 export async function createProject(formData: unknown) {
   console.log("[Action] 1. --- createProject functie gestart ---");
   console.log("[Action] 2. Ontvangen formulier data:", formData);
 
-  try {
-    if (!admin.apps.length) {
-      console.log("[Action] 3. Firebase Admin SDK wordt geïnitialiseerd...");
-      admin.initializeApp({
-        credential: admin.credential.cert(serviceAccount),
-        projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-      });
-      console.log("[Action] 6. Firebase Admin SDK succesvol geïnitialiseerd.");
-    } else {
-      console.log("[Action] 3. Bestaande Firebase Admin SDK instantie wordt hergebruikt.");
-    }
-  } catch (e: any) {
-    console.error("[Action ERROR] Fout bij initialiseren van Firebase Admin SDK:", e);
-    throw new Error(`Initialisatie van Firebase Admin SDK mislukt. Error: ${e.message}`);
-  }
-
-  const firestore = admin.firestore();
-  console.log("[Action] 7. Firestore instantie verkregen.");
-
-  console.log("[Action] 8. Starten van Zod validatie...");
   const validatedFields = NewProjectSchema.safeParse(formData);
 
   if (!validatedFields.success) {
@@ -77,6 +66,33 @@ export async function createProject(formData: unknown) {
   revalidatePath("/dashboard");
   console.log("[Action] 17. --- createProject functie succesvol afgerond ---");
 }
+
+export async function updateBasicInfo(projectId: string, formData: unknown) {
+  const validatedFields = BasicInfoSchema.safeParse(formData);
+
+  if (!validatedFields.success) {
+    console.error("Zod validation failed:", validatedFields.error.flatten().fieldErrors);
+    return { error: "Invalid form data." };
+  }
+
+  try {
+    const projectRef = firestore.collection("aiso_projects").doc(projectId);
+    const basicInfoRef = projectRef.collection("basicInfo").doc("details");
+
+    await firestore.runTransaction(async (transaction) => {
+      transaction.update(basicInfoRef, validatedFields.data);
+      transaction.update(projectRef, { updatedAt: admin.firestore.FieldValue.serverTimestamp() });
+    });
+
+    revalidatePath(`/project/${projectId}/basic-info`);
+    revalidatePath(`/project/${projectId}/overview`);
+    return { success: "Basic info updated successfully." };
+  } catch (error) {
+    console.error("Error updating basic info in Firestore:", error);
+    return { error: "Could not update project in Firestore." };
+  }
+}
+
 
 export async function generateDocumentAction(formData: unknown) {
   const validatedFields = GenerateDocumentSchema.safeParse(formData);
