@@ -13,6 +13,7 @@ import {
   Bot,
   LogOut,
   Loader2,
+  Edit,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -231,6 +232,12 @@ export function ProjectDashboard() {
                               <Link href={`/project/${project.id}/overview`}>
                                 <Eye className="mr-2 h-4 w-4" />
                                 Open Project
+                              </Link>
+                            </DropdownMenuItem>
+                             <DropdownMenuItem asChild>
+                              <Link href={`/project/${project.id}/basic-info`}>
+                                <Edit className="mr-2 h-4 w-4" />
+                                Edit
                               </Link>
                             </DropdownMenuItem>
                             <DropdownMenuItem asChild>
