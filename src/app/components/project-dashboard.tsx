@@ -168,8 +168,8 @@ export function ProjectDashboard() {
 
                           <DropdownMenuContent>
                             <DropdownMenuItem
-                              onClick={(e) => {
-                                router.push(`/project/${p.id}/basic-info`);
+                              onClick={() => {
+                                router.push(`/project/${p.id}/edit`);
                               }}
                             >
                               <Edit className="mr-2 h-4 w-4" />

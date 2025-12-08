@@ -21,6 +21,7 @@ import {
   Users,
   Bot,
   FileText,
+  Settings,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -57,6 +58,7 @@ const bottomNavItems = [
     { href: "/governance", icon: LifeBuoy, label: "Governance" },
     { href: "/risk-register", icon: ShieldAlert, label: "Risk Register" },
     { href: "/documents", icon: BookCopy, label: "Documents" },
+    { href: "/edit", icon: Settings, label: "Project Settings"},
 ];
 
 

@@ -2,7 +2,7 @@
 'use server';
 
 import { revalidatePath } from "next/cache";
-import { NewProjectSchema, BasicInfoSchema } from "./definitions";
+import { NewProjectSchema, BasicInfoSchema, ProjectSchema } from "./definitions";
 import { generateAiTechnicalFile } from "@/ai/ai-technical-file-generation";
 import { GenerateDocumentSchema } from "@/ai/schemas/ai-technical-file-generation";
 import { adminDb } from "@/firebase/admin";
@@ -56,6 +56,31 @@ export async function createProject(formData: unknown) {
 
   revalidatePath("/dashboard");
   return { success: true };
+}
+
+export async function updateProject(projectId: string, formData: unknown) {
+  const validatedFields = ProjectSchema.safeParse(formData);
+
+  if (!validatedFields.success) {
+    console.error("Zod validation failed for updateProject:", validatedFields.error.flatten().fieldErrors);
+    return { error: "Invalid form data for updating project." };
+  }
+
+  try {
+    const projectRef = adminDb.collection("aiso_projects").doc(projectId);
+    await projectRef.update({
+      ...validatedFields.data,
+      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+
+    revalidatePath(`/project/${projectId}/edit`);
+    revalidatePath(`/project/${projectId}/overview`);
+    revalidatePath(`/dashboard`);
+    return { success: "Project details updated successfully." };
+  } catch (error) {
+    console.error("Error updating project in Firestore:", error);
+    return { error: "Could not update project in Firestore." };
+  }
 }
 
 export async function updateBasicInfo(projectId: string, formData: unknown) {
