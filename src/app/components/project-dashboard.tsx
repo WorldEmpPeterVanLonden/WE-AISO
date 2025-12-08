@@ -35,8 +35,8 @@ interface Project {
   status: ProjectStatus;
   riskCategory: RiskCategory;
   complianceProgress: number;
-  createdAt: Timestamp;
-  updatedAt: Timestamp;
+  createdAt: Timestamp | Date | string;
+  updatedAt: Timestamp | Date | string;
 }
 
 export function ProjectDashboard() {
@@ -84,6 +84,18 @@ export function ProjectDashboard() {
 
     return () => unsub();
   }, [user, userLoading, firestore, router]);
+
+  const formatDate = (dateValue: Timestamp | Date | string | undefined | null): string => {
+    if (!dateValue) return "-";
+    if (typeof (dateValue as any)?.toDate === 'function') {
+      return format((dateValue as Timestamp).toDate(), "dd.MM.yy");
+    }
+    try {
+      return format(new Date(dateValue), "dd.MM.yy");
+    } catch {
+      return "-";
+    }
+  };
 
   if (loading || userLoading) {
     return (
@@ -152,10 +164,10 @@ export function ProjectDashboard() {
                       </TableCell>
 
                       <TableCell>
-                        {p.createdAt ? format(p.createdAt.toDate(), "dd.MM.yy") : "-"}
+                        {formatDate(p.createdAt)}
                       </TableCell>
                       <TableCell>
-                        {p.updatedAt ? format(p.updatedAt.toDate(), "dd.MM.yy") : "-"}
+                        {formatDate(p.updatedAt)}
                       </TableCell>
 
                       <TableCell className="text-right">
