@@ -49,14 +49,27 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useUser } from "@/firebase";
+import { useFirestore, useUser } from "@/firebase";
 import { signOut, type Auth } from "firebase/auth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ProjectHeader } from "./project-header";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { collection, onSnapshot, query, where, type Firestore, type Timestamp } from "firebase/firestore";
 
 type ProjectStatus = "draft" | "active" | "archived";
 type RiskCategory = "low" | "medium" | "high";
+
+interface Project {
+    id: string;
+    name: string;
+    customerName?: string;
+    status: ProjectStatus;
+    riskCategory: RiskCategory;
+    complianceProgress: number; // This would be calculated
+    createdAt: Timestamp;
+    updatedAt: Timestamp;
+}
+
 
 const StatusBadge = ({ status }: { status: ProjectStatus }) => {
   const variant: "default" | "secondary" | "destructive" =
@@ -103,28 +116,41 @@ const RiskBadge = ({ risk }: { risk: RiskCategory }) => {
 
 export function ProjectDashboard() {
   const router = useRouter();
-  const { user, auth, loading } = useUser();
-  const mockProjects: any[] = []; 
+  const { user, auth, loading: userLoading } = useUser();
+  const firestore = useFirestore();
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!loading && !user) {
+    if (userLoading) return;
+    if (!user) {
       router.push('/login');
+      return;
     }
-  }, [loading, user, router]);
+    
+    setLoading(true);
 
-  const handleSignOut = async () => {
-    if (auth) {
-      await signOut(auth as Auth);
-      router.push('/login');
-    }
-  };
+    const projectsRef = collection(firestore as Firestore, "aiso_projects");
+    const userProjectsQuery = query(projectsRef, where("owner", "==", user.uid));
 
-  const getInitials = (name?: string | null) => {
-    if (!name) return 'U';
-    return name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
-  }
+    const unsubscribe = onSnapshot(userProjectsQuery, (snapshot) => {
+        const userProjects = snapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data(),
+            complianceProgress: 0, // Placeholder
+        } as Project));
+        setProjects(userProjects);
+        setLoading(false);
+    }, (error) => {
+        console.error("Error fetching projects:", error);
+        setLoading(false);
+    });
 
-  if (loading || !user) {
+    return () => unsubscribe();
+  }, [user, userLoading, firestore, router]);
+
+
+  if (userLoading || loading) {
     return (
         <div className="flex items-center justify-center min-h-screen">
             <Loader2 className="h-16 w-16 animate-spin text-primary" />
@@ -160,14 +186,14 @@ export function ProjectDashboard() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {mockProjects.length === 0 ? (
+                {projects.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={8} className="h-24 text-center">
                       No projects found. <Link href="/project/new" className="text-primary underline">Create a new project</Link> to get started.
                     </TableCell>
                   </TableRow>
                 ) : (
-                  mockProjects.map((project) => (
+                  projects.map((project) => (
                     <TableRow 
                       key={project.id} 
                       className="cursor-pointer"
@@ -176,7 +202,7 @@ export function ProjectDashboard() {
                       <TableCell className="font-medium group-hover:underline">
                         {project.name}
                       </TableCell>
-                      <TableCell>{project.customerName}</TableCell>
+                      <TableCell>{project.customerName || '-'}</TableCell>
                       <TableCell>
                         <StatusBadge status={project.status as ProjectStatus} />
                       </TableCell>
@@ -189,8 +215,8 @@ export function ProjectDashboard() {
                               <span className="text-muted-foreground text-xs">{project.complianceProgress}%</span>
                           </div>
                       </TableCell>
-                      <TableCell>{format(project.startDate, "dd.MM.yy")}</TableCell>
-                      <TableCell>{format(project.updatedAt, "dd.MM.yy")}</TableCell>
+                      <TableCell>{project.createdAt ? format(project.createdAt.toDate(), "dd.MM.yy") : '-'}</TableCell>
+                      <TableCell>{project.updatedAt ? format(project.updatedAt.toDate(), "dd.MM.yy") : '-'}</TableCell>
                       <TableCell onClick={(e) => e.stopPropagation()}>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
