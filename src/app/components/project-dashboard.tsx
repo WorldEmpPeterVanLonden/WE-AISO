@@ -129,6 +129,11 @@ export function ProjectDashboard() {
       return;
     }
     
+    // Ensure firestore is initialized before using it.
+    if (!firestore) {
+      return;
+    }
+    
     setLoading(true);
 
     const projectsRef = collection(firestore as Firestore, "aiso_projects");
