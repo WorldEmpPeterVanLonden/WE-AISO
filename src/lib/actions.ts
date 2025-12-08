@@ -25,7 +25,7 @@ export async function createProject(formData: unknown) {
   console.log("Attempting to create project with data:", validatedFields.data);
 
   try {
-    const projectRef = firestore.collection("aiso_projects").doc();
+    const projectRef = adminDb.collection("aiso_projects").doc();
     
     const projectData = {
       name, version, customerId, description, useCase, systemType, riskCategory, owner,
@@ -40,7 +40,7 @@ export async function createProject(formData: unknown) {
       businessContext: description,
     };
     
-    const batch = firestore.batch();
+    const batch = adminDb.batch();
     
     batch.set(projectRef, projectData);
     

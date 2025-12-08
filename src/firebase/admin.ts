@@ -2,15 +2,15 @@
 import * as admin from "firebase-admin";
 
 if (!admin.apps.length) {
-  // Use FIREBASE_ADMIN_KEY for local dev, fallback to FIREBASE_SERVICE_ACCOUNT for production
-  const serviceAccountString = process.env.FIREBASE_ADMIN_KEY || process.env.FIREBASE_SERVICE_ACCOUNT;
-  
-  console.log("🔥 Firebase Admin using:", 
-    process.env.FIREBASE_ADMIN_KEY ? "FIREBASE_ADMIN_KEY" : "FIREBASE_SERVICE_ACCOUNT"
-  );
+  // 1) Dev / Firebase Studio: NEXT_SERVER_ADMIN_KEY
+  // 2) App Hosting: FIREBASE_SERVICE_ACCOUNT (uit apphosting.yaml)
+  const serviceAccountString =
+    process.env.NEXT_SERVER_ADMIN_KEY || process.env.FIREBASE_SERVICE_ACCOUNT;
 
   if (!serviceAccountString) {
-    throw new Error("A Firebase service account environment variable (FIREBASE_ADMIN_KEY or FIREBASE_SERVICE_ACCOUNT) is not set.");
+    throw new Error(
+      "Missing service account: set NEXT_SERVER_ADMIN_KEY (dev/Studio) or FIREBASE_SERVICE_ACCOUNT (App Hosting)."
+    );
   }
 
   admin.initializeApp({
