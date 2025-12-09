@@ -68,7 +68,7 @@ env:
 
   # ✅ NIEUW (OPTIONEEL): Google AI API Key als back-up/DEV secret
   - variable: GOOGLE_API_KEY
-    secret: GOOGLE_AI_API_KEY_SECRET # Vervang door de naam van je secret
+    secret: GOOGLE_AI_API_KEY # Vervang door de naam van je secret
     availability: [RUNTIME]
 
   # === AUTH / SSO ===
