@@ -1,55 +1,54 @@
-// src/firebase/admin.ts
-import * as admin from "firebase-admin";
-import * as fs from 'fs'; // Importeer de file system module
+import { initializeApp, getApps, cert } from "firebase-admin/app";
+import { getFirestore } from "firebase-admin/firestore";
+import fs from "fs";
 
-const FIREBASE_LOCAL_SA_PATH = './keys/sa.json'; // Ons lokale bestandspad
+const LOCAL_SA_PATH = "./keys/sa.json";
 
 /**
- * Laadt het Service Account: Eerst proberen we het lokale bestand te lezen
- * (om .env/shell-escapingsproblemen te omzeilen), dan vallen we terug op de environment variable (PROD/deployment).
+ * Laadt het service account:
+ * - lokaal vanuit bestand
+ * - in deployment vanuit environment secret (FIREBASE_SERVICE_ACCOUNT)
  */
-const loadServiceAccount = () => {
-    // 1. Probeer lokaal bestand te lezen (betrouwbaarst voor lokale JSON met \n)
-    if (fs.existsSync(FIREBASE_LOCAL_SA_PATH)) {
-        console.log(`[Firebase Admin] Laadt Service Account van lokaal bestand: ${FIREBASE_LOCAL_SA_PATH}`);
-        try {
-            const fileContent = fs.readFileSync(FIREBASE_LOCAL_SA_PATH, 'utf-8');
-            // De content is al geldige JSON uit het bestand, geen cleanup nodig
-            return JSON.parse(fileContent);
-        } catch (e) {
-            console.error(`[Firebase Admin] Fout bij parsen van lokaal bestand ${FIREBASE_LOCAL_SA_PATH}:`, e);
-            // We gooien hier GEEN fout, we vallen terug naar de .env check
-        }
-    }
+function loadServiceAccount() {
+  // 1) Lokaal → keys/sa.json gebruiken
+  if (fs.existsSync(LOCAL_SA_PATH)) {
+    console.log(`[Firebase Admin] Using local service account file: ${LOCAL_SA_PATH}`);
+    const file = fs.readFileSync(LOCAL_SA_PATH, "utf8");
+    return JSON.parse(file);
+  }
 
-    // 2. Als lokaal bestand niet werkt, val terug op de environment variable (NODIG VOOR DEPLOYMENT)
-    const rawServiceAccountString =
-        process.env.NEXT_SERVER_ADMIN_KEY || process.env.FIREBASE_SERVICE_ACCOUNT;
+  // 2) Deployment / App Hosting → environment secret gebruiken
+  const raw =
+    process.env.FIREBASE_SERVICE_ACCOUNT ||
+    process.env.NEXT_SERVER_ADMIN_KEY;
 
-    if (!rawServiceAccountString) {
-        throw new Error(
-            "Missing service account: Set NEXT_SERVER_ADMIN_KEY (local .env) or ensure sa.json exists locally."
-        );
-    }
+  if (!raw) {
+    throw new Error(
+      "FATAL: No service account found. Provide FIREBASE_SERVICE_ACCOUNT (App Hosting) or keys/sa.json locally."
+    );
+  }
 
-    // 3. Probeer de environment string te parsen (met cleanup voor deployment)
-    const cleanString = rawServiceAccountString.trim().replace(/^['"]|['"]$/g, ''); 
-    
-    try {
-        return JSON.parse(cleanString);
-    } catch (e) {
-        // Dit vangt de hardnekkige "Bad control character" fout op in de .env string
-        console.error("FATAL ERROR: Environment Variable Service Account JSON is incorrect/badly escaped.", cleanString);
-        throw new Error(`Failed to initialize Firebase Admin SDK: Check JSON secret. Original error: ${e}`);
-    }
-};
-
-if (!admin.apps.length) {
-    const serviceAccountData = loadServiceAccount();
-
-    admin.initializeApp({
-        credential: admin.credential.cert(serviceAccountData),
-    });
+  try {
+    // App Hosting levert exact geldig JSON, dus direct parsen
+    return JSON.parse(raw);
+  } catch (e) {
+    console.error("Service Account ENV contains invalid JSON:", raw);
+    throw e;
+  }
 }
 
-export const adminDb = admin.firestore();
+let app;
+
+if (!getApps().length) {
+  const sa = loadServiceAccount();
+
+  app = initializeApp({
+    credential: cert(sa),
+  });
+
+  console.log("[Firebase Admin] Initialized");
+} else {
+  app = getApps()[0];
+}
+
+export const adminDb = getFirestore(app);
