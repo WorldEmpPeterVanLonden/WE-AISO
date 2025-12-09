@@ -7,7 +7,6 @@ import { GenerateDocumentSchema } from "@/ai/schemas/ai-technical-file-generatio
 import { adminDb } from "@/firebase/admin";
 import * as admin from 'firebase-admin';
 import { generateAiTechnicalFile } from "@/ai/ai-technical-file-generation";
-import { listFlows } from "genkit";
 
 
 export async function createProject(formData: unknown) {
@@ -177,17 +176,15 @@ export type AiHealthOutput = { status: 'ok' | 'error', message?: string };
 export async function healthCheck(): Promise<AiHealthOutput> {
   console.log('--- Running AI Health Check ---');
   try {
-    const flows = listFlows();
-    console.log(`Genkit initialized. Found ${flows.length} flows.`);
-    
     const projectId = process.env.VERTEX_PROJECT || 'Not Set';
     const location = process.env.VERTEX_LOCATION || 'Not Set';
     const model = process.env.VERTEX_MODEL || 'Not Set';
 
-    console.log(`Project ID: ${projectId}`);
+    console.log(`Project ID:   ${projectId}`);
     console.log(`Location:     ${location}`);
     console.log(`Model:        ${model}`);
-    
+
+    console.log('Genkit config OK');
     console.log('-----------------------------');
     return { status: 'ok' };
   } catch (error: any) {

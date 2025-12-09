@@ -1,34 +1,47 @@
 'use server';
 
-/**
- * @fileOverview AI flow to generate suggestions for the main project details.
- *
- * - generateProjectSuggestions - A function that generates suggestions for the project name and description based on the use case.
- */
+import { ai } from "@/ai/genkit";
+import { vertexAI } from "@genkit-ai/google-genai";
+import {
+  ProjectSuggestionsInputSchema,
+  ProjectSuggestionsOutputSchema,
+  type ProjectSuggestionsInput,
+  type ProjectSuggestionsOutput,
+} from "@/ai/schemas/project-suggestions";
 
-import { ai } from '@/ai/genkit';
-import { googleAI } from '@genkit-ai/google-genai';
-import { 
-    ProjectSuggestionsInputSchema, 
-    ProjectSuggestionsOutputSchema, 
-    type ProjectSuggestionsInput, 
-    type ProjectSuggestionsOutput 
-} from '@/ai/schemas/project-suggestions';
+export async function generateProjectSuggestions(
+  input: ProjectSuggestionsInput
+): Promise<ProjectSuggestionsOutput> {
 
-export async function generateProjectSuggestions(input: ProjectSuggestionsInput): Promise<ProjectSuggestionsOutput> {
-  const prompt = ai.definePrompt({
-    name: 'projectSuggestionsPrompt',
-    input: { schema: ProjectSuggestionsInputSchema },
-    output: { schema: ProjectSuggestionsOutputSchema },
-    model: googleAI.model('gemini-2.5-flash'),
-    prompt: `You are an expert project manager for AI systems. Based on the provided use case, generate a concise and descriptive project name and a brief, one-sentence project description.
+  console.log("ENV CHECK VERTEX_MODEL =", process.env.VERTEX_MODEL);
+  console.log("ENV CHECK VERTEX_PROJECT =", process.env.VERTEX_PROJECT);
+  console.log("ENV CHECK VERTEX_LOCATION =", process.env.VERTEX_LOCATION);
 
-    Use Case: {{{useCase}}}
-    
-    Provide the output in the requested JSON format.
-    `,
+  const modelName = process.env.VERTEX_MODEL ?? "gemini-2.5-flash-001";
+
+  const promptText = `
+    You are an expert AI project manager.
+    Based on the provided use case, generate:
+    - a concise project name
+    - a one-sentence description
+
+    Use Case: ${input.useCase}
+
+    Return valid JSON according to the schema.
+  `;
+
+  const { text } = await ai.generate({
+    model: vertexAI({ 
+      projectId: process.env.VERTEX_PROJECT!,
+      location: process.env.VERTEX_LOCATION ?? "us-central1",
+    }).model(modelName),
+
+    prompt: promptText,
   });
 
-  const { output } = await prompt(input);
-  return output!;
+  console.log("RAW AI OUTPUT:", text);
+
+  // parse naar schema
+  const parsed = ProjectSuggestionsOutputSchema.parse(JSON.parse(text));
+  return parsed;
 }

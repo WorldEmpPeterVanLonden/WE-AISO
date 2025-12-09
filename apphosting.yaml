@@ -1,5 +1,22 @@
+# apphosting.yaml
+
+# De build-instellingen voor het Next.js (of Node.js) project
+build:
+  # Gebruik de Next.js build tool voor de Next.js adapter
+  builder: next
+
+# De runtime-instellingen
+run:
+  # De Node.js versie die de server zal gebruiken
+  runtime: "nodejs20" 
+  
+  # De hoeveelheid geheugen die de server toegewezen krijgt (pas aan indien nodig)
+  # memory: 512Mi
+
+# De omgevingsvariabelen en geheimen (secrets)
 env:
   # === FIREBASE PUBLIC CONFIG ===
+  # Deze variabelen zijn nodig voor de client-side Firebase SDK (NEXT_PUBLIC_*)
   - variable: NEXT_PUBLIC_FIREBASE_API_KEY
     secret: Portal-FIREBASE_API_KEY
     availability: [BUILD, RUNTIME]
@@ -32,7 +49,8 @@ env:
     value: "AIzaSyBn2lceGbX408vuB8slmPKKe_HG21JBS5w"
     availability: [BUILD, RUNTIME]
   
-  # === VERTEX AI / GENKIT ===
+  # === VERTEX AI / GENKIT (PROD) ===
+  # Dit is de configuratie voor de dual-provider logica in PROD
   - variable: VERTEX_PROJECT
     secret: Portal-FIREBASE_PROJECT_ID
     availability: [BUILD, RUNTIME]
@@ -42,6 +60,16 @@ env:
   - variable: VERTEX_MODEL
     value: "gemini-2.5-flash"
     availability: [BUILD, RUNTIME]
+
+  # ✅ NIEUW: De schakelaar voor de PROD-modus
+  - variable: USE_VERTEX_AI
+    value: "true"
+    availability: [BUILD, RUNTIME]
+
+  # ✅ NIEUW (OPTIONEEL): Google AI API Key als back-up/DEV secret
+  - variable: GOOGLE_API_KEY
+    secret: GOOGLE_AI_API_KEY_SECRET # Vervang door de naam van je secret
+    availability: [RUNTIME]
 
   # === AUTH / SSO ===
   - variable: JWT_SECRET_KEY
