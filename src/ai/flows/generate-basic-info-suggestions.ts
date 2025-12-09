@@ -40,7 +40,7 @@ export async function generateBasicInfoSuggestions(input: BasicInfoSuggestionsIn
     name: 'basicInfoSuggestionsPrompt',
     input: { schema: BasicInfoSuggestionsInputSchema },
     output: { schema: BasicInfoSuggestionsOutputSchema },
-    model: "googleai/gemini-2.5-flash",
+    model: "gemini-2.5-flash",
     prompt: `
       Project Name: {{{projectName}}}
       Use Case: {{{useCase}}}
@@ -56,5 +56,3 @@ export async function generateBasicInfoSuggestions(input: BasicInfoSuggestionsIn
   const { output } = await prompt(input);
   return output!;
 }
-
-    
