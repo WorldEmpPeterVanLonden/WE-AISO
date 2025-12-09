@@ -2,7 +2,7 @@
 import { genkit } from 'genkit';
 import { vertexAI } from '@genkit-ai/vertexai';
 
-// helper for env-vars with fallback
+// helper voor env-vars met fallback
 function requireEnv(key: string, fallback: string): string {
   const val = process.env[key];
   return typeof val === 'string' && val.length > 0 ? val : fallback;
@@ -10,8 +10,8 @@ function requireEnv(key: string, fallback: string): string {
 
 export const ai = genkit({
   plugins: [
-    vertexAI({    
+    vertexAI({
       projectId: requireEnv('VERTEX_PROJECT', 'we-portal-b9e8d'),
-      location: requireEnv('VERTEX_LOCATION', 'us-central1'),
+      location: requireEnv('VERTEX_LOCATION', 'europe-west4'),
     }),
   ]});
