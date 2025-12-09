@@ -88,3 +88,4 @@ pnpm-debug.log*
 
 # Firebase Hosting cache
 .firebaserc.backup
+keys/sa.json
