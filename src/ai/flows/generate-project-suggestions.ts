@@ -2,7 +2,6 @@
 'use server';
 
 import { ai } from "@/ai/genkit";
-import { googleAI } from "@genkit-ai/google-genai";
 import {
   ProjectSuggestionsInputSchema,
   ProjectSuggestionsOutputSchema,
@@ -17,7 +16,7 @@ export async function generateProjectSuggestions(
     name: "projectSuggestionsPrompt",
     input: { schema: ProjectSuggestionsInputSchema },
     output: { schema: ProjectSuggestionsOutputSchema },
-    model: googleAI.model("gemini-2.5-flash"),
+    model: process.env.VERTEX_MODEL || "gemini-1.5-flash-001",
     prompt: `
       You are an expert AI project manager.
       Based on the provided use case, generate:

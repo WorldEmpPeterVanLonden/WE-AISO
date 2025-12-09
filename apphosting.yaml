@@ -55,10 +55,10 @@ env:
     secret: Portal-FIREBASE_PROJECT_ID
     availability: [BUILD, RUNTIME]
   - variable: VERTEX_LOCATION
-    value: "us-central1"
+    value: "europe-west4"
     availability: [BUILD, RUNTIME]
   - variable: VERTEX_MODEL
-    value: "gemini-2.5-flash"
+    value: "gemini-1.5-flash-001"
     availability: [BUILD, RUNTIME]
 
   # ✅ NIEUW: De schakelaar voor de PROD-modus
