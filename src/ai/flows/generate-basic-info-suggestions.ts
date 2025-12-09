@@ -8,6 +8,7 @@
  */
 
 import { ai } from '@/ai/genkit';
+import { googleAI } from '@genkit-ai/google-genai';
 import { 
     BasicInfoSuggestionsInputSchema, 
     BasicInfoSuggestionsOutputSchema, 
@@ -40,7 +41,7 @@ export async function generateBasicInfoSuggestions(input: BasicInfoSuggestionsIn
     name: 'basicInfoSuggestionsPrompt',
     input: { schema: BasicInfoSuggestionsInputSchema },
     output: { schema: BasicInfoSuggestionsOutputSchema },
-    model: "gemini-2.5-flash",
+    model: googleAI.model("gemini-2.5-flash"),
     prompt: `
       Project Name: {{{projectName}}}
       Use Case: {{{useCase}}}
