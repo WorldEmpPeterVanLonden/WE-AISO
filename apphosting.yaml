@@ -37,7 +37,7 @@ env:
     secret: Portal-FIREBASE_PROJECT_ID
     availability: [BUILD, RUNTIME]
   - variable: VERTEX_LOCATION
-    value: "europe-west4"
+    value: "us-central1"
     availability: [BUILD, RUNTIME]
   - variable: VERTEX_MODEL
     value: "gemini-2.5-flash"

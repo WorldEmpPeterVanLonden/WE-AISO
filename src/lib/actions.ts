@@ -2,11 +2,12 @@
 'use server';
 
 import { revalidatePath } from "next/cache";
-import { NewProjectSchema } from "./definitions";
+import { NewProjectSchema, BasicInfoSchema } from "./definitions";
 import { GenerateDocumentSchema } from "@/ai/schemas/ai-technical-file-generation";
 import { adminDb } from "@/firebase/admin";
 import * as admin from 'firebase-admin';
 import { generateAiTechnicalFile } from "@/ai/ai-technical-file-generation";
+import { listFlows } from "genkit";
 
 
 export async function createProject(formData: unknown) {
@@ -100,29 +101,10 @@ export async function updateProject(projectId: string, formData: unknown) {
 }
 
 export async function updateBasicInfo(projectId: string, formData: unknown) {
-  const validatedFields = NewProjectSchema.pick({
-      intendedUsers: true,
-      geographicScope: true,
-      dataCategories: true,
-      dataSources: true,
-      legalRequirements: true,
-      businessContext: true,
-      stakeholders: true,
-      prohibitedUse: true,
-      retentionPolicy: true,
-      operationalEnvironment: true,
-      performanceGoals: true,
-      scopeComponents: true,
-      dataSubjects: true,
-      dataSensitivity: true,
-      aiActClassification: true,
-      geographicScopeOther: true,
-      legalRequirementsOther: true,
-      retentionPolicyOther: true
-  }).partial().safeParse(formData);
+  const validatedFields = BasicInfoSchema.safeParse(formData);
 
   if (!validatedFields.success) {
-    console.error("Zod validation failed:", validatedFields.error.flatten().fieldErrors);
+    console.error("Zod validation failed for updateBasicInfo:", validatedFields.error.flatten().fieldErrors);
     return { error: "Invalid form data." };
   }
 
@@ -190,8 +172,27 @@ export async function generateDocumentAction(formData: unknown) {
   return { success: "Document generated successfully!" };
 }
 
-export type AiHealthOutput = { status: 'ok' };
+export type AiHealthOutput = { status: 'ok' | 'error', message?: string };
 
 export async function healthCheck(): Promise<AiHealthOutput> {
-  return { status: 'ok' };
+  console.log('--- Running AI Health Check ---');
+  try {
+    const flows = listFlows();
+    console.log(`Genkit initialized. Found ${flows.length} flows.`);
+    
+    const projectId = process.env.VERTEX_PROJECT || 'Not Set';
+    const location = process.env.VERTEX_LOCATION || 'Not Set';
+    const model = process.env.VERTEX_MODEL || 'Not Set';
+
+    console.log(`Project ID: ${projectId}`);
+    console.log(`Location:     ${location}`);
+    console.log(`Model:        ${model}`);
+    
+    console.log('-----------------------------');
+    return { status: 'ok' };
+  } catch (error: any) {
+    console.error('AI Health Check failed:', error.message);
+    console.log('-----------------------------');
+    return { status: 'error', message: error.message };
+  }
 }

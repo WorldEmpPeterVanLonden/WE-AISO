@@ -192,14 +192,14 @@ export function BasicInfoForm({ defaultValues }: { defaultValues: BasicInfoFormD
                 type="button"
                 variant="ghost"
                 size="icon"
-                className="absolute bottom-2 right-2 h-7 w-7 text-muted-foreground hover:text-accent"
+                className="absolute bottom-2 right-2 h-7 w-7 text-muted-foreground"
                 onClick={() => handleGenerateFieldSuggestion(fieldName)}
                 disabled={isLoading}
               >
                 {isLoading ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (
-                  <Sparkles className="h-4 w-4" />
+                  <Sparkles className="h-4 w-4 text-accent" />
                 )}
                 <span className="sr-only">Generate suggestion for {label}</span>
               </Button>
