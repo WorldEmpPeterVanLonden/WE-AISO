@@ -192,7 +192,7 @@ export const NewProjectSchema = ProjectSchema.merge(BasicInfoObjectSchema.pick({
     // to allow reuse for updates where owner is not changed.
     owner: z.string().min(1, "Owner is required.").optional(),
     description: z.string().min(1, "Description is required."),
-}));
+});
 
 export const GenerateDocumentSchema = z.object({
   projectId: z.string(),

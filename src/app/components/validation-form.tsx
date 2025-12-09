@@ -24,7 +24,7 @@ import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { generateValidationSuggestions from "@/ai/flows/generate-validation-suggestions";
+import { generateValidationSuggestions } from "@/ai/flows/generate-validation-suggestions";
 
 type ValidationFormData = z.infer<typeof ValidationSchema>;
 
@@ -112,7 +112,7 @@ export function ValidationForm() {
                 </>
               ) : (
                 <>
-                  <Sparkles className="mr-2 h-4 w-4 text-accent" />
+                  <Sparkles className="mr-2 h-4 w-4" />
                   AI Assist
                 </>
               )}
@@ -237,5 +237,3 @@ export function ValidationForm() {
     </Form>
   );
 }
-
-    
