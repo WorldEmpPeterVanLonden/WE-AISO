@@ -1,18 +1,24 @@
 {
-  "functions": {
-    "source": "functions",
-    "runtime": "nodejs20",
-    "region": "europe-west4"
-  },
-  "hosting": {
-    "source": ".",
-    "ignore": [
-      "firebase.json",
-      "**/.*",
-      "**/node_modules/**"
-    ],
-    "frameworksBackend": {
-      "region": "europe-west4"
+  "hosting": [
+    {
+      "site": "we-portal-b9e8d",
+      "public": "public",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ]
+    }
+  ],
+
+
+  "apphosting": {
+    "backends": {
+      "we-aiso": {
+        "env": {
+          "FIREBASE_ADMIN_SERVICE_ACCOUNT_JSON": "secret://FIREBASE_ADMIN_SERVICE_ACCOUNT_JSON"
+        }
+      }
     }
   }
 }
