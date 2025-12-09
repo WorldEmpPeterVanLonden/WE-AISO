@@ -1,34 +1,41 @@
-import { initializeApp, getApps, cert } from 'firebase-admin/app';
-import { getFirestore } from 'firebase-admin/firestore';
+import { initializeApp, getApps, cert } from "firebase-admin/app";
+import { getFirestore } from "firebase-admin/firestore";
+import fs from "fs";
+
+const LOCAL_SA_PATH = "./keys/sa.json";
 
 function loadServiceAccount() {
-  const raw =
-    process.env.FIREBASE_SERVICE_ACCOUNT ||
-    process.env.NEXT_SERVER_ADMIN_KEY;
+  // 1) Local dev → keys/sa.json
+  if (fs.existsSync(LOCAL_SA_PATH)) {
+    console.log("[Firebase Admin] Using local service account file");
+    return JSON.parse(fs.readFileSync(LOCAL_SA_PATH, "utf8"));
+  }
+
+  // 2) Firebase App Hosting → FIREBASE_SERVICE_ACCOUNT
+  const raw = process.env.FIREBASE_SERVICE_ACCOUNT;
 
   if (!raw) {
     throw new Error(
-      "FATAL: FIREBASE_SERVICE_ACCOUNT (App Hosting) or NEXT_SERVER_ADMIN_KEY (local) is missing."
+      "FATAL: No service account found. Expected FIREBASE_SERVICE_ACCOUNT from App Hosting."
     );
   }
 
   try {
     return JSON.parse(raw);
   } catch (e) {
-    console.error("Service account JSON failed to parse:", raw);
-    throw new Error("Invalid JSON in FIREBASE_SERVICE_ACCOUNT");
+    console.error("Invalid JSON in FIREBASE_SERVICE_ACCOUNT:", raw);
+    throw e;
   }
 }
 
-let adminApp;
+let app;
 
 if (!getApps().length) {
   const sa = loadServiceAccount();
-  adminApp = initializeApp({
-    credential: cert(sa),
-  });
+  app = initializeApp({ credential: cert(sa) });
+  console.log("[Firebase Admin] Initialized.");
 } else {
-  adminApp = getApps()[0];
+  app = getApps()[0];
 }
 
-export const adminDb = getFirestore(adminApp);
+export const adminDb = getFirestore(app);
