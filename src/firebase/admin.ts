@@ -18,9 +18,13 @@ function loadServiceAccount() {
   }
 
   // 2) Deployment / App Hosting → environment secret gebruiken
+  const rawNext = process.env.NEXT_SERVER_ADMIN_KEY;
+  const rawFirebase = process.env.FIREBASE_SERVICE_ACCOUNT;
+
+  // ⛔ Lege strings uitsluiten
   const raw =
-    process.env.FIREBASE_SERVICE_ACCOUNT ||
-    process.env.NEXT_SERVER_ADMIN_KEY;
+    (rawNext && rawNext.trim().length > 0 ? rawNext : null) ||
+    (rawFirebase && rawFirebase.trim().length > 0 ? rawFirebase : null);
 
   if (!raw) {
     throw new Error(
@@ -29,7 +33,6 @@ function loadServiceAccount() {
   }
 
   try {
-    // App Hosting levert exact geldig JSON, dus direct parsen
     return JSON.parse(raw);
   } catch (e) {
     console.error("Service Account ENV contains invalid JSON:", raw);
